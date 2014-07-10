@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TestSite.Models;
 
 namespace TestSite.Controllers
 {
@@ -10,7 +11,12 @@ namespace TestSite.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
+            var ctx = new TagSystem();
+            int id = ctx.AddTag("The first category", "the first category in spanish", 0, TagSystem.TagType.Category);
+            ctx.AddTag("The second cat", "the second cat in spanish", 0, TagSystem.TagType.Category);
+            int id2 = ctx.AddTag("The first top-level category", "The first top-level category in spanish", id, TagSystem.TagType.TopLevelTag);
+
+            ViewBag.Message = "Created path is " + String.Join(" > ", ctx.GetPathById(id2));
 
             return View();
         }

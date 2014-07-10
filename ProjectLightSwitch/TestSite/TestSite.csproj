@@ -196,6 +196,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\Survey.cs" />
+    <Compile Include="Models\Tag.cs" />
+    <Compile Include="Models\TagModel.cs" />
+    <Compile Include="Models\TagsTranslated.cs" />
+    <Compile Include="Models\TagSystem.cs" />
+    <Compile Include="Models\TagTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
