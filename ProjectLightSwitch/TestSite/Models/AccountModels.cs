@@ -25,7 +25,7 @@ namespace TestSite.Models
         }
     }
 
-    [Table("testing_UserProfile", Schema="testing")]
+    [Table("UserProfile")]
     public class UserProfile
     {
         [Key]
