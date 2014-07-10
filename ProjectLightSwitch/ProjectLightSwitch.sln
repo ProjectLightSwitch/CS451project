@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectLightSwitch", "ProjectLightSwitch\ProjectLightSwitch.csproj", "{98050B94-DCAD-472D-997E-2638A604B865}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectLightSwitch.Tests", "ProjectLightSwitch.Tests\ProjectLightSwitch.Tests.csproj", "{C3677C46-3DCC-4D68-96BD-BB1BBA051D2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite", "TestSite\TestSite.csproj", "{8A3C2888-D876-47A2-8536-1DCCDBE0BFCB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98050B94-DCAD-472D-997E-2638A604B865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98050B94-DCAD-472D-997E-2638A604B865}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98050B94-DCAD-472D-997E-2638A604B865}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98050B94-DCAD-472D-997E-2638A604B865}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3677C46-3DCC-4D68-96BD-BB1BBA051D2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3677C46-3DCC-4D68-96BD-BB1BBA051D2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3677C46-3DCC-4D68-96BD-BB1BBA051D2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3677C46-3DCC-4D68-96BD-BB1BBA051D2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A3C2888-D876-47A2-8536-1DCCDBE0BFCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A3C2888-D876-47A2-8536-1DCCDBE0BFCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A3C2888-D876-47A2-8536-1DCCDBE0BFCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A3C2888-D876-47A2-8536-1DCCDBE0BFCB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
