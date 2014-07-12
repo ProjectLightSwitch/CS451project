@@ -14,7 +14,7 @@ namespace TestSite.Models
 
         public virtual DbSet<Survey> Surveys { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
-        public virtual DbSet<TagTree> TagTrees { get; set; }
+        public virtual DbSet<TagTree> TagTree { get; set; }
         public virtual DbSet<TagsTranslated> TranslatedTags { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

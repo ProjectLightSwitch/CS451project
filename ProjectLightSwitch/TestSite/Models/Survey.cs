@@ -16,11 +16,13 @@ namespace TestSite.Models
 
         public int SurveyId { get; set; }
 
+        [Required]
         public byte? Age { get; set; }
 
         [StringLength(256)]
         public string Location { get; set; }
 
+        [RegularExpression("[MFI]", ErrorMessageResourceName = "GenderInputError")]
         [StringLength(1)]
         public string Sex { get; set; }
 
