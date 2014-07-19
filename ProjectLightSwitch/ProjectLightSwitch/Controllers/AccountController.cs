@@ -8,13 +8,13 @@ using System.Web.Security;
 using DotNetOpenAuth.AspNet;
 using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
-using ProjectLightSwitch.Filters;
+//using ProjectLightSwitch.Filters;
 using ProjectLightSwitch.Models;
 
 namespace ProjectLightSwitch.Controllers
 {
     [Authorize]
-    [InitializeSimpleMembership]
+    //[InitializeSimpleMembership]
     public class AccountController : Controller
     {
         //

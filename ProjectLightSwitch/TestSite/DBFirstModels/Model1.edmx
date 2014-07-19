@@ -1,0 +1,823 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="dbmodel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Answers">
+          <Key>
+            <PropertyRef Name="AnswerId" />
+          </Key>
+          <Property Name="AnswerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StoryId" Type="int" Nullable="false" />
+          <Property Name="QuestionId" Type="int" />
+          <Property Name="AnswerText" Type="varchar" MaxLength="2048" />
+        </EntityType>
+        <EntityType Name="Questions">
+          <Key>
+            <PropertyRef Name="QuestionId" />
+          </Key>
+          <Property Name="QuestionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="QuestionText" Type="varchar" MaxLength="1024" Nullable="false" />
+          <Property Name="StoryTypeId" Type="int" />
+        </EntityType>
+        <EntityType Name="StoryInformation">
+          <Key>
+            <PropertyRef Name="StoryId" />
+          </Key>
+          <Property Name="StoryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StoryTypeId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" />
+          <Property Name="Story" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="StoryType">
+          <Key>
+            <PropertyRef Name="StoryTypeId" />
+          </Key>
+          <Property Name="StoryTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Surveys">
+          <Key>
+            <PropertyRef Name="SurveyId" />
+          </Key>
+          <Property Name="SurveyId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Age" Type="tinyint" />
+          <Property Name="Location" Type="nvarchar" MaxLength="256" />
+          <Property Name="Sex" Type="char" MaxLength="1" />
+          <Property Name="Story" Type="nvarchar" MaxLength="4000" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SurveyTags">
+          <Key>
+            <PropertyRef Name="TagId" />
+            <PropertyRef Name="SurveyId" />
+          </Key>
+          <Property Name="TagId" Type="int" Nullable="false" />
+          <Property Name="SurveyId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tags">
+          <Key>
+            <PropertyRef Name="TagId" />
+          </Key>
+          <Property Name="TagId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TagType" Type="tinyint" Nullable="false" />
+          <Property Name="EnglishText" Type="varchar" MaxLength="1024" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'egoldner_db.testing.TagsTranslated' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="TagsTranslated">
+          <Key>
+            <PropertyRef Name="TagId" />
+            <PropertyRef Name="LanguageCode" />
+            <PropertyRef Name="Text" />
+          </Key>
+          <Property Name="TagId" Type="int" Nullable="false" />
+          <Property Name="LanguageCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Text" Type="nvarchar" MaxLength="1024" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TagTree">
+          <Key>
+            <PropertyRef Name="AncestorId" />
+            <PropertyRef Name="DescendantId" />
+          </Key>
+          <Property Name="AncestorId" Type="int" Nullable="false" />
+          <Property Name="DescendantId" Type="int" Nullable="false" />
+          <Property Name="PathLength" Type="tinyint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserInformation">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Country" Type="varchar" MaxLength="1024" />
+          <Property Name="Gender" Type="varchar" MaxLength="50" />
+          <Property Name="Age" Type="int" />
+        </EntityType>
+        <EntityType Name="UserProfile">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="56" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_Membership">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" />
+          <Property Name="ConfirmationToken" Type="nvarchar" MaxLength="128" />
+          <Property Name="IsConfirmed" Type="bit" />
+          <Property Name="LastPasswordFailureDate" Type="datetime" />
+          <Property Name="PasswordFailuresSinceLastSuccess" Type="int" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="PasswordChangedDate" Type="datetime" />
+          <Property Name="PasswordSalt" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="PasswordVerificationToken" Type="nvarchar" MaxLength="128" />
+          <Property Name="PasswordVerificationTokenExpirationDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="webpages_OAuthMembership">
+          <Key>
+            <PropertyRef Name="Provider" />
+            <PropertyRef Name="ProviderUserId" />
+          </Key>
+          <Property Name="Provider" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="ProviderUserId" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_UsersInRoles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="RoleId" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Answers_Answers">
+          <End Role="StoryInformation" Type="Self.StoryInformation" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Answers" Type="Self.Answers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StoryInformation">
+              <PropertyRef Name="StoryId" />
+            </Principal>
+            <Dependent Role="Answers">
+              <PropertyRef Name="StoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Answers_Questions">
+          <End Role="Questions" Type="Self.Questions" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Answers" Type="Self.Answers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Questions">
+              <PropertyRef Name="QuestionId" />
+            </Principal>
+            <Dependent Role="Answers">
+              <PropertyRef Name="QuestionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Questions_StoryType">
+          <End Role="StoryType" Type="Self.StoryType" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Questions" Type="Self.Questions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StoryType">
+              <PropertyRef Name="StoryTypeId" />
+            </Principal>
+            <Dependent Role="Questions">
+              <PropertyRef Name="StoryTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_RoleId">
+          <End Role="webpages_Roles" Type="Self.webpages_Roles" Multiplicity="1" />
+          <End Role="webpages_UsersInRoles" Type="Self.webpages_UsersInRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Roles">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="webpages_UsersInRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StoryInformation_UserInformation">
+          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="StoryInformation" Type="Self.StoryInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserInformation">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="StoryInformation">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SurveyTags_Surveys">
+          <End Role="Surveys" Type="Self.Surveys" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="SurveyTags" Type="Self.SurveyTags" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Surveys">
+              <PropertyRef Name="SurveyId" />
+            </Principal>
+            <Dependent Role="SurveyTags">
+              <PropertyRef Name="SurveyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SurveyTags_Tags">
+          <End Role="Tags" Type="Self.Tags" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="SurveyTags" Type="Self.SurveyTags" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tags">
+              <PropertyRef Name="TagId" />
+            </Principal>
+            <Dependent Role="SurveyTags">
+              <PropertyRef Name="TagId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TagsTranslated_Tags">
+          <End Role="Tags" Type="Self.Tags" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TagsTranslated" Type="Self.TagsTranslated" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tags">
+              <PropertyRef Name="TagId" />
+            </Principal>
+            <Dependent Role="TagsTranslated">
+              <PropertyRef Name="TagId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TagTree_Tags_Ancestor">
+          <End Role="Tags" Type="Self.Tags" Multiplicity="1" />
+          <End Role="TagTree" Type="Self.TagTree" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tags">
+              <PropertyRef Name="TagId" />
+            </Principal>
+            <Dependent Role="TagTree">
+              <PropertyRef Name="AncestorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TagTree_Tags_Descendant">
+          <End Role="Tags" Type="Self.Tags" Multiplicity="1" />
+          <End Role="TagTree" Type="Self.TagTree" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tags">
+              <PropertyRef Name="TagId" />
+            </Principal>
+            <Dependent Role="TagTree">
+              <PropertyRef Name="DescendantId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_UserId">
+          <End Role="UserProfile" Type="Self.UserProfile" Multiplicity="1" />
+          <End Role="webpages_UsersInRoles" Type="Self.webpages_UsersInRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserProfile">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="webpages_UsersInRoles">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="dbmodelStoreContainer">
+          <EntitySet Name="Answers" EntityType="Self.Answers" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="Questions" EntityType="Self.Questions" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="StoryInformation" EntityType="Self.StoryInformation" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="StoryType" EntityType="Self.StoryType" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="Surveys" EntityType="Self.Surveys" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="SurveyTags" EntityType="Self.SurveyTags" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="Tags" EntityType="Self.Tags" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="TagTree" EntityType="Self.TagTree" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="UserInformation" EntityType="Self.UserInformation" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="UserProfile" EntityType="Self.UserProfile" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="webpages_Membership" EntityType="Self.webpages_Membership" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="webpages_OAuthMembership" EntityType="Self.webpages_OAuthMembership" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="webpages_Roles" EntityType="Self.webpages_Roles" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="webpages_UsersInRoles" EntityType="Self.webpages_UsersInRoles" Schema="testing" store:Type="Tables" />
+          <EntitySet Name="TagsTranslated" EntityType="Self.TagsTranslated" store:Type="Tables" store:Schema="testing">
+            <DefiningQuery>SELECT 
+    [TagsTranslated].[TagId] AS [TagId], 
+    [TagsTranslated].[LanguageCode] AS [LanguageCode], 
+    [TagsTranslated].[Text] AS [Text]
+    FROM [testing].[TagsTranslated] AS [TagsTranslated]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_Answers_Answers" Association="Self.FK_Answers_Answers">
+            <End Role="StoryInformation" EntitySet="StoryInformation" />
+            <End Role="Answers" EntitySet="Answers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Answers_Questions" Association="Self.FK_Answers_Questions">
+            <End Role="Questions" EntitySet="Questions" />
+            <End Role="Answers" EntitySet="Answers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Questions_StoryType" Association="Self.FK_Questions_StoryType">
+            <End Role="StoryType" EntitySet="StoryType" />
+            <End Role="Questions" EntitySet="Questions" />
+          </AssociationSet>
+          <AssociationSet Name="fk_RoleId" Association="Self.fk_RoleId">
+            <End Role="webpages_Roles" EntitySet="webpages_Roles" />
+            <End Role="webpages_UsersInRoles" EntitySet="webpages_UsersInRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StoryInformation_UserInformation" Association="Self.FK_StoryInformation_UserInformation">
+            <End Role="UserInformation" EntitySet="UserInformation" />
+            <End Role="StoryInformation" EntitySet="StoryInformation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SurveyTags_Surveys" Association="Self.FK_SurveyTags_Surveys">
+            <End Role="Surveys" EntitySet="Surveys" />
+            <End Role="SurveyTags" EntitySet="SurveyTags" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SurveyTags_Tags" Association="Self.FK_SurveyTags_Tags">
+            <End Role="Tags" EntitySet="Tags" />
+            <End Role="SurveyTags" EntitySet="SurveyTags" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TagsTranslated_Tags" Association="Self.FK_TagsTranslated_Tags">
+            <End Role="Tags" EntitySet="Tags" />
+            <End Role="TagsTranslated" EntitySet="TagsTranslated" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TagTree_Tags_Ancestor" Association="Self.FK_TagTree_Tags_Ancestor">
+            <End Role="Tags" EntitySet="Tags" />
+            <End Role="TagTree" EntitySet="TagTree" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TagTree_Tags_Descendant" Association="Self.FK_TagTree_Tags_Descendant">
+            <End Role="Tags" EntitySet="Tags" />
+            <End Role="TagTree" EntitySet="TagTree" />
+          </AssociationSet>
+          <AssociationSet Name="fk_UserId" Association="Self.fk_UserId">
+            <End Role="UserProfile" EntitySet="UserProfile" />
+            <End Role="webpages_UsersInRoles" EntitySet="webpages_UsersInRoles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="dbmodel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Answer">
+          <Key>
+            <PropertyRef Name="AnswerId" />
+          </Key>
+          <Property Name="AnswerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StoryId" Type="Int32" Nullable="false" />
+          <Property Name="QuestionId" Type="Int32" />
+          <Property Name="AnswerText" Type="String" MaxLength="2048" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="StoryInformation" Relationship="Self.FK_Answers_Answers" FromRole="Answers" ToRole="StoryInformation" />
+          <NavigationProperty Name="Question" Relationship="Self.FK_Answers_Questions" FromRole="Answers" ToRole="Questions" />
+        </EntityType>
+        <EntityType Name="Question">
+          <Key>
+            <PropertyRef Name="QuestionId" />
+          </Key>
+          <Property Name="QuestionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="QuestionText" Type="String" MaxLength="1024" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="StoryTypeId" Type="Int32" />
+          <NavigationProperty Name="Answers" Relationship="Self.FK_Answers_Questions" FromRole="Questions" ToRole="Answers" />
+          <NavigationProperty Name="StoryType" Relationship="Self.FK_Questions_StoryType" FromRole="Questions" ToRole="StoryType" />
+        </EntityType>
+        <EntityType Name="StoryInformation">
+          <Key>
+            <PropertyRef Name="StoryId" />
+          </Key>
+          <Property Name="StoryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StoryTypeId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="Story" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Answers" Relationship="Self.FK_Answers_Answers" FromRole="StoryInformation" ToRole="Answers" />
+          <NavigationProperty Name="UserInformation" Relationship="Self.FK_StoryInformation_UserInformation" FromRole="StoryInformation" ToRole="UserInformation" />
+        </EntityType>
+        <EntityType Name="StoryType">
+          <Key>
+            <PropertyRef Name="StoryTypeId" />
+          </Key>
+          <Property Name="StoryTypeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Questions" Relationship="Self.FK_Questions_StoryType" FromRole="StoryType" ToRole="Questions" />
+        </EntityType>
+        <EntityType Name="Survey">
+          <Key>
+            <PropertyRef Name="SurveyId" />
+          </Key>
+          <Property Name="SurveyId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Age" Type="Byte" />
+          <Property Name="Location" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Sex" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Story" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Tags" Relationship="Self.SurveyTags" FromRole="Surveys" ToRole="Tags" />
+        </EntityType>
+        <EntityType Name="Tag">
+          <Key>
+            <PropertyRef Name="TagId" />
+          </Key>
+          <Property Name="TagId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TagType" Type="Byte" Nullable="false" />
+          <Property Name="EnglishText" Type="String" MaxLength="1024" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="TagsTranslateds" Relationship="Self.FK_TagsTranslated_Tags" FromRole="Tags" ToRole="TagsTranslated" />
+          <NavigationProperty Name="TagTrees" Relationship="Self.FK_TagTree_Tags_Ancestor" FromRole="Tags" ToRole="TagTree" />
+          <NavigationProperty Name="TagTrees1" Relationship="Self.FK_TagTree_Tags_Descendant" FromRole="Tags" ToRole="TagTree" />
+          <NavigationProperty Name="Surveys" Relationship="Self.SurveyTags" FromRole="Tags" ToRole="Surveys" />
+        </EntityType>
+        <EntityType Name="TagTree">
+          <Key>
+            <PropertyRef Name="AncestorId" />
+            <PropertyRef Name="DescendantId" />
+          </Key>
+          <Property Name="AncestorId" Type="Int32" Nullable="false" />
+          <Property Name="DescendantId" Type="Int32" Nullable="false" />
+          <Property Name="PathLength" Type="Byte" Nullable="false" />
+          <NavigationProperty Name="Tag" Relationship="Self.FK_TagTree_Tags_Ancestor" FromRole="TagTree" ToRole="Tags" />
+          <NavigationProperty Name="Tag1" Relationship="Self.FK_TagTree_Tags_Descendant" FromRole="TagTree" ToRole="Tags" />
+        </EntityType>
+        <EntityType Name="UserInformation">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Country" Type="String" MaxLength="1024" FixedLength="false" Unicode="false" />
+          <Property Name="Gender" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Age" Type="Int32" />
+          <NavigationProperty Name="StoryInformations" Relationship="Self.FK_StoryInformation_UserInformation" FromRole="UserInformation" ToRole="StoryInformation" />
+        </EntityType>
+        <EntityType Name="UserProfile">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="56" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="webpages_Roles" Relationship="Self.webpages_UsersInRoles" FromRole="UserProfile" ToRole="webpages_Roles" />
+        </EntityType>
+        <EntityType Name="webpages_Membership">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Precision="3" />
+          <Property Name="ConfirmationToken" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsConfirmed" Type="Boolean" />
+          <Property Name="LastPasswordFailureDate" Type="DateTime" Precision="3" />
+          <Property Name="PasswordFailuresSinceLastSuccess" Type="Int32" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PasswordChangedDate" Type="DateTime" Precision="3" />
+          <Property Name="PasswordSalt" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PasswordVerificationToken" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordVerificationTokenExpirationDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="webpages_OAuthMembership">
+          <Key>
+            <PropertyRef Name="Provider" />
+            <PropertyRef Name="ProviderUserId" />
+          </Key>
+          <Property Name="Provider" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProviderUserId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="UserProfiles" Relationship="Self.webpages_UsersInRoles" FromRole="webpages_Roles" ToRole="UserProfile" />
+        </EntityType>
+        <EntityType Name="TagsTranslated">
+          <Key>
+            <PropertyRef Name="TagId" />
+            <PropertyRef Name="LanguageCode" />
+            <PropertyRef Name="Text" />
+          </Key>
+          <Property Name="TagId" Type="Int32" Nullable="false" />
+          <Property Name="LanguageCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Text" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Tag" Relationship="Self.FK_TagsTranslated_Tags" FromRole="TagsTranslated" ToRole="Tags" />
+        </EntityType>
+        <Association Name="FK_Answers_Answers">
+          <End Role="StoryInformation" Type="Self.StoryInformation" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Answers" Type="Self.Answer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StoryInformation">
+              <PropertyRef Name="StoryId" />
+            </Principal>
+            <Dependent Role="Answers">
+              <PropertyRef Name="StoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Answers_Questions">
+          <End Role="Questions" Type="Self.Question" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Answers" Type="Self.Answer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Questions">
+              <PropertyRef Name="QuestionId" />
+            </Principal>
+            <Dependent Role="Answers">
+              <PropertyRef Name="QuestionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Questions_StoryType">
+          <End Role="StoryType" Type="Self.StoryType" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Questions" Type="Self.Question" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StoryType">
+              <PropertyRef Name="StoryTypeId" />
+            </Principal>
+            <Dependent Role="Questions">
+              <PropertyRef Name="StoryTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StoryInformation_UserInformation">
+          <End Role="UserInformation" Type="Self.UserInformation" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="StoryInformation" Type="Self.StoryInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserInformation">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="StoryInformation">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TagsTranslated_Tags">
+          <End Role="Tags" Type="Self.Tag" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TagsTranslated" Type="Self.TagsTranslated" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tags">
+              <PropertyRef Name="TagId" />
+            </Principal>
+            <Dependent Role="TagsTranslated">
+              <PropertyRef Name="TagId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TagTree_Tags_Ancestor">
+          <End Role="Tags" Type="Self.Tag" Multiplicity="1" />
+          <End Role="TagTree" Type="Self.TagTree" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tags">
+              <PropertyRef Name="TagId" />
+            </Principal>
+            <Dependent Role="TagTree">
+              <PropertyRef Name="AncestorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TagTree_Tags_Descendant">
+          <End Role="Tags" Type="Self.Tag" Multiplicity="1" />
+          <End Role="TagTree" Type="Self.TagTree" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tags">
+              <PropertyRef Name="TagId" />
+            </Principal>
+            <Dependent Role="TagTree">
+              <PropertyRef Name="DescendantId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="SurveyTags">
+          <End Role="Surveys" Type="Self.Survey" Multiplicity="*" />
+          <End Role="Tags" Type="Self.Tag" Multiplicity="*" />
+        </Association>
+        <Association Name="webpages_UsersInRoles">
+          <End Role="webpages_Roles" Type="Self.webpages_Roles" Multiplicity="*" />
+          <End Role="UserProfile" Type="Self.UserProfile" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Answers" EntityType="Self.Answer" />
+          <EntitySet Name="Questions" EntityType="Self.Question" />
+          <EntitySet Name="StoryInformations" EntityType="Self.StoryInformation" />
+          <EntitySet Name="StoryTypes" EntityType="Self.StoryType" />
+          <EntitySet Name="Surveys" EntityType="Self.Survey" />
+          <EntitySet Name="Tags" EntityType="Self.Tag" />
+          <EntitySet Name="TagTrees" EntityType="Self.TagTree" />
+          <EntitySet Name="UserInformations" EntityType="Self.UserInformation" />
+          <EntitySet Name="UserProfiles" EntityType="Self.UserProfile" />
+          <EntitySet Name="webpages_Membership" EntityType="Self.webpages_Membership" />
+          <EntitySet Name="webpages_OAuthMembership" EntityType="Self.webpages_OAuthMembership" />
+          <EntitySet Name="webpages_Roles" EntityType="Self.webpages_Roles" />
+          <EntitySet Name="TagsTranslateds" EntityType="Self.TagsTranslated" />
+          <AssociationSet Name="FK_Answers_Answers" Association="Self.FK_Answers_Answers">
+            <End Role="StoryInformation" EntitySet="StoryInformations" />
+            <End Role="Answers" EntitySet="Answers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Answers_Questions" Association="Self.FK_Answers_Questions">
+            <End Role="Questions" EntitySet="Questions" />
+            <End Role="Answers" EntitySet="Answers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Questions_StoryType" Association="Self.FK_Questions_StoryType">
+            <End Role="StoryType" EntitySet="StoryTypes" />
+            <End Role="Questions" EntitySet="Questions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StoryInformation_UserInformation" Association="Self.FK_StoryInformation_UserInformation">
+            <End Role="UserInformation" EntitySet="UserInformations" />
+            <End Role="StoryInformation" EntitySet="StoryInformations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TagsTranslated_Tags" Association="Self.FK_TagsTranslated_Tags">
+            <End Role="Tags" EntitySet="Tags" />
+            <End Role="TagsTranslated" EntitySet="TagsTranslateds" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TagTree_Tags_Ancestor" Association="Self.FK_TagTree_Tags_Ancestor">
+            <End Role="Tags" EntitySet="Tags" />
+            <End Role="TagTree" EntitySet="TagTrees" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TagTree_Tags_Descendant" Association="Self.FK_TagTree_Tags_Descendant">
+            <End Role="Tags" EntitySet="Tags" />
+            <End Role="TagTree" EntitySet="TagTrees" />
+          </AssociationSet>
+          <AssociationSet Name="SurveyTags" Association="Self.SurveyTags">
+            <End Role="Surveys" EntitySet="Surveys" />
+            <End Role="Tags" EntitySet="Tags" />
+          </AssociationSet>
+          <AssociationSet Name="webpages_UsersInRoles" Association="Self.webpages_UsersInRoles">
+            <End Role="webpages_Roles" EntitySet="webpages_Roles" />
+            <End Role="UserProfile" EntitySet="UserProfiles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="dbmodelStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="Answers">
+            <EntityTypeMapping TypeName="dbmodel.Answer">
+              <MappingFragment StoreEntitySet="Answers">
+                <ScalarProperty Name="AnswerId" ColumnName="AnswerId" />
+                <ScalarProperty Name="StoryId" ColumnName="StoryId" />
+                <ScalarProperty Name="QuestionId" ColumnName="QuestionId" />
+                <ScalarProperty Name="AnswerText" ColumnName="AnswerText" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Questions">
+            <EntityTypeMapping TypeName="dbmodel.Question">
+              <MappingFragment StoreEntitySet="Questions">
+                <ScalarProperty Name="QuestionId" ColumnName="QuestionId" />
+                <ScalarProperty Name="QuestionText" ColumnName="QuestionText" />
+                <ScalarProperty Name="StoryTypeId" ColumnName="StoryTypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StoryInformations">
+            <EntityTypeMapping TypeName="dbmodel.StoryInformation">
+              <MappingFragment StoreEntitySet="StoryInformation">
+                <ScalarProperty Name="StoryId" ColumnName="StoryId" />
+                <ScalarProperty Name="StoryTypeId" ColumnName="StoryTypeId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Story" ColumnName="Story" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StoryTypes">
+            <EntityTypeMapping TypeName="dbmodel.StoryType">
+              <MappingFragment StoreEntitySet="StoryType">
+                <ScalarProperty Name="StoryTypeId" ColumnName="StoryTypeId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Surveys">
+            <EntityTypeMapping TypeName="dbmodel.Survey">
+              <MappingFragment StoreEntitySet="Surveys">
+                <ScalarProperty Name="SurveyId" ColumnName="SurveyId" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="Sex" ColumnName="Sex" />
+                <ScalarProperty Name="Story" ColumnName="Story" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tags">
+            <EntityTypeMapping TypeName="dbmodel.Tag">
+              <MappingFragment StoreEntitySet="Tags">
+                <ScalarProperty Name="TagId" ColumnName="TagId" />
+                <ScalarProperty Name="TagType" ColumnName="TagType" />
+                <ScalarProperty Name="EnglishText" ColumnName="EnglishText" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TagTrees">
+            <EntityTypeMapping TypeName="dbmodel.TagTree">
+              <MappingFragment StoreEntitySet="TagTree">
+                <ScalarProperty Name="AncestorId" ColumnName="AncestorId" />
+                <ScalarProperty Name="DescendantId" ColumnName="DescendantId" />
+                <ScalarProperty Name="PathLength" ColumnName="PathLength" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserInformations">
+            <EntityTypeMapping TypeName="dbmodel.UserInformation">
+              <MappingFragment StoreEntitySet="UserInformation">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserProfiles">
+            <EntityTypeMapping TypeName="dbmodel.UserProfile">
+              <MappingFragment StoreEntitySet="UserProfile">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="webpages_Membership">
+            <EntityTypeMapping TypeName="dbmodel.webpages_Membership">
+              <MappingFragment StoreEntitySet="webpages_Membership">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="ConfirmationToken" ColumnName="ConfirmationToken" />
+                <ScalarProperty Name="IsConfirmed" ColumnName="IsConfirmed" />
+                <ScalarProperty Name="LastPasswordFailureDate" ColumnName="LastPasswordFailureDate" />
+                <ScalarProperty Name="PasswordFailuresSinceLastSuccess" ColumnName="PasswordFailuresSinceLastSuccess" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="PasswordChangedDate" ColumnName="PasswordChangedDate" />
+                <ScalarProperty Name="PasswordSalt" ColumnName="PasswordSalt" />
+                <ScalarProperty Name="PasswordVerificationToken" ColumnName="PasswordVerificationToken" />
+                <ScalarProperty Name="PasswordVerificationTokenExpirationDate" ColumnName="PasswordVerificationTokenExpirationDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="webpages_OAuthMembership">
+            <EntityTypeMapping TypeName="dbmodel.webpages_OAuthMembership">
+              <MappingFragment StoreEntitySet="webpages_OAuthMembership">
+                <ScalarProperty Name="Provider" ColumnName="Provider" />
+                <ScalarProperty Name="ProviderUserId" ColumnName="ProviderUserId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="webpages_Roles">
+            <EntityTypeMapping TypeName="dbmodel.webpages_Roles">
+              <MappingFragment StoreEntitySet="webpages_Roles">
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TagsTranslateds">
+            <EntityTypeMapping TypeName="dbmodel.TagsTranslated">
+              <MappingFragment StoreEntitySet="TagsTranslated">
+                <ScalarProperty Name="TagId" ColumnName="TagId" />
+                <ScalarProperty Name="LanguageCode" ColumnName="LanguageCode" />
+                <ScalarProperty Name="Text" ColumnName="Text" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="SurveyTags" TypeName="dbmodel.SurveyTags" StoreEntitySet="SurveyTags">
+            <EndProperty Name="Surveys">
+              <ScalarProperty Name="SurveyId" ColumnName="SurveyId" />
+            </EndProperty>
+            <EndProperty Name="Tags">
+              <ScalarProperty Name="TagId" ColumnName="TagId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="webpages_UsersInRoles" TypeName="dbmodel.webpages_UsersInRoles" StoreEntitySet="webpages_UsersInRoles">
+            <EndProperty Name="webpages_Roles">
+              <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+            </EndProperty>
+            <EndProperty Name="UserProfile">
+              <ScalarProperty Name="UserId" ColumnName="UserId" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="6b0ce644396741bfbabb89ac332c0386" Name="Diagram1">
+        <EntityTypeShape EntityType="dbmodel.Answer" Width="1.5" PointX="5.25" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.Question" Width="1.5" PointX="3" PointY="10" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.StoryInformation" Width="1.5" PointX="3" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.StoryType" Width="1.5" PointX="0.75" PointY="10.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.Survey" Width="1.5" PointX="0.75" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.Tag" Width="1.5" PointX="3" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.TagTree" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.UserInformation" Width="1.5" PointX="0.75" PointY="7" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.UserProfile" Width="1.5" PointX="10" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.webpages_Membership" Width="1.5" PointX="7.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.webpages_OAuthMembership" Width="1.5" PointX="7.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.webpages_Roles" Width="1.5" PointX="7.75" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbmodel.TagsTranslated" Width="1.5" PointX="5.25" PointY="3.75" IsExpanded="true" />
+        <AssociationConnector Association="dbmodel.FK_Answers_Answers" ManuallyRouted="false" />
+        <AssociationConnector Association="dbmodel.FK_Answers_Questions" ManuallyRouted="false" />
+        <AssociationConnector Association="dbmodel.FK_Questions_StoryType" ManuallyRouted="false" />
+        <AssociationConnector Association="dbmodel.FK_StoryInformation_UserInformation" ManuallyRouted="false" />
+        <AssociationConnector Association="dbmodel.FK_TagsTranslated_Tags" ManuallyRouted="false" />
+        <AssociationConnector Association="dbmodel.FK_TagTree_Tags_Ancestor" ManuallyRouted="false" />
+        <AssociationConnector Association="dbmodel.FK_TagTree_Tags_Descendant" ManuallyRouted="false" />
+        <AssociationConnector Association="dbmodel.SurveyTags" ManuallyRouted="false" />
+        <AssociationConnector Association="dbmodel.webpages_UsersInRoles" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
