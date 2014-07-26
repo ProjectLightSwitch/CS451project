@@ -108,7 +108,7 @@
         else {
             delete SelectedEndTags[tagId];
             $("#" + GetElementIdFromId(tagId)).remove();
-            $('[data-tagselectorid="' + result.tagId + '"] input[type="checkbox"]').checked = false;
+            container.find('input[type="checkbox"]').attr("checked", status)
         }
     }
 
