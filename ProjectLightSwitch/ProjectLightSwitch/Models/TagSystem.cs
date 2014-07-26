@@ -8,13 +8,15 @@ namespace ProjectLightSwitch.Models
 {
     public class TagSystem
     {
-        public void SeedData()
+        public const int InvisibleRootId = -1;
+        public static void SeedData()
         {
             using (var model = new StoryModel())
             {
                 model.Database.ExecuteSqlCommand("DELETE FROM Tags");
                 model.Database.ExecuteSqlCommand("DELETE FROM TagTree");
-                model.Database.ExecuteSqlCommand("DBCC CHECKIDENT (Tags, reseed, 0)");
+                model.Database.ExecuteSqlCommand("DBCC CHECKIDENT (Tags, reseed, 1)");
+                model.SaveChanges();
 
                 //context.Database.ExecuteSqlCommand("DELETE * FROM Tags");
 
@@ -22,7 +24,7 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        private IEnumerable<Tuple<Tag, int>> GetInitialTags()
+        private static IEnumerable<Tuple<Tag, int>> GetInitialTags()
         {
             const int numCategories = 5;
             const int numTopLevelTags = 15;
@@ -53,7 +55,7 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public IList<String> GetPathById(int id)
+        public static IList<String> GetPathById(int id)
         {
             using (var model = new StoryModel())
             {
@@ -66,7 +68,7 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public bool RemoveTag(int id)
+        public static bool RemoveTag(int id)
         {
             using (var context = new StoryModel())
             {
@@ -80,7 +82,7 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public void AddTag(Tag tag, int parent)
+        public static void AddTag(Tag tag, int parent)
         {
             AddTags(new Tuple<Tag, int>[] { Tuple.Create<Tag, int>(tag, parent) });
         }
@@ -89,7 +91,7 @@ namespace ProjectLightSwitch.Models
         /// 
         /// </summary>
         /// <param name="tags">tag, parentId, 0 for top level</param>
-        public void AddTags(IEnumerable<Tuple<Tag, int>> tags)
+        public static void AddTags(IEnumerable<Tuple<Tag, int>> tags)
         {
             using (var context = new StoryModel())
             {
@@ -104,7 +106,7 @@ namespace ProjectLightSwitch.Models
                 foreach (var tag in tags)
                 {
                     var q = (from t in context.TagTrees
-                             where tag.Item2 > 0 && t.DescendantId == tag.Item2
+                             where tag.Item2 > InvisibleRootId && t.DescendantId == tag.Item2
                              select new
                              {
                                  anc = t.AncestorId,
@@ -126,7 +128,26 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public void AddTagsSql(IEnumerable<Tuple<Tag, int>> tags)
+        public static IEnumerable<Tag> GetCategories()
+        {
+            using (var context = new StoryModel())
+            {
+                return context.Tags.Where(t => t.TagType == (byte)TagType.Category).ToArray();
+            }
+        }
+
+        public static IEnumerable<Tag> GetChildTags(int parentId, bool includePendingTags)
+        {
+            using (var context = new StoryModel())
+            {
+                context.Configuration.LazyLoadingEnabled = false;
+                return context.TagTrees.Include("Tag")
+                    .Where(tt=>tt.AncestorId == parentId && tt.PathLength == 1 && (tt.Descendant.TagType != (byte)TagType.PendingTag || includePendingTags))
+                    .Select(tt=>tt.Descendant).ToList();
+            }
+        }
+
+        public static void AddTagsSql(IEnumerable<Tuple<Tag, int>> tags)
         {
             using (var context = new StoryModel())
             {
@@ -162,7 +183,7 @@ namespace ProjectLightSwitch.Models
             public string Path { get; set; }
         }
 
-        public List<TagPathInfo> GetPaths(int rootId, string searchTerm, bool returnAllDescendants)
+        public static List<TagPathInfo> GetPaths(int rootId, string searchTerm, bool returnAllDescendants)
         {
             const string delimiter = " > ";
             using (var context = new StoryModel())
@@ -170,7 +191,7 @@ namespace ProjectLightSwitch.Models
                 return context.TagTrees
                     .Where(tt =>
                         (searchTerm == null || tt.Descendant.EnglishText.Contains(searchTerm))
-                        && (rootId == 0 || context.TagTrees.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
+                        && (rootId == InvisibleRootId || context.TagTrees.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
                         && (returnAllDescendants || tt.PathLength == 1)
                      )
                     .GroupBy(group => group.DescendantId)
@@ -187,7 +208,7 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public List<Tag> GetTagsByType(
+        public static List<Tag> GetTagsByType(
             bool showCategories = false,
             bool showTopLevelTags = false,
             bool showTags = false,
@@ -205,7 +226,7 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public Tag GetTag(int id)
+        public static Tag GetTag(int id)
         {
             using (var context = new StoryModel())
             {

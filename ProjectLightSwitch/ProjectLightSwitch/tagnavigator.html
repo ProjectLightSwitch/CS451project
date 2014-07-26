@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Tag Navigation Testing</title>
+    <script language="javascript" type="text/javascript">
+        function GetCategories()
+        {
+            $.ajax
+        }
+
+        
+    </script>
+
+    <style type="text/css">
+
+        body {
+            padding: 0px;
+            margin: 0px;
+        }
+        
+        .tagnav {
+
+        }
+
+        .tagnav ul {
+            padding: 0px;
+            list-style: none;
+            list-style-image: none;
+            list-style-type: none;
+        }
+
+        .tagnav > ul.cat {
+            width: 100%;
+            border: 2px solid black;
+            overflow:auto;
+        }
+
+        .tagnav > ul.cat > li > a, .tagnav > ul.cat > li > a:visited {
+            color:blue;
+            text-decoration: none;
+        }
+
+        .tagnav > ul.cat > li > a:active {
+            color:red;
+        }
+
+        .tagnav > ul.cat > li {
+            float: left;
+            padding: 10px;
+            border: 1px solid black;
+            
+
+        }
+
+        .subCategories > ul > li {
+            
+        }
+
+        .clear {
+            clear: both;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div>
+        <div class="tagnav">
+            <ul class="cat">
+                <li><a href="#">Health</a></li>
+                <li><a href="#">Addiction</a></li>
+                <li><a href="#">Psychological</a></li>
+                <li><a href="#">Eating Disorders</a></li>
+                <li><a href="#">Stress</a></li>
+                <li><a href="#">Abuse</a></li>
+            </ul>
+            <div class="clear subCategories">
+                <ul>
+                    <li>Sub cat 1 <input type="checkbox" /></li>
+                    <li>Sub cat 1 <input type="checkbox" /></li>
+                    <li>Sub cat 1 <input type="checkbox" /></li>
+                    <li>Sub cat 1 <input type="checkbox" /></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

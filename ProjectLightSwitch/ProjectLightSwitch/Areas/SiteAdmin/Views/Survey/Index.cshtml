@@ -1,0 +1,17 @@
+﻿@model List<TestSite.Models.Tag>
+
+@{
+    ViewBag.Title = "Index";
+}
+<h2>Index</h2>
+<h3>Choose a category</h3>
+
+<p>@ViewBag.Message</p>
+
+<ul>
+    <li>@Html.ActionLink("ROOT", "View", new { Category = 0 })</li>
+    @foreach (var tag in Model)
+    {
+        <li>@Html.ActionLink(tag.EnglishText, "View", new { id = tag.TagId })</li>
+    }
+</ul>

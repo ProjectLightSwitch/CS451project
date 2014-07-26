@@ -1,0 +1,23 @@
+﻿@model List<TestSite.Models.TagSystem.TagPathInfo>
+
+@{
+    ViewBag.Title = "View";
+    
+    int categoryId = (ViewBag.Category != null) ? ViewBag.Category.TagId : 0;
+    string categoryName = categoryId > 0 ? ViewBag.Category.EnglishText : "ROOT";
+}
+
+<h2>View</h2>
+<h3>Current Tags for Category: @categoryName</h3>
+
+<table border="1">
+    @foreach (var info in Model)
+    {
+        <tr>
+            <td>@Html.ActionLink("View", "View", new { id = info.TagId })</td>
+            <td>@Html.ActionLink("Add", "AddChildTag", new { id = info.TagId, Category = categoryId })</td>
+            <td>@Html.ActionLink("Remove", "RemoveTag", new { id = info.TagId, Category = categoryId })</td>
+            <td>@String.Join(" > ", info.Path)</td>
+        </tr>
+    }
+</table>

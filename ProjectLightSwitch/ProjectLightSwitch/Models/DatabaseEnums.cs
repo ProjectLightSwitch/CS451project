@@ -10,7 +10,7 @@ namespace ProjectLightSwitch.Models.Enums
             Category = 1,
             TopLevelTag,
             Tag,
-            PendingTag,
+            PendingTag
         }
         public enum Gender
         {
