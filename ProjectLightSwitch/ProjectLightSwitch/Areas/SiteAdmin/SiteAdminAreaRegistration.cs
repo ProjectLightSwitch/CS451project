@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace TestSite.Areas.SiteAdmin
+namespace ProjectLightSwitch.Areas.SiteAdmin
 {
     public class SiteAdminAreaRegistration : AreaRegistration
     {

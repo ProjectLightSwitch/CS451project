@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using ProjectLightSwitch.Models;
 
 
-namespace TestSite.Areas.SiteAdmin.Controllers
+namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
 {
     public class StoryTypeController : Controller
     {
