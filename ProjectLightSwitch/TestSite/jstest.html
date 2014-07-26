@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script language="javascript" type="text/javascript">
+
+
+        function AddQuestionRow(tableId, prompt)
+        {
+            var table = $('#' + tableId);
+            var row = $('<tr>');
+            row.append($('<td>').text(prompt));
+            row.append($('<td>').append($('<input>')));
+        }
+    </script>
+</head>
+<body>
+    <table id="questions" />
+    <input type="button" value="Add Row" onclick="AddQuestionRow('questions', 'Add a question');" />
+</body>
+</html>
