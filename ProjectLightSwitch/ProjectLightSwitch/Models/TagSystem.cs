@@ -15,7 +15,7 @@ namespace ProjectLightSwitch.Models
             {
                 model.Database.ExecuteSqlCommand("DELETE FROM Tags");
                 model.Database.ExecuteSqlCommand("DELETE FROM TagTree");
-                model.Database.ExecuteSqlCommand("DBCC CHECKIDENT (Tags, reseed, 1)");
+                model.Database.ExecuteSqlCommand("DBCC CHECKIDENT (Tags, reseed, 0)");
                 model.SaveChanges();
 
                 //context.Database.ExecuteSqlCommand("DELETE * FROM Tags");
@@ -26,32 +26,41 @@ namespace ProjectLightSwitch.Models
 
         private static IEnumerable<Tuple<Tag, int>> GetInitialTags()
         {
-            const int numCategories = 5;
-            const int numTopLevelTags = 15;
-            const int numTags = 150;
-            const int degree = 5;
-
-            //var categories = Enumerable.Range(1, numCategories).Select(i=>AddTag(model, "cat_" + i, type: TagType.Category, spanish: "cat(es)_" + i));
-            //var topLevelTags = Enumerable.Range(1, numTopLevelTags).Select(i=>AddTag(model, "tlt_" + i, type: TagType.TopLevelTag, spanish:"tlt(es)_"+i, parentId: (i % numCategories) + 1));
-            //var tags =  Enumerable.Range(1, numTags).Select(i => AddTag(model, "tag_" + i, spanish: "tag(es)_"+i, type: TagType.tag, parentId: ((numCategories + numTopLevelTags + i) % (numTopLevelTags + i)) + 1 + numCategories));
-
-
-            
+            const int numCategories = 4;
+            const int numTags = 250;
+            const int degree = numCategories;
 
             int idx = 0;
+
+            // CREATE ROOT
+            yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.InvisibleRoot, EnglishText = "[Tag Root]", TagId = InvisibleRootId }, idx / degree);
+            
             for (int i = 0; i < numCategories; i++)
             {
-                yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.Category, EnglishText = "cat_" + i }, ++idx / degree);
-            }
-
-            for (int i = 0; i < numTopLevelTags; i++)
-            {
-                yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.TopLevelTag, EnglishText = "tlt_" + i }, ++idx / degree);
+                idx++;
+                yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.Category, EnglishText = "cat_" + idx }, idx / degree);
             }
 
             for (int i = 0; i < numTags; i++)
             {
-                yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.Tag, EnglishText = "tag_" + i }, ++idx / degree);
+                idx++;
+                if (idx % degree < degree / 2)
+                {
+                    yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.NavigationalTag, EnglishText = "tlt_" + idx }, idx / degree);
+                }
+                else
+                {
+                    yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.SelectableTag, EnglishText = "tag_" + idx }, idx / degree);
+                }
+            }
+        }
+
+        public static void GetTagNavigatorViewModel()
+        {
+            using (var model = new StoryModel())
+            { 
+
+            
             }
         }
 
@@ -142,7 +151,7 @@ namespace ProjectLightSwitch.Models
             {
                 context.Configuration.LazyLoadingEnabled = false;
                 return context.TagTrees.Include("Tag")
-                    .Where(tt=>tt.AncestorId == parentId && tt.PathLength == 1 && (tt.Descendant.TagType != (byte)TagType.PendingTag || includePendingTags))
+                    .Where(tt=>tt.AncestorId == parentId && tt.PathLength == 1 && (tt.Descendant.TagType != (byte)TagType.PendingSelectableTag || includePendingTags))
                     .Select(tt=>tt.Descendant).ToList();
             }
         }
@@ -218,10 +227,10 @@ namespace ProjectLightSwitch.Models
             using (var context = new StoryModel())
             {
                 return context.Tags.Where(t =>
-                        (ShowPending && t.TagType == (byte)TagType.PendingTag)
+                        (ShowPending && t.TagType == (byte)TagType.PendingSelectableTag)
                     || (showCategories && t.TagType == (byte)TagType.Category)
-                    || (showTopLevelTags && t.TagType == (byte)TagType.TopLevelTag)
-                    || (showTags && t.TagType == (byte)TagType.Tag)
+                    || (showTopLevelTags && t.TagType == (byte)TagType.NavigationalTag)
+                    || (showTags && t.TagType == (byte)TagType.SelectableTag)
                 ).OrderBy(t => t.EnglishText).ToList();
             }
         }

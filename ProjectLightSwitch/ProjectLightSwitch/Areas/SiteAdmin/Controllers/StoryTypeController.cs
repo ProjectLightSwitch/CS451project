@@ -24,11 +24,16 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             return null;
         }
 
-        public ActionResult Create()
-        { 
-
-
-
+        public ActionResult Create([Bind(Include = "Description,QuestionText")] StoryType storyType)
+        {
+            if (this.ModelState.IsValid)
+            {
+                using (var context = new StoryModel())
+                {
+                    context.StoryTypes.Add(storyType);
+                    context.SaveChanges();
+                }
+            }
 
             return View();
         }
@@ -46,7 +51,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         public ActionResult AddChildTag(int category, int id = 0)
         {
             // Hard coded for now
-            TagSystem.AddTag(new Tag { EnglishText = Guid.NewGuid().ToString(), TagType = (byte)ProjectLightSwitch.Models.Enums.TagType.Tag }, id);
+            TagSystem.AddTag(new Tag { EnglishText = Guid.NewGuid().ToString(), TagType = (byte)ProjectLightSwitch.Models.Enums.TagType.SelectableTag }, id);
 
             ViewBag.Message = "Tag Added";
             return RedirectToAction("View", new { id = category });

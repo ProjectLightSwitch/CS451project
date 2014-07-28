@@ -7,10 +7,11 @@ namespace ProjectLightSwitch.Models.Enums
 {
         public enum TagType : byte
         {
-            Category = 1,
-            TopLevelTag,
-            Tag,
-            PendingTag
+            InvisibleRoot = 0,
+            Category,
+            NavigationalTag,
+            SelectableTag,
+            PendingSelectableTag,
         }
         public enum Gender
         {
