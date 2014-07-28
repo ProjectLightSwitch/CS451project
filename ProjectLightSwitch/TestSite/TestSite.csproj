@@ -194,6 +194,7 @@
     <Compile Include="Areas\SiteAdmin\SiteAdminAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\StoryController.cs" />
     <Compile Include="DBFirstModels\Answer.cs">
       <DependentUpon>Model2.tt</DependentUpon>
     </Compile>
@@ -257,7 +258,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\Story.cs" />
     <Compile Include="Models\StoryModel.cs" />
+    <Compile Include="Models\StoryType.cs" />
     <Compile Include="Models\Survey.cs" />
     <Compile Include="Models\Tag.cs" />
     <Compile Include="Models\TagModel.cs" />
@@ -409,6 +412,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Home\TagPathTest.cshtml" />
+    <Content Include="Views\Story\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
