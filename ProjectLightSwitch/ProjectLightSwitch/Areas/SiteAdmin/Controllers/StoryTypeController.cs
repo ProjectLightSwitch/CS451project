@@ -13,9 +13,12 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         //
         // GET: /SiteAdmin/Survey/
         // TODO: this might be better suited for a separate tag controller
+        StoryModel sb = new StoryModel();
         public ActionResult Index()
         {
-            var model = TagSystem.GetTagsByType(showCategories: true);
+            
+           // var model = TagSystem.GetTagsByType(showCategories: true);
+            var model = sb.StoryTypes;
             return View(model);
         }
         
@@ -37,7 +40,11 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
 
             return View();
         }
-
+        public ActionResult Details(int id)
+        {
+            var model = sb.StoryTypes.Find(id);
+            return View(model);
+        }
         // TODO: this might be better suited for a separate tag controller
         public ActionResult View(string search, int id = 0)
         {
