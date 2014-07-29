@@ -9,10 +9,10 @@
         }
 
 
-        
-        div#tagnav {
+        div.tagnav > div.tags {
 
         }
+
 
         div#tagnav ul {
             padding: 0px;
@@ -21,42 +21,45 @@
             list-style-type: none;
         }
 
-        div#tagnav > ul.cat {
-            width: 100%;
-            border: 2px solid black;
-            overflow:hidden;
-        }
-
-        div#tagnav > .tags {
-            overflow:auto;
-        }
-
-        div#tagnav > .tags > ul {
+        div#tagnav .tags > ul {
             width: 20%;
             float: left;
         }
 
-        .tagnav > ul.cat > li > a, .tagnav > ul.cat > li > a:visited {
+        div#tagnav .tags > ul label {
+            display: inline;
+        }
+
+        /* Category List */
+        div#tagnav .tags > ul:first-child {
+            width: 100%;
+            border: 2px solid black;
+            overflow:auto;
+            float:none;
+        }
+
+        div#tagnav .tags > ul:first-child > li {
+            float: left;
+            padding: 10px;
+            border-right: 2px solid black;
+        }
+
+        div#tagnav .tags > ul:first-child::after {
+            clear:left;
+        }
+
+
+        div#tagnav a, div#tagnav a:visited {
             color:blue;
             text-decoration: none;
         }
 
-        .tagnav > ul.cat > li > a:active {
+        div#tagnav a.sel {
             color:red;
         }
 
-        .tagnav > ul.cat > li {
-            float: left;
-            padding: 10px;
-            border-right: 2px solid black;
-            
-
-        }
-
-        .subCategories > ul > li {
-            
-        }
-
+        
+        
         .clear {
             clear: both;
         }
@@ -64,116 +67,30 @@
 
 </style>
 
-<script language="javascript" type="text/javascript">
-    @{
-<text>
-    var PathSeparator = '>';
-    var SelectedEndTags = {};
-
-    var SelectedPath = [];
-
-    function GetElementIdFromId(tagId)
-    {
-        return "tag_" + tagId;
-    }
-
-    function EndTagSelected(tagId, status)
-    {
-        var container = $('.tagnav [data-tagselectorid="' + tagId + '"]');
-        depth = container.attr('data-tagdepth');
-        name = container.text();
-
-        //name, status, depth
-        UpdateSelectedPath(tagId, name, depth);
-
-        if (status) {
-            SelectedEndTags[tagId] = true;
-
-            var path = [SelectedPath[0].name];
-            if (SelectedPath.length >= 3)
-            {
-                path.push(SelectedPath[SelectedPath.length-2].name)
-            }
-            path.push(SelectedPath[SelectedPath.length - 1].name)
-
-            SelectedEndTags[tagId] = true;
-            
-            
-            $('<li />').attr('id', GetElementIdFromId(tagId)).text(path.join(PathSeparator)).append($('<a>').attr(
-                { 
-                    'href': '#', 
-                    'onclick': ["EndTagSelected(", tagId, ", false);return false;"].join('')
-                }).text('X')).appendTo('.selectedTags');
-        }
-        else {
-            delete SelectedEndTags[tagId];
-            $("#" + GetElementIdFromId(tagId)).remove();
-            container.find('input[type="checkbox"]').attr("checked", status)
-        }
-    }
-
-    function UpdateSelectedPath(newId, newName, depth)
-    {
-        SelectedPath[depth] = { 'id': newId, 'name': newName };
-        if (SelectedPath.length - 1 > depth) {
-            SelectedPath.splice(depth + 1, SelectedPath.length - depth - 1)
-        }
-    }
-
-    function TagSelected(parentId, name, type, depth)
-    {
-        UpdateSelectedPath(parentId, name, depth);
-
-        $.ajax({
-            cache: false,
-            data: {parent:parentId},
-            url: "/Tags/GetChildTags",
-            type: "GET"
-        }).success(function(results) {
-
-            var container = $("#tagnav > .tags");
-
-            // Clear tags at higher depth than selected
-            var toRemove = container.find("ul:nth-child(" + (depth + 1) + "), ul:nth-child(" + (depth + 1) + ") ~ ul");
-            toRemove.remove();
-
-            var ul = $('<ul>').attr('data-tagdepth', depth + 1);
-            
-            $.each(results, function (index, result) {
-                if( result.TagType == '@((byte)ProjectLightSwitch.Models.Enums.TagType.TopLevelTag)' )
-                {
-                    $('<li>').attr({ 'data-tagdepth': depth + 1, 'data-tagselectorid': result.TagId }).addClass("nav_tlt").html(
-                        $('<a>').attr({ 'href': '#', 'onclick': 'TagSelected(' + result.TagId + ',"' + result.EnglishText + '",' + result.TagType + ',' + (depth + 1) + '); return false;' }).text(result.EnglishText + '->')).appendTo(ul);
-                }
-                else if (result.TagType == '@((byte)ProjectLightSwitch.Models.Enums.TagType.Tag)')
-                {
-                    $('<li>').attr({ 'data-tagdepth': depth + 1, 'data-tagselectorid': result.TagId }).addClass("nav_tag").html(
-                        $('<input>').attr({ 'type': 'checkbox', 'onchange': 'EndTagSelected(' + result.TagId + ', this.checked);' }).after(result.EnglishText)).appendTo(ul);
-               }
-            });
-            ul.appendTo(container);
-</text>
-}
-        });
-        return false;
-    }
-</script>
 
 <h2>TagNavigator</h2>
 
-<div id="tagnav" class="tagnav">
-    <ul class="cat">
-        @foreach (var category in Model)
-        { 
-            <li class="nav_cat"><a href="#" onclick="TagSelected(@category.TagId, '@category.EnglishText', '@category.TagType.ToString()', 0); return false;">@category.EnglishText</a></li>
-        }
-    </ul>
-    <br class="clear" />
-    <div class="tags">
 
+<form action="#" method="get">
+    <div  />
+    <div id="editForm">
+        <div class="globalEdit">
+
+
+
+        </div>
+
+        <table>
+            <tr>
+                <td>Add </td>
+
+            </tr>
+
+        </table>
+
+        
     </div>
-    <br class="clear" />
-    <ul class="selectedTags" />
-</div>
-
-<ul id="test"></ul>
+    
+ 
+    <input type="submit" value="Submit" />
+</form>
