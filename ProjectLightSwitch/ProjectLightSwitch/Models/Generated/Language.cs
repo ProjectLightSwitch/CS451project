@@ -11,10 +11,10 @@ namespace ProjectLightSwitch.Models
     {
         public Language()
         {
-            StoryInformations = new HashSet<StoryInformation>();
+            StoryResponses = new HashSet<StoryResponse>();
+            TranslatedStrings = new HashSet<TranslatedString>();
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int LanguageId { get; set; }
 
         [Required]
@@ -25,6 +25,8 @@ namespace ProjectLightSwitch.Models
         [StringLength(256)]
         public string Description { get; set; }
 
-        public virtual ICollection<StoryInformation> StoryInformations { get; set; }
+        public virtual ICollection<StoryResponse> StoryResponses { get; set; }
+
+        public virtual ICollection<TranslatedString> TranslatedStrings { get; set; }
     }
 }

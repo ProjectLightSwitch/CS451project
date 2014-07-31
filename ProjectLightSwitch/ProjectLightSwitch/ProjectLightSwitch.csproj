@@ -192,7 +192,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\SiteAdmin\Controllers\DataController.cs" />
+    <Compile Include="Areas\SiteAdmin\Controllers\SiteController.cs" />
     <Compile Include="Areas\SiteAdmin\Controllers\StoryTypeController.cs" />
+    <Compile Include="Areas\SiteAdmin\Controllers\TagsController.cs" />
     <Compile Include="Areas\SiteAdmin\SiteAdminAreaRegistration.cs" />
     <Compile Include="Attributes\Attributes.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -203,20 +205,24 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
-    <Compile Include="Models\Answer.cs" />
     <Compile Include="Models\DatabaseEnums.cs" />
-    <Compile Include="Models\Language.cs" />
-    <Compile Include="Models\ModelValidation.cs" />
-    <Compile Include="Models\Question.cs" />
-    <Compile Include="Models\QuestionOptions.cs" />
-    <Compile Include="Models\StoryInformation.cs" />
-    <Compile Include="Models\StoryModel.cs" />
-    <Compile Include="Models\StoryType.cs" />
-    <Compile Include="Models\Survey.cs" />
-    <Compile Include="Models\Tag.cs" />
-    <Compile Include="Models\TagsTranslated.cs" />
+    <Compile Include="Models\Generated\Answer.cs" />
+    <Compile Include="Models\Generated\Country.cs" />
+    <Compile Include="Models\Generated\Language.cs" />
+    <Compile Include="Models\Generated\Question.cs" />
+    <Compile Include="Models\Generated\StoryModel.cs" />
+    <Compile Include="Models\Generated\StoryRespons.cs" />
+    <Compile Include="Models\Generated\StoryType.cs" />
+    <Compile Include="Models\Generated\StoryTypeTag.cs" />
+    <Compile Include="Models\Generated\Tag.cs" />
+    <Compile Include="Models\Generated\TagTree.cs" />
+    <Compile Include="Models\Generated\TranslatedString.cs" />
+    <Compile Include="Models\Generated\TranslatedTag.cs" />
     <Compile Include="Models\TagSystem.cs" />
-    <Compile Include="Models\TagTree.cs" />
+    <Compile Include="Models\UserProfile.cs" />
+    <Compile Include="Models\webpages_Membership.cs" />
+    <Compile Include="Models\webpages_OAuthMembership.cs" />
+    <Compile Include="Models\webpages_Roles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -281,6 +287,7 @@
     <Content Include="Areas\SiteAdmin\Views\Web.config" />
     <Content Include="Areas\SiteAdmin\Views\Survey\Create.cshtml" />
     <Content Include="Areas\SiteAdmin\Views\StoryType\Create.cshtml" />
+    <Content Include="Areas\SiteAdmin\Views\Tags\Edit.cshtml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />

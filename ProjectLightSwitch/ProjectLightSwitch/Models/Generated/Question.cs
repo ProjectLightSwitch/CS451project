@@ -16,9 +16,7 @@ namespace ProjectLightSwitch.Models
 
         public int QuestionId { get; set; }
 
-        [Required]
-        [StringLength(1024)]
-        public string QuestionText { get; set; }
+        public Guid PromptTranslatedStringId { get; set; }
 
         public int? StoryTypeId { get; set; }
 
@@ -26,7 +24,5 @@ namespace ProjectLightSwitch.Models
         public string Options { get; set; }
 
         public virtual ICollection<Answer> Answers { get; set; }
-
-        public virtual StoryType StoryType { get; set; }
     }
 }

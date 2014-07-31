@@ -11,10 +11,11 @@ namespace ProjectLightSwitch.Models
     {
         public Tag()
         {
-            TagsTranslateds = new HashSet<TagsTranslated>();
+            StoryTypeTags = new HashSet<StoryTypeTag>();
+            TranslatedTags = new HashSet<TranslatedTag>();
             Ancestors = new HashSet<TagTree>();
             Descendants = new HashSet<TagTree>();
-            Surveys = new HashSet<Survey>();
+            StoryResponses = new HashSet<StoryResponse>();
         }
 
         public int TagId { get; set; }
@@ -25,12 +26,14 @@ namespace ProjectLightSwitch.Models
         [StringLength(1024)]
         public string EnglishText { get; set; }
 
-        public virtual ICollection<TagsTranslated> TagsTranslateds { get; set; }
+        public virtual ICollection<StoryTypeTag> StoryTypeTags { get; set; }
+
+        public virtual ICollection<TranslatedTag> TranslatedTags { get; set; }
 
         public virtual ICollection<TagTree> Ancestors { get; set; }
 
         public virtual ICollection<TagTree> Descendants { get; set; }
 
-        public virtual ICollection<Survey> Surveys { get; set; }
+        public virtual ICollection<StoryResponse> StoryResponses { get; set; }
     }
 }

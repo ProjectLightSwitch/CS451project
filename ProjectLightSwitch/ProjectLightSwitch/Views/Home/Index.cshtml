@@ -11,13 +11,10 @@
 
 @section scripts
 {
-    <script language="javascript" type="text/javascript">
+    
         @{
 <text>
-
-
-
-
+    <script language="javascript" type="text/javascript">
     function TagNavigator(container, editContainer, options) {
         if (typeof container == 'string') {
             container = $('#' + container);
@@ -68,7 +65,7 @@
 
     TagNavigator.prototype.init = function () {
         this.container.children().remove();
-            
+
         this.hierarchicalTagContainer = $('<div>').addClass(hierarchyContainerDivName);
         this.selectedBreadcrumbsContainer = $('<ul>').addClass(selectedBreadcrumbsUlName);
 
@@ -81,7 +78,7 @@
 
         if(editable)
         {
-            
+
             this.populateEditForm();
         }
 
@@ -145,8 +142,8 @@
             // Add breadcrumb
             tagNavigator = this;
             $('<li />').attr(tagIdAttr, tagId).text(path.join(this.options.pathSeparator)).append($('<a>').attr('href','#').click(function () {
-                    tagNavigator.endTagSelected(tagId, false);
-                }).text('X')).appendTo(this.selectedBreadcrumbsContainer);
+                tagNavigator.endTagSelected(tagId, false);
+            }).text('X')).appendTo(this.selectedBreadcrumbsContainer);
         }
         else {
 
@@ -192,20 +189,57 @@
                             tagNavigator.endTagSelected(result.TagId, $(this)[0].checked);
                         }).attr({ 'name': 'tagnav_' + result.TagId, 'type': 'checkbox', 'checked': isChecked })
                    )).appendTo(ul);
-               }
+                }
             });
             ul.appendTo(container).fadeIn('fast');
 
         });
         return false;
+
     }
+
+    function TagEditor()
+    {
+        this.parentId = null;
+        readyForEdit = function () { return this.parentId !== null && this.parentId >= 0; };
+    }
+
+    TagEditor.protype.addChildTag(tagText)
+    {
+
+    }
+
+    TagEditor.protype.removeTag()
+    {
+
+    }
+
+    TagEditor.protype.editTag(newTagText)
+    {
+
+    }
+
+    var tagnav = new TagNavigator('tagnav', null, null);
+
+
+
+
+
+</script>
 </text>
 }
-    </script>
 }
 
 
-Tab Navigator:
-@{Html.RenderAction("TagNavigator", "Tags");}
+    Tab Navigator:
+
+        <form action="#" method="post">
+            <div id="tagnav" />
+            <div id="tagedit">
+                <table>
 
 
+
+                </table>
+            </div>
+        </form>

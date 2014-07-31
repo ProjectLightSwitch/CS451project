@@ -6,16 +6,17 @@ namespace ProjectLightSwitch.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("pls.StoryInformation")]
-    public partial class StoryInformation
+    [Table("pls.StoryResponses")]
+    public partial class StoryResponse
     {
-        public StoryInformation()
+        public StoryResponse()
         {
             Answers = new HashSet<Answer>();
+            Tags = new HashSet<Tag>();
         }
 
         [Key]
-        public int StoryId { get; set; }
+        public int StoryResponseId { get; set; }
 
         public int StoryTypeId { get; set; }
 
@@ -34,8 +35,8 @@ namespace ProjectLightSwitch.Models
 
         public virtual Language Language { get; set; }
 
-        public virtual StoryInformation StoryInformation1 { get; set; }
+        public virtual StoryType StoryType { get; set; }
 
-        public virtual StoryInformation StoryInformation2 { get; set; }
+        public virtual ICollection<Tag> Tags { get; set; }
     }
 }

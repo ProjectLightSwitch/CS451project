@@ -6,23 +6,22 @@ namespace ProjectLightSwitch.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("pls.TagTree")]
-    public partial class TagTree
+    [Table("pls.TranslatedStrings")]
+    public partial class TranslatedString
     {
         [Key]
         [Column(Order = 0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int AncestorId { get; set; }
+        public Guid TranslatedStringId { get; set; }
 
         [Key]
         [Column(Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int DescendantId { get; set; }
+        public int LanguageId { get; set; }
 
-        public byte PathLength { get; set; }
+        [Required]
+        [StringLength(4000)]
+        public string String { get; set; }
 
-        public virtual Tag Ancestor { get; set; }
-
-        public virtual Tag Descendant { get; set; }
+        public virtual Language Language { get; set; }
     }
 }

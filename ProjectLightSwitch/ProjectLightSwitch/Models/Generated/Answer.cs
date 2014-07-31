@@ -11,15 +11,15 @@ namespace ProjectLightSwitch.Models
     {
         public int AnswerId { get; set; }
 
-        public int StoryId { get; set; }
+        public int StoryResponseId { get; set; }
 
         public int? QuestionId { get; set; }
 
         [StringLength(2048)]
         public string AnswerText { get; set; }
 
-        public virtual StoryInformation StoryInformation { get; set; }
-
         public virtual Question Question { get; set; }
+
+        public virtual StoryResponse StoryRespons { get; set; }
     }
 }

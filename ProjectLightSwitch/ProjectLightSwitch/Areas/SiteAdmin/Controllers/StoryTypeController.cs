@@ -53,7 +53,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             // Hard coded for now
             TagSystem.AddTag(new Tag { EnglishText = Guid.NewGuid().ToString(), TagType = (byte)ProjectLightSwitch.Models.Enums.TagType.SelectableTag }, id);
 
-            ViewBag.Message = "Tag Added";
+            ViewBag.Message = "Ancestors Added";
             return RedirectToAction("View", new { id = category });
         }
 
@@ -62,7 +62,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         public ActionResult RemoveTag(int category, int id)
         {
             bool result = TagSystem.RemoveTag(id);
-            ViewBag.Message = result ? "Tag was deleted" : "Tag could not be deleted";
+            ViewBag.Message = result ? "Ancestors was deleted" : "Ancestors could not be deleted";
             return RedirectToAction("View", new { id = category });
         }
     }

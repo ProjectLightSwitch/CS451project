@@ -8,7 +8,7 @@ namespace ProjectLightSwitch.Models
 {
     public class TagSystem
     {
-        public const int InvisibleRootId = -1;
+        
         public static void SeedData()
         {
             using (var model = new StoryModel())
@@ -33,7 +33,7 @@ namespace ProjectLightSwitch.Models
             int idx = 0;
 
             // CREATE ROOT
-            yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.InvisibleRoot, EnglishText = "[Tag Root]", TagId = InvisibleRootId }, idx / degree);
+            yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.InvisibleRoot, EnglishText = "[Ancestors Root]", TagId = TagTree.InvisibleRootId }, idx / degree);
             
             for (int i = 0; i < numCategories; i++)
             {
@@ -91,31 +91,37 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public static void AddTag(Tag tag, int parent)
+        public static bool AddTag(Tag tag, int parent)
         {
-            AddTags(new Tuple<Tag, int>[] { Tuple.Create<Tag, int>(tag, parent) });
+            return AddTags(new Tuple<Tag, int>[] { Tuple.Create<Tag, int>(tag, parent) });
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="tags">tag, parentId, 0 for top level</param>
-        public static void AddTags(IEnumerable<Tuple<Tag, int>> tags)
+        /// <returns>true if at least one tag and one relationship were added (not rigorous check)</returns>
+        public static bool AddTags(IEnumerable<Tuple<Tag, int>> tags)
         {
             using (var context = new StoryModel())
             {
 
                 // Add the tags themselves first
                 context.Tags.AddRange(tags.Select(t => t.Item1).AsEnumerable());
-                context.SaveChanges();
+                var result = context.SaveChanges() > 0;
 
-                // TODO check for duplicates by name
+                // TODO: check for duplicate tags by name
 
                 // Add structure after tags have been saved
                 foreach (var tag in tags)
                 {
+                    if (tag.Item2 == TagTree.InvisibleRootId || tag.Item2 < 0)
+                    {
+                        continue;
+                    }
+
                     var q = (from t in context.TagTrees
-                             where tag.Item2 > InvisibleRootId && t.DescendantId == tag.Item2
+                             where tag.Item2 > TagTree.InvisibleRootId && t.DescendantId == tag.Item2
                              select new
                              {
                                  anc = t.AncestorId,
@@ -133,7 +139,36 @@ namespace ProjectLightSwitch.Models
                     context.TagTrees.Add(new TagTree { PathLength = 0, AncestorId = tag.Item1.TagId, DescendantId = tag.Item1.TagId });
                     context.TagTrees.AddRange(list);
                 }
-                context.SaveChanges();
+                result &= (context.SaveChanges() > 0);
+
+                return result;
+            }
+        }
+        
+        public class TagNavigatorColumnResults
+        {
+            public Tag ParentTag { get; set; }
+            public IEnumerable<Tag> Children { get; set; }
+        }
+
+        public static IEnumerable<TagNavigatorColumnResults> GetChildrenFromPathEnd(int tagId)
+        {
+        using (var context = new StoryModel())
+            {
+                return context.TagTrees
+                        .Where( tt=>context.TagTrees
+                                .Where(tt2=>tt2.DescendantId == tagId)
+                                .Select(tt2=>tt2.AncestorId)
+                                .Contains(tt.AncestorId) 
+                                &&  tt.PathLength == 1
+                        )
+                        .GroupBy(tt => tt.Ancestor)
+                        .Select(grouped => new TagNavigatorColumnResults { 
+                                ParentTag = grouped.Key, 
+                                Children = grouped.Select(g => g.Descendant).AsEnumerable() 
+                        }
+                        )
+                        .AsEnumerable();
             }
         }
 
@@ -150,7 +185,7 @@ namespace ProjectLightSwitch.Models
             using (var context = new StoryModel())
             {
                 context.Configuration.LazyLoadingEnabled = false;
-                return context.TagTrees.Include("Tag")
+                return context.TagTrees.Include("Ancestors")
                     .Where(tt=>tt.AncestorId == parentId && tt.PathLength == 1 && (tt.Descendant.TagType != (byte)TagType.PendingSelectableTag || includePendingTags))
                     .Select(tt=>tt.Descendant).ToList();
             }
@@ -200,7 +235,7 @@ namespace ProjectLightSwitch.Models
                 return context.TagTrees
                     .Where(tt =>
                         (searchTerm == null || tt.Descendant.EnglishText.Contains(searchTerm))
-                        && (rootId == InvisibleRootId || context.TagTrees.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
+                        && (rootId == TagTree.InvisibleRootId || context.TagTrees.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
                         && (returnAllDescendants || tt.PathLength == 1)
                      )
                     .GroupBy(group => group.DescendantId)
