@@ -288,6 +288,8 @@
     <Content Include="Areas\SiteAdmin\Views\Survey\Create.cshtml" />
     <Content Include="Areas\SiteAdmin\Views\StoryType\Create.cshtml" />
     <Content Include="Areas\SiteAdmin\Views\Tags\Edit.cshtml" />
+    <Content Include="Areas\SiteAdmin\Views\StoryType\Index.cshtml" />
+    <Content Include="Areas\SiteAdmin\Views\StoryType\Details.cshtml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
