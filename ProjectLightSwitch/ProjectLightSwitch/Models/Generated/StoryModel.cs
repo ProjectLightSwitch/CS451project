@@ -8,7 +8,7 @@ namespace ProjectLightSwitch.Models
     public partial class StoryModel : DbContext
     {
         public StoryModel()
-            : base("name=StoryModel")
+            : base("name=DefaultConnection")
         {
         }
 

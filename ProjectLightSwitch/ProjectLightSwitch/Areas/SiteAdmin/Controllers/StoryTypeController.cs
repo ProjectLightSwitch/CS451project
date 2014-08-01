@@ -17,7 +17,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         public ActionResult Index()
         {
             
-           // var model = TagSystem.GetTagsByType(showCategories: true);
+           // var context = TagSystem.GetTagsByType(showCategories: true);
             var model = sb.StoryTypes;
             return View(model);
         }

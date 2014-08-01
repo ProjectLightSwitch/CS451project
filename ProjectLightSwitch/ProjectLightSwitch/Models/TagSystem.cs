@@ -11,14 +11,12 @@ namespace ProjectLightSwitch.Models
         
         public static void SeedData()
         {
-            using (var model = new StoryModel())
+            using (var context = new StoryModel())
             {
-                model.Database.ExecuteSqlCommand("DELETE FROM Tags");
-                model.Database.ExecuteSqlCommand("DELETE FROM TagTree");
-                model.Database.ExecuteSqlCommand("DBCC CHECKIDENT (Tags, reseed, 0)");
-                model.SaveChanges();
-
-                //context.Database.ExecuteSqlCommand("DELETE * FROM Tags");
+                context.Database.ExecuteSqlCommand("DELETE FROM Tags");
+                context.Database.ExecuteSqlCommand("DELETE FROM TagTree");
+                context.Database.ExecuteSqlCommand("DBCC CHECKIDENT (Tags, reseed, 0)");
+                context.SaveChanges();
 
                 AddTagsSql(GetInitialTags());
             }
@@ -30,15 +28,15 @@ namespace ProjectLightSwitch.Models
             const int numTags = 250;
             const int degree = numCategories;
 
-            int idx = 0;
+            int idx = TagTree.InvisibleRootId;
 
             // CREATE ROOT
-            yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.InvisibleRoot, EnglishText = "[Ancestors Root]", TagId = TagTree.InvisibleRootId }, idx / degree);
+            yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.InvisibleRoot, TagId=idx, EnglishText = "[Root]"}, TagTree.InvisibleRootId);
             
             for (int i = 0; i < numCategories; i++)
             {
                 idx++;
-                yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.Category, EnglishText = "cat_" + idx }, idx / degree);
+                yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.Category, TagId=idx, EnglishText = "cat_" + idx }, idx / degree);
             }
 
             for (int i = 0; i < numTags; i++)
@@ -46,11 +44,11 @@ namespace ProjectLightSwitch.Models
                 idx++;
                 if (idx % degree < degree / 2)
                 {
-                    yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.NavigationalTag, EnglishText = "tlt_" + idx }, idx / degree);
+                    yield return Tuple.Create<Tag, int>(new Tag { TagId = idx, TagType = (byte)TagType.NavigationalTag, EnglishText = "tlt_" + idx }, idx / degree);
                 }
                 else
                 {
-                    yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.SelectableTag, EnglishText = "tag_" + idx }, idx / degree);
+                    yield return Tuple.Create<Tag, int>(new Tag { TagId = idx, TagType = (byte)TagType.SelectableTag, EnglishText = "tag_" + idx }, idx / degree);
                 }
             }
         }
@@ -115,7 +113,7 @@ namespace ProjectLightSwitch.Models
                 // Add structure after tags have been saved
                 foreach (var tag in tags)
                 {
-                    if (tag.Item2 == TagTree.InvisibleRootId || tag.Item2 < 0)
+                    if (tag.Item2 < 0)
                     {
                         continue;
                     }
@@ -197,6 +195,7 @@ namespace ProjectLightSwitch.Models
             {
                 // Add the tags themselves first
                 var list = tags.ToList();
+                var list2 = tags.Where(t => t.Item1.TagId == 1).ToList();
                 context.Tags.AddRange(list.Select(t => t.Item1));
                 context.SaveChanges();
 
@@ -293,7 +292,7 @@ namespace ProjectLightSwitch.Models
         //    }
         //}
 
-        //public int AddTag(TagModel model, string english, string spanish = null, int parentId = 0, TagType type = TagType.tag)
+        //public int AddTag(TagModel context, string english, string spanish = null, int parentId = 0, TagType type = TagType.tag)
         //{
         //    int result = 0;
         //    // For testing, not really needed
@@ -309,10 +308,10 @@ namespace ProjectLightSwitch.Models
         //            {
         //                tag.TranslatedTags.Add(new TagsTranslated { LanguageCode = "es-mx", Text = spanish });
         //            }
-        //            model.SaveChanges();
+        //            context.SaveChanges();
 
         //            // Add tree structure
-        //            var q = (from t in model.TagTree
+        //            var q = (from t in context.TagTree
         //                        where parentId > 0 && t.DescendantId == parentId
         //                        select new { 
         //                            anc = t.AncestorId, 
@@ -320,9 +319,9 @@ namespace ProjectLightSwitch.Models
         //                            pathlen = (byte)(t.PathLength + 1) })
         //                    .AsEnumerable().Select(x => new TagTree { AncestorId = x.anc, DescendantId = x.des, PathLength = x.pathlen });
 
-        //            model.TagTree.Add(new TagTree() { Ancestor = tag, Descendant = tag, PathLength = 0 });
-        //            model.TagTree.AddRange(q);
-        //            model.SaveChanges();
+        //            context.TagTree.Add(new TagTree() { Ancestor = tag, Descendant = tag, PathLength = 0 });
+        //            context.TagTree.AddRange(q);
+        //            context.SaveChanges();
         //            //transaction.Commit();
 
         //            result = tag.TagId;

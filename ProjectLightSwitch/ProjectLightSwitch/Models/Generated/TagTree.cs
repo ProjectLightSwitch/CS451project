@@ -9,7 +9,7 @@ namespace ProjectLightSwitch.Models
     [Table("pls.TagTree")]
     public partial class TagTree
     {
-        public static int InvisibleRootId { get { return 1; } }
+        public static int InvisibleRootId { get { return 0; } }
 
         [Key]
         [Column(Order = 0)]
