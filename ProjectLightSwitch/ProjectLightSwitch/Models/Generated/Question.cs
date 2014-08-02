@@ -16,6 +16,7 @@ namespace ProjectLightSwitch.Models
 
         public int QuestionId { get; set; }
 
+        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
         public Guid PromptTranslatedStringId { get; set; }
 
         public int? StoryTypeId { get; set; }

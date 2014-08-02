@@ -15,10 +15,13 @@ namespace ProjectLightSwitch.Models
             StoryTypeTags = new HashSet<StoryTypeTag>();
         }
 
+        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
         public int StoryTypeId { get; set; }
 
+        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
         public Guid DescriptionStringId { get; set; }
 
+        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
         public DateTime DateCreated { get; set; }
 
         public virtual ICollection<StoryResponse> StoryResponses { get; set; }

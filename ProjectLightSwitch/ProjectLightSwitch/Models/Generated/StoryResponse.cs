@@ -22,6 +22,9 @@ namespace ProjectLightSwitch.Models
 
         public int? CountryId { get; set; }
 
+        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
+        public DateTime CreationDate { get; set; }
+
         public byte? Age { get; set; }
 
         [StringLength(10)]

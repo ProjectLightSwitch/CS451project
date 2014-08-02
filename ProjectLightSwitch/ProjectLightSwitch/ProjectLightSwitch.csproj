@@ -211,7 +211,7 @@
     <Compile Include="Models\Generated\Language.cs" />
     <Compile Include="Models\Generated\Question.cs" />
     <Compile Include="Models\Generated\StoryModel.cs" />
-    <Compile Include="Models\Generated\StoryRespons.cs" />
+    <Compile Include="Models\Generated\StoryResponse.cs" />
     <Compile Include="Models\Generated\StoryType.cs" />
     <Compile Include="Models\Generated\StoryTypeTag.cs" />
     <Compile Include="Models\Generated\Tag.cs" />
