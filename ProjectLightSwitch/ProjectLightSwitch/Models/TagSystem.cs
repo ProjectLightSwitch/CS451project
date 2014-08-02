@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using ProjectLightSwitch.Models.Enums;
+using System.Web.Mvc;
 
 namespace ProjectLightSwitch.Models
 {
     public class TagSystem
     {
-        
+
+        #region Site Initialization
         public static void SeedData()
         {
             using (var context = new StoryModel())
@@ -18,55 +20,126 @@ namespace ProjectLightSwitch.Models
                 context.Database.ExecuteSqlCommand("DBCC CHECKIDENT (Tags, reseed, 0)");
                 context.SaveChanges();
 
-                AddTagsSql(GetInitialTags());
+                AddTagsSql(CreateInitialTags());
             }
         }
 
-        private static IEnumerable<Tuple<Tag, int>> GetInitialTags()
+        private static IEnumerable<Tuple<Tag, int>> CreateInitialTags()
         {
             const int numCategories = 4;
-            const int numTags = 250;
+            const int numTags = 100;
+            int numNavTags = 100;
             const int degree = numCategories;
 
             int idx = TagTree.InvisibleRootId;
 
             // CREATE ROOT
-            yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.InvisibleRoot, TagId=idx, EnglishText = "[Root]"}, TagTree.InvisibleRootId);
-            
+            yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.InvisibleRoot, TagId = idx, EnglishText = "[Root]" }, -1);
+
+            int selStart = idx + 1;
             for (int i = 0; i < numCategories; i++)
             {
                 idx++;
-                yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.Category, TagId=idx, EnglishText = "cat_" + idx }, idx / degree);
+                yield return Tuple.Create<Tag, int>(new Tag { TagType = (byte)TagType.Category, TagId = idx, EnglishText = "cat_" + idx }, TagTree.InvisibleRootId);
             }
 
-            for (int i = 0; i < numTags; i++)
+            int parent = selStart;
+            for (int j = 0; j < numNavTags / 2; j++)
             {
                 idx++;
-                if (idx % degree < degree / 2)
-                {
-                    yield return Tuple.Create<Tag, int>(new Tag { TagId = idx, TagType = (byte)TagType.NavigationalTag, EnglishText = "tlt_" + idx }, idx / degree);
-                }
-                else
-                {
-                    yield return Tuple.Create<Tag, int>(new Tag { TagId = idx, TagType = (byte)TagType.SelectableTag, EnglishText = "tag_" + idx }, idx / degree);
-                }
+                yield return Tuple.Create<Tag, int>(new Tag { TagId = idx, TagType = (byte)TagType.NavigationalTag, EnglishText = "nav_" + idx }, parent);
+                idx++;
+                yield return Tuple.Create<Tag, int>(new Tag { TagId = idx, TagType = (byte)TagType.NavigationalTag, EnglishText = "nav_" + idx }, parent);
+                parent++;
+            }
+            int selEnd = idx;
+
+            for (int i = selStart; i <= selEnd; i++)
+            {
+                idx++;
+                yield return Tuple.Create<Tag, int>(new Tag { TagId = idx, TagType = (byte)TagType.SelectableTag, EnglishText = "tag_" + idx }, i);
+                idx++;
+                yield return Tuple.Create<Tag, int>(new Tag { TagId = idx, TagType = (byte)TagType.SelectableTag, EnglishText = "tag_" + idx }, i);
             }
         }
 
-        public static void GetTagNavigatorViewModel()
+        #endregion
+
+        public class TagNavigatorDepthLevel
         {
-            using (var model = new StoryModel())
-            { 
+            Tag Parent { get; set; }
+            IEnumerable<Tag> Children { get; set; }
+        }
 
-            
+
+        #region JSON methods
+
+        public static String GetFullTagNavigationPath_Json(int displayToTagId, bool childrenOnly, int languageId)
+        {
+            if (languageId == SiteSettings.DefaultLanguageId)
+            {
+                languageId = -1;
+            }
+            using (var context= new StoryModel())
+            {
+
+                // TODO: Ordering?
+
+                context.Configuration.LazyLoadingEnabled = false;
+                var q =
+                        context.TagTree.Where(tt =>
+                            tt.PathLength == 1
+                            && context.TagTree
+                            .Where(
+                                tt2 => tt2.DescendantId == displayToTagId
+                                && (!childrenOnly || tt2.PathLength == 0)
+                            )
+                            .Select(tt2 => tt2.AncestorId)
+                            .Contains(tt.AncestorId)
+                        )
+                        .GroupBy(tt => tt.Ancestor)
+                        .Select(grouped => new
+                        {
+                            parent = new
+                            {
+                                id = grouped.Key.TagId,
+                                eng = grouped.Key.EnglishText,
+                                type = grouped.Key.TagType,
+                                text = languageId != -1 ? grouped.Key.TranslatedTags.Where(tt => tt.LanguageId == languageId).Select(t => t.Text).FirstOrDefault() : null
+                            },
+                            children = grouped.OrderBy(g => g.Descendant.EnglishText).Select(g => new
+                                {
+                                    id = g.Descendant.TagId,
+                                    eng = g.Descendant.EnglishText,
+                                    type = g.Descendant.TagType,
+                                    text = languageId != -1 ? g.Descendant.TranslatedTags.Where(tt => tt.LanguageId == languageId).Select(t => t.Text).FirstOrDefault() : null
+                                })
+                        });
+
+                var result = new { defLangId=SiteSettings.DefaultLanguageId, reqLangId=languageId!=-1?languageId:SiteSettings.DefaultLanguageId, results=q };
+
+                return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(result);
             }
         }
+
+        public static String GetChildren_Json(int parentId)
+        {
+            using (var context = new StoryModel())
+            {
+                context.Configuration.LazyLoadingEnabled = false;
+
+                var q = context.TagTree.Where(tt => tt.AncestorId == parentId && tt.PathLength == 1).Select(t => t.Descendant).ToList();
+                return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(q);
+            }
+        }
+
+        #endregion
 
         public static IList<String> GetPathById(int id)
         {
-            using (var model = new StoryModel())
+            using (var context = new StoryModel())
             {
-                var q = from t in model.TagTrees
+                var q = from t in context.TagTree
                         where t.DescendantId == id
                         orderby t.PathLength descending
                         select t.Ancestor.EnglishText;
@@ -118,7 +191,7 @@ namespace ProjectLightSwitch.Models
                         continue;
                     }
 
-                    var q = (from t in context.TagTrees
+                    var q = (from t in context.TagTree
                              where tag.Item2 > TagTree.InvisibleRootId && t.DescendantId == tag.Item2
                              select new
                              {
@@ -134,15 +207,15 @@ namespace ProjectLightSwitch.Models
                             DescendantId = tt.des,
                             PathLength = tt.pathlen
                         }).AsEnumerable();
-                    context.TagTrees.Add(new TagTree { PathLength = 0, AncestorId = tag.Item1.TagId, DescendantId = tag.Item1.TagId });
-                    context.TagTrees.AddRange(list);
+                    context.TagTree.Add(new TagTree { PathLength = 0, AncestorId = tag.Item1.TagId, DescendantId = tag.Item1.TagId });
+                    context.TagTree.AddRange(list);
                 }
                 result &= (context.SaveChanges() > 0);
 
                 return result;
             }
         }
-        
+
         public class TagNavigatorColumnResults
         {
             public Tag ParentTag { get; set; }
@@ -151,19 +224,20 @@ namespace ProjectLightSwitch.Models
 
         public static IEnumerable<TagNavigatorColumnResults> GetChildrenFromPathEnd(int tagId)
         {
-        using (var context = new StoryModel())
+            using (var context = new StoryModel())
             {
-                return context.TagTrees
-                        .Where( tt=>context.TagTrees
-                                .Where(tt2=>tt2.DescendantId == tagId)
-                                .Select(tt2=>tt2.AncestorId)
-                                .Contains(tt.AncestorId) 
-                                &&  tt.PathLength == 1
+                return context.TagTree
+                        .Where(tt => context.TagTree
+                                .Where(tt2 => tt2.DescendantId == tagId)
+                                .Select(tt2 => tt2.AncestorId)
+                                .Contains(tt.AncestorId)
+                                && tt.PathLength == 1
                         )
                         .GroupBy(tt => tt.Ancestor)
-                        .Select(grouped => new TagNavigatorColumnResults { 
-                                ParentTag = grouped.Key, 
-                                Children = grouped.Select(g => g.Descendant).AsEnumerable() 
+                        .Select(grouped => new TagNavigatorColumnResults
+                        {
+                            ParentTag = grouped.Key,
+                            Children = grouped.Select(g => g.Descendant).AsEnumerable()
                         }
                         )
                         .AsEnumerable();
@@ -183,9 +257,9 @@ namespace ProjectLightSwitch.Models
             using (var context = new StoryModel())
             {
                 context.Configuration.LazyLoadingEnabled = false;
-                return context.TagTrees.Include("Ancestors")
-                    .Where(tt=>tt.AncestorId == parentId && tt.PathLength == 1 && (tt.Descendant.TagType != (byte)TagType.PendingSelectableTag || includePendingTags))
-                    .Select(tt=>tt.Descendant).ToList();
+                return context.TagTree.Include("Ancestors")
+                    .Where(tt => tt.AncestorId == parentId && tt.PathLength == 1 && (tt.Descendant.TagType != (byte)TagType.PendingSelectableTag || includePendingTags))
+                    .Select(tt => tt.Descendant).ToList();
             }
         }
 
@@ -204,12 +278,16 @@ namespace ProjectLightSwitch.Models
                 foreach (var tag in list)
                 {
                     string query = @"
-                        INSERT INTO TagTree (AncestorId, DescendantId, PathLength) VALUES ({0}, {0}, 0);
+                        INSERT INTO TagTree (AncestorId, DescendantId, PathLength) VALUES ({0}, {0}, 0);";
+
+                    if (tag.Item2 != -1)
+                    {
+                        query += @"
                         INSERT INTO TagTree
                         SELECT AncestorId, DescendantId = {0}, PathLength = PathLength + 1
                         FROM TagTree
                         WHERE DescendantId = {1}";
-
+                    }
 
                     context.Database.ExecuteSqlCommand(query, tag.Item1.TagId, tag.Item2);
 
@@ -231,10 +309,10 @@ namespace ProjectLightSwitch.Models
             const string delimiter = " > ";
             using (var context = new StoryModel())
             {
-                return context.TagTrees
+                return context.TagTree
                     .Where(tt =>
                         (searchTerm == null || tt.Descendant.EnglishText.Contains(searchTerm))
-                        && (rootId == TagTree.InvisibleRootId || context.TagTrees.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
+                        && (rootId == TagTree.InvisibleRootId || context.TagTree.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
                         && (returnAllDescendants || tt.PathLength == 1)
                      )
                     .GroupBy(group => group.DescendantId)

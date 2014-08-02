@@ -16,8 +16,27 @@ namespace ProjectLightSwitch
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+                namespaces: new[] { "ProjectLightSwitch.Controllers" }
             );
+
+            routes.MapRoute(
+                name: "Json",
+                url: "Json/{action}/{id}",
+                defaults: new { controller = "Tags", id = UrlParameter.Optional }, 
+                constraints: new { action = "(navigate|getchildren)" },
+                namespaces: new[] { "ProjectLightSwitch.Controllers" }
+            );
+
+            // Hidden
+            routes.MapRoute(
+                name: "HiddenTags",
+                url: "Tags/{*.}",
+                defaults: new { controller = "Home", action = "Index"},
+                namespaces: new[] { "ProjectLightSwitch.Controllers" }
+            );
+
+
         }
     }
 }

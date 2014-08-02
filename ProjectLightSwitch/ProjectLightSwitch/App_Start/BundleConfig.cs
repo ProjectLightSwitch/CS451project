@@ -8,6 +8,11 @@ namespace ProjectLightSwitch
         // For more information on Bundling, visit http://go.microsoft.com/fwlink/?LinkId=254725
         public static void RegisterBundles(BundleCollection bundles)
         {
+            bundles.Add(new ScriptBundle("~/bundles/tags").Include(
+                        "~/Scripts/Utilities.js",
+                        "~/Scripts/TagNavigator.js"
+            ));
+
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
@@ -25,6 +30,8 @@ namespace ProjectLightSwitch
 
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css"));
 
+            bundles.Add(new StyleBundle("~/Content/tagnav").Include("~/Content/Styles/TagNavigator.css"));
+
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
                         "~/Content/themes/base/jquery.ui.core.css",
                         "~/Content/themes/base/jquery.ui.resizable.css",
@@ -38,6 +45,8 @@ namespace ProjectLightSwitch
                         "~/Content/themes/base/jquery.ui.datepicker.css",
                         "~/Content/themes/base/jquery.ui.progressbar.css",
                         "~/Content/themes/base/jquery.ui.theme.css"));
+
+            BundleTable.EnableOptimizations = false;
         }
     }
 }

@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@section featured {
+    <section class="featured">
+        <div class="content-wrapper">
+            <h1>Project Lightswitch</h1>
+        </div>
+    </section>
+}
+
+@section head {
+    @Styles.Render("~/Content/tagnav")
+    @Scripts.Render("~/bundles/tags")
+}
+
+@section scripts
+{
+    <script type="text/javascript" language="javascript">
+        var tagnav = new TagNavigator('tagnav', null, null);
+    </script>
+}
+
+Tab Navigator:
+<form action="#" method="post">
+    <div id="tagnav" />
+</form>

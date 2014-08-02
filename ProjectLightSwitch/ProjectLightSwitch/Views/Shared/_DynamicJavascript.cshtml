@@ -1,0 +1,11 @@
+﻿<script language="javascript" type="text/javascript">
+    var InvisibleRootId = '@(ProjectLightSwitch.Models.TagTree.InvisibleRootId)';
+    var TagType = {};
+    @{
+    // Store TagTypes in both directions
+    foreach (ProjectLightSwitch.Models.Enums.TagType value in Enum.GetValues(typeof(ProjectLightSwitch.Models.Enums.TagType)))
+    {
+        @:TagType['@(value.ToString())'] = '@((byte)value)'; TagType['@((byte)value)'] = '@(value.ToString())';
+        }
+}
+</script>

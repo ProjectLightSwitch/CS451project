@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ProjectLightSwitch.Models;
 
 namespace ProjectLightSwitch.Controllers
 {
@@ -12,6 +13,12 @@ namespace ProjectLightSwitch.Controllers
         {
             ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
             return View();
+        }
+
+        public ActionResult Eric()
+        {
+            return View();
+            //return Json(TagSystem.GetFullTagNavigationPath_Json(26, null), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult About()

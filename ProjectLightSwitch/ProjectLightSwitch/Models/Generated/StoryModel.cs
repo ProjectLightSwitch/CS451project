@@ -20,7 +20,7 @@ namespace ProjectLightSwitch.Models
         public virtual DbSet<StoryType> StoryTypes { get; set; }
         public virtual DbSet<StoryTypeTag> StoryTypeTags { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
-        public virtual DbSet<TagTree> TagTrees { get; set; }
+        public virtual DbSet<TagTree> TagTree { get; set; }
         public virtual DbSet<TranslatedString> TranslatedStrings { get; set; }
         public virtual DbSet<TranslatedTag> TranslatedTags { get; set; }
 

@@ -9,6 +9,7 @@ using System.Web.Mvc;
 
 namespace ProjectLightSwitch.Controllers
 {
+    
     public class TagsController : Controller
     {
         //
@@ -27,13 +28,21 @@ namespace ProjectLightSwitch.Controllers
         [AjaxOnly]
         public ActionResult GetCategories()
         {
-            return Json(TagSystem.GetCategories(), JsonRequestBehavior.AllowGet);
+            return Content(TagSystem.GetChildren_Json(TagTree.InvisibleRootId), "application/json");
         }
 
         [AjaxOnly]
-        public ActionResult GetChildTags(int parent)
+        [OutputCache(Duration = 30, VaryByParam = "*", VaryByHeader = "Accept-Language")]
+        public ActionResult Children(int parent)
         {
-            return Json(TagSystem.GetChildTags(parent, false), JsonRequestBehavior.AllowGet);
+            return Content(TagSystem.GetChildren_Json(parent), "application/json");
+        }
+
+        //[AjaxOnly]
+        [OutputCache(Duration = 30, VaryByParam = "*", VaryByHeader = "Accept-Language")]
+        public ActionResult Navigate(int id, bool childrenOnly = false, int language = -1)
+        {
+            return Content(TagSystem.GetFullTagNavigationPath_Json(id, childrenOnly, language), "application/json");
         }
 
         [AjaxOnly]
@@ -41,7 +50,7 @@ namespace ProjectLightSwitch.Controllers
         {
             if(!Enum.IsDefined(typeof(TagType), type) || type == TagTree.InvisibleRootId)
             {
-                return Json(new { error = "Invalid tag type." }); 
+                return Content("{'error':'Invalid Type.'}", "application/json");
             }
 
             using (var context = new StoryModel())
@@ -58,7 +67,7 @@ namespace ProjectLightSwitch.Controllers
                     bool success = context.SaveChanges() > 0;
                     return Json(new { result = success, error = success ? null : "There was an error removing the tag." });
                 }
-                return Json(new { error = "Ancestors not found." });
+                return Content("{'error':'Ancestors not found.'}", "application/json");
             }
         }
 
@@ -74,7 +83,7 @@ namespace ProjectLightSwitch.Controllers
                     bool success = context.SaveChanges() > 0;
                     return Json(new { error = success ? null : "There was an error removing the tag." });
                 }
-                return Json(new { error = "Ancestors not found." });
+                return Content("{'error':'Ancestors not found.'}", "application/json");
             }
         }
     }

@@ -1,0 +1,51 @@
+﻿div.TagNavigator ul {
+    padding: 0px;
+    list-style: none;
+    list-style-image: none;
+    list-style-type: none;
+}
+
+div.TagNavigator .tags > ul {
+    width: 20%;
+    float: left;
+}
+
+div.TagNavigator .tags > ul label {
+    display: inline;
+}
+
+/* Category List */
+div.TagNavigator .tags > ul:first-child {
+    width: 100%;
+    border: 2px solid black;
+    overflow:auto;
+    float:none;
+}
+
+div.TagNavigator .tags > ul:first-child > li {
+    float: left;
+    padding: 10px;
+    border-right: 2px solid black;
+}
+
+div.TagNavigator .tags > ul:first-child::after {
+    clear:left;
+}
+
+
+div.TagNavigator a, div.TagNavigator a:visited {
+    color:blue;
+    text-decoration: none;
+}
+
+div.TagNavigator .nav_tag.sel {
+    font-weight: bold;
+}
+
+div.TagNavigator a.sel {
+    color:red;
+}
+       
+.clear {
+    clear: both;
+}
