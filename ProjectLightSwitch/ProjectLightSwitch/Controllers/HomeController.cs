@@ -17,14 +17,6 @@ namespace ProjectLightSwitch.Controllers
 
         public ActionResult Eric()
         {
-                using (var context = new StoryModel())
-                {
-                    var foo = new StoryType();
-                    context.StoryTypes.Add(foo);
-                    context.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-
             return View();
             //return Json(TagSystem.GetFullTagNavigationPath_Json(26, null), JsonRequestBehavior.AllowGet);
         }

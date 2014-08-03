@@ -6,6 +6,7 @@
         <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <meta name="viewport" content="width=device-width" />
         @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/themes/base/css")
         @Scripts.Render("~/bundles/modernizr")
         @{ Html.RenderPartial("~/Views/Shared/_DynamicJavascript.cshtml"); }
 
@@ -15,8 +16,22 @@
         <header>
             <div class="content-wrapper">
                 <div class="float-left">
-                    <p>PROJECT LIGHT SWITCH PROJECT!</p>
+                    <p>PROJECT LIGHT SWITCH!</p>
                     <p class="site-title">@Html.ActionLink("your logo here", "Index", "Home")</p>
+                </div>
+                <div>
+                    @{
+                        IEnumerable<string> messages = ProjectLightSwitch.HelperFunctions.GetGlobalMessages(TempData);
+                        if (messages.Count() > 0)
+                        {
+                            <ul id="globalMessages">
+                                @foreach(string message in messages)
+                                {
+                                    <li>@message</li>
+                                }
+                            </ul>
+                        }
+                    }
                 </div>
                 <div class="float-right">
                     <section id="login">
@@ -42,12 +57,12 @@
         <footer>
             <div class="content-wrapper">
                 <div class="float-left">
-                    <p>&copy; @DateTime.Now.Year - My ASP.NET MVC Application</p>
+                    <p>&copy; @DateTime.Now.Year - Project Light Switch</p>
                 </div>
             </div>
         </footer>
-
         @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryui")
         @RenderSection("scripts", required: false)
     </body>
 </html>
