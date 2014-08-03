@@ -11,11 +11,7 @@ function getUrlVars() {
 }
 
 function getUrlPath() {
-    var parts = window.location.href.split('/');
-    if (parts.length > 0) {
-        return parts[parts.length - 1];
-    }
-    return null;
+    return window.location.href.split('/');
 }
 
 function getUrlHash() {

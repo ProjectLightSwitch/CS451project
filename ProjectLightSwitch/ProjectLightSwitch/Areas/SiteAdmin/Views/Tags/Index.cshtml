@@ -1,0 +1,42 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Tag Management";
+}
+
+
+@section head {
+    @Styles.Render("~/Content/tagnav")
+    @Scripts.Render("~/bundles/tags")
+}
+
+@section scripts
+{
+    <script type="text/javascript" language="javascript">
+    var tagnav = new TagNavigator('tagnav', {
+            enabled:true,
+            editUrl: '@Url.Action("Edit", "Tags", new { area = "SiteAdmin", id="(0)"})',
+            selectedTagSubmissionName: "SelectedTags[(0)]",
+            ajax_navigateToTagUrl: '@Url.Action("Navigate", "Tags", new { area = "" })'
+        });
+    </script>
+}
+
+<h2>Tag Management</h2>
+@using(Html.BeginForm("AddChildren", "Tags", new {area="SiteAdmin"}, FormMethod.Post))
+{
+    <h3>Add Category</h3>
+    @Html.Hidden("parentId", ProjectLightSwitch.Models.TagTree.InvisibleRootId)
+    @Html.Hidden("Children[0].TagType", (byte)ProjectLightSwitch.Models.Enums.TagType.Category)
+    <label>Category Name: <input name="Children[0].EnglishText" /></label>
+    <input type="submit" value="Add Category" />
+}
+
+<h3>Pending tags</h3>
+<p>
+    @Html.ActionLink("Review Pending Tags", "ReviewPending", new { area = "SiteAdmin" })
+</p>
+
+Tab Navigator:
+<form action="#" method="post">
+    <div id="tagnav"></div>
+</form>

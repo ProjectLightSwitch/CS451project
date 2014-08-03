@@ -9,27 +9,30 @@
     this.selectedEndTags = {};
     this.hierarchicalTagContainer = null;
     this.selectedBreadcrumbsContainer = null;
+    this.selectedTagId = null;
 
     // Set defaults
     this.options = {
-        selectedTagSubmissionName: "SelectedTags[{0}]",
-        ajax_getChildrenUrl: "/Tags/Children",
+        selectedTagSubmissionName: "SelectedTags[(0)]",
         ajax_navigateToTagUrl: "/Tags/Navigate",
-        editUrl: "/Tags/Edit/{0}",
-        editable: true,
+        ajax_searchUrl: "/Tags/Search",
+        enabled: true,
+        editUrl: null,
         pathSeparator: ' > '
     };
     if (options != null) {
-        var providedOptionKeys = Object.keys(options);
-        for (var providedOptionKey in providedOptionKeys) {
-            this.options[providedOptionKey] = options[providedOptionKey];
+        //var providedOptionKeys = Object.keys(options);
+        for (var property in options) {
+            if (options.hasOwnProperty(property)) {
+                this.options[property] = options[property];
+            }
         }
     }
 
     // PRIVATES
     this._cssContainerClassName = "TagNavigator";
-    this._selectedClassName = "sel",
     this._hiddenInputContainerName = "selTagInputs";
+    this._searchTextClassName = "tagSearch";
     this._hierarchicalContainerDivClassName = "tags";
     this._selectedBreadcrumbsUlClassName = "selectedTags";
     this._selectedTagClassName = "sel";
@@ -46,16 +49,21 @@ TagNavigator.prototype.init = function () {
     this.container.addClass(this._cssContainerClassName);
 
     this.hierarchicalTagContainer = $('<div>').addClass(this._hierarchicalContainerDivClassName);
-    this.selectedBreadcrumbsContainer = $('<ul>').addClass(this._selectedBreadcrumbsUlClassName);
-
     this.container.append(
         this.hierarchicalTagContainer).append(
-        $('<br>').attr('clear', 'left')).append(
-        this.selectedBreadcrumbsContainer).append(
-        // See: http://www.quirksmode.org/css/clearing.html for possible workaround
-        $('<br>').attr('clear', 'left')
-    );
+        $('<br>').css('clear', 'left'));
+    
+    if (this.options.enabled) {
+        var autocomplete = $('<input>').addClass(this._searchTextClassName);
+        this.wireAutocomplete(autocomplete);
+        this.container.append(autocomplete);
 
+        this.selectedBreadcrumbsContainer = $('<ul>').addClass(this._selectedBreadcrumbsUlClassName);
+        this.container.append(this.selectedBreadcrumbsContainer);
+    }
+    // See: http://www.quirksmode.org/css/clearing.html for possible workaround
+    this.container.append($('<br>').css('clear', 'left'));
+        
     // Hook into form submission
     var tagnav = this;
     $(document).ready(function () {
@@ -71,13 +79,15 @@ TagNavigator.prototype.findTagId = function () {
     if (tagId == null) {
         tagId = getUrlVars()['id'];
         if (tagId == null) {
+            tagId = InvisibleRootId;
+
             var list = getUrlPath();
-            var num = parseInt(list[list.length - 1]);
-            if (!isNaN(num)) {
-                tagId = num;
-            }
-            else {
-                tagId = InvisibleRootId;
+            if (list.length > 1)
+            {
+                var num = parseInt(list[list.length - 1]);
+                if (!isNaN(num) && num >= InvisibleRootId) {
+                    tagId = num;
+                }
             }
         }
     }
@@ -91,7 +101,7 @@ TagNavigator.prototype.injectHiddenFields = function () {
     var tagIds = Object.keys(this.selectedEndTags);
     $.each(tagIds, function (index, result) {
         $('<input>').attr({
-            'name': tagnav.options.selectedTagSubmissionName.replace('{0}', index),
+            'name': tagnav.options.selectedTagSubmissionName.replace('(0)', index),
             'value': result,
             'type': 'hidden'
         }).appendTo(tagnav.container);
@@ -129,9 +139,12 @@ TagNavigator.prototype.endTagSelected = function (tagId, status) {
         path.push(name);
 
         // Add breadcrumb
-        tagNavigator = this;
+        tagnav = this;
         $('<li />').attr(this._tagIdAttr, tagId).text(path.join(this.options.pathSeparator)).append($('<a>').attr('href', '#').click(function () {
-            tagNavigator.endTagSelected(tagId, false); return false;
+            if (tagnav.options.enabled) {
+                tagnav.endTagSelected(tagId, false);
+            }
+            return false;
         }).text('X')).appendTo(this.selectedBreadcrumbsContainer);
     }
     else {
@@ -156,6 +169,7 @@ TagNavigator.prototype.navigateToTag = function (id) {
         url: tagnav.options.ajax_navigateToTagUrl,
         type: "GET"
     }).success(function (response) {
+        tagnav.selectedTagId = id;
         $.each(response.results, function (index, result) {
             tagnav.displayNavigationLevel(result, index, response.defLangId != response.reqLangId);
         })
@@ -177,6 +191,7 @@ TagNavigator.prototype.tagSelected = function (parentId, name, type, depth) {
             data = response.results[0];
         }
 
+        tagnav.selectedTagId = parentId;
         tagnav.displayNavigationLevel(data, depth + 1, response.defLangId != response.reqLangId);
     });
     return false;
@@ -192,9 +207,8 @@ TagNavigator.prototype.displayNavigationLevel = function (data, depth, isTransla
 
     //this.hierarchicalTagContainer.find("ul:eq(" + depth + "),ul:eq(" + depth + ") ~ ul").remove();
     // Create new unordered list
-    var ul = $('<ul>').attr(this._depthAttr, depth).attr(this._parentIdAttr, data.parent.id).attr(this._parentNameAttr, data.parent.name);
+    var ul = $('<ul>').attr(this._depthAttr, depth).attr(this._parentIdAttr, data.parent.id).attr(this._parentNameAttr, data.parent.text == null ? data.parent.eng : data.parent.text);
     var tagnav = this;
-
 
     var missingTranslation;
     var label;
@@ -216,39 +230,121 @@ TagNavigator.prototype.displayNavigationLevel = function (data, depth, isTransla
         if (missingTranslation) {
             li.addClass("noTrans");
         }
-        if (tagnav.options.editable) {
-            li.append('<span class="editSpan">(<a href="' + tagnav.options.editUrl.replace('{0}', child.id) + '">Edit</a>)</span>')
+
+        if (child.id == tagnav.selectedTagId) {
+            li.addClass(tagnav._selectedTagClassName);
+        }
+
+        if (tagnav.options.enabled && tagnav.options.editUrl != null) {
+            li.append('<span class="editSpan">(<a class="editTag" href="' + tagnav.options.editUrl.replace('(0)', child.id) + '">Edit</a>)</span>');
         }
 
         if (child.type == TagType.NavigationalTag || child.type == TagType.Category) {
             li.addClass(child.type == TagType.Category ? 'tagnav_cat' : 'tagnav_nav').addClass('tagnav_tag');
             li.append(
-                $('<a>').attr('href', '#').click(
-                    function () {
-                        tagnav.tagSelected(child.id, label, child.type, depth);
-                        return false;
-                    }
-                ).text(label));
+                tagnav.options.enabled 
+                ? $('<a>').attr('href', '#').click(function () {
+                    tagnav.tagSelected(child.id, label, child.type, depth);
+                    return false;
+                }).text(label)
+                : $('<span>').text(label));
         }
         else if (child.type == TagType.SelectableTag) {
             var isChecked = tagnav.selectedEndTags[child.id] === true;
             li.addClass('tagnav_sel');
             li.append(
-                $('<label>').attr({ 'for': 'tagnav_' + child.id }).text(label).after(
-                $('<input>').click(function () {
-                    tagnav.endTagSelected(child.id, $(this)[0].checked);
-                }
-                ).attr({ 'name': 'tagnav_' + child.id, 'type': 'checkbox', 'checked': isChecked })
-            ))
+                tagnav.options.enabled 
+                ? $('<label>').attr({ 'for': 'tagnav_' + child.id }).text(label).after(
+                    $('<input>').click(function () {
+                        tagnav.endTagSelected(child.id, $(this)[0].checked);
+                    }
+                    ).attr({ 'name': 'tagnav_' + child.id, 'type': 'checkbox', 'checked': isChecked })
+                )
+                : $('<span>').text(label))
         }
         li.appendTo(ul);
     });
 
     // Ensure only parent is selected
-    var parentElement = ul.prev().find('[' + tagnav.options._parentIdAttr + '=' + data.parent.id + ']');
+    var parentElement = this.hierarchicalTagContainer.children().last().find('[' + tagnav._tagIdAttr + '=' + data.parent.id + ']');
     parentElement.addClass(this._selectedTagClassName);
-    ul.prev().children().not(parentElement).removeClass(this._selectedTagClassName);
+    parentElement.siblings().removeClass(this._selectedTagClassName);
 
-    ul.appendTo(tagnav.hierarchicalTagContainer).fadeIn('slow');
+
+
+    ul.appendTo(tagnav.hierarchicalTagContainer).fadeIn('fast');
+}
+
+TagNavigator.prototype.wireAutocomplete = function (textbox)
+{
+    var tagnav = this;
+    $(function () {
+        textbox.autocomplete({
+            source: function (request, response) {
+                $.ajax(tagnav.options.ajax_searchUrl, 
+                {
+                    cache: tagnav.options.editUrl == null,
+                    data: { term: request.term },
+                    success: function (data)
+                    {
+                        $.each(data, function(idx, item){
+                            data[idx].label = item.label.join(tagnav.options.pathSeparator);
+                        });
+                        data.sort(function (a, b) { return a.label.localeCompare(b.label); });
+                        response(data)
+                    }
+                })
+            },
+            minLength: 3,
+            select: function (event, ui) {
+                event.preventDefault();
+                textbox.val(ui.item.label);
+                tagnav.navigateToTag(ui.item.value);
+            },
+
+            //html: true, // optional (jquery.ui.autocomplete.html.js required)
+            focus: function (event, ui) {
+                event.preventDefault();
+            },
+            open: function (event, ui) {
+                $(".ui-autocomplete").css("z-index", 1000);
+            }
+        });
+    });
+
+    //textbox.autocomplete({
+    //    source: function (request, response) {
+    //        // TODO: replace url
+    //        $.ajax({
+    //            dataType: "json",
+    //            type: 'Get',
+    //            url: '/Tags/Search',
+
+    //            success: function (data) {
+    //                textbox.removeClass('ui-autocomplete-loading');  // hide loading image
+
+    //                response($.map(data, function (item) {
+    //                    // your operation on data
+    //                }));
+    //            },
+    //            error: function (data) {
+    //                textbox.removeClass('ui-autocomplete-loading');
+    //            }
+    //        });
+    //    },
+    //    minLength: 3,
+    //    open: function () {
+
+    //    },
+    //    close: function () {
+
+    //    },
+    //    focus: function (event, ui) {
+
+    //    },
+    //    select: function (event, ui) {
+
+    //    }
+    //});
 }
 

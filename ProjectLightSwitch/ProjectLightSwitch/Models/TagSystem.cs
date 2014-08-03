@@ -74,6 +74,34 @@ namespace ProjectLightSwitch.Models
 
         #region JSON methods
 
+        //public static string GetPaths_Json(int rootId, string searchTerm, bool returnAllDescendants)
+        //{
+        //    const string delimiter = " > ";
+            
+        //    using (var context = new StoryModel())
+        //    {
+        //        context.Configuration.LazyLoadingEnabled = false;
+        //        var q = context.TagTree
+        //            .Where(tt =>
+        //                (searchTerm == null || tt.Descendant.EnglishText.Contains(searchTerm))
+        //                && (rootId == TagTree.InvisibleRootId || context.TagTree.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
+        //                && (returnAllDescendants || tt.PathLength == 1)
+        //             )
+        //            .GroupBy(group => group.DescendantId)
+        //            .Select(group => new { TagId = group.Key, Nodes = group.OrderByDescending(t => t.PathLength).Select(t => t.Ancestor) })
+        //            .ToList()
+        //            .Select(t => new TagPathInfo
+        //            {
+        //                TagId = t.TagId,
+        //                Nodes = t.Nodes,
+        //                Path = String.Join(delimiter, t.Nodes.Select(tt => tt.EnglishText))
+        //            })
+        //            .OrderBy(t => t.Path);
+
+        //        return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(q);
+        //    }
+        //}
+
         public static String GetFullTagNavigationPath_Json(int displayToTagId, bool childrenOnly, int languageId)
         {
             if (languageId == SiteSettings.DefaultLanguageId)
@@ -122,18 +150,42 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public static String GetChildren_Json(int parentId)
+
+        #endregion
+
+        public static IEnumerable<Language> GetLanguages()
         {
             using (var context = new StoryModel())
             {
-                context.Configuration.LazyLoadingEnabled = false;
-
-                var q = context.TagTree.Where(tt => tt.AncestorId == parentId && tt.PathLength == 1).Select(t => t.Descendant).ToList();
-                return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(q);
+                return context.Languages.ToList();
             }
         }
+        
+        public static bool ChangeTagTranslation(int tagId, int languageId, string text)
+        {
+            // TODO: Improve performance (sql merge?) if time
+            using (var context = new StoryModel())
+            {
+                if( !context.Tags.Any(t=>t.TagId == tagId) || !context.Languages.Any(l=>l.LanguageId == languageId))
+                {
+                    return false;
+                }
 
-        #endregion
+                var tagTranslation = context.TranslatedTags.Where(tt => tt.TagId == tagId && tt.LanguageId == languageId).FirstOrDefault();
+                if (tagTranslation != null)
+                {
+                    // Update existing tag
+                    tagTranslation.Text = text;
+                }
+                else
+                {
+                    // Create a new tag
+                    context.TranslatedTags.Add(new TranslatedTag() { TagId = tagId, Text = text, LanguageId = languageId });
+                }
+                context.SaveChanges();
+                return true;
+            }
+        }
 
         public static IList<String> GetPathById(int id)
         {
@@ -150,6 +202,12 @@ namespace ProjectLightSwitch.Models
 
         public static bool RemoveTag(int id)
         {
+            // Don't delete root (from here at least)
+            if (id == TagTree.InvisibleRootId)
+            {
+                return false;
+            }
+
             using (var context = new StoryModel())
             {
                 var tag = context.Tags.FirstOrDefault(t => t.TagId == id);
@@ -159,6 +217,14 @@ namespace ProjectLightSwitch.Models
                 }
                 context.Tags.Remove(tag);
                 return context.SaveChanges() > 0;
+            }
+        }
+
+        public static Tag GetParent(int tagId)
+        {
+            using (var context = new StoryModel())
+            {
+                return context.TagTree.Where(tt => tt.DescendantId == tagId && tt.PathLength == 1).Select(tt=>tt.Ancestor).FirstOrDefault();
             }
         }
 
@@ -192,7 +258,7 @@ namespace ProjectLightSwitch.Models
                     }
 
                     var q = (from t in context.TagTree
-                             where tag.Item2 > TagTree.InvisibleRootId && t.DescendantId == tag.Item2
+                             where tag.Item2 >= TagTree.InvisibleRootId && t.DescendantId == tag.Item2
                              select new
                              {
                                  anc = t.AncestorId,
@@ -207,7 +273,127 @@ namespace ProjectLightSwitch.Models
                             DescendantId = tt.des,
                             PathLength = tt.pathlen
                         }).AsEnumerable();
-                    context.TagTree.Add(new TagTree { PathLength = 0, AncestorId = tag.Item1.TagId, DescendantId = tag.Item1.TagId });
+
+                    if(tag.Item1.TagId != TagTree.InvisibleRootId)
+                    {
+                        context.TagTree.Add(new TagTree { PathLength = 0, AncestorId = tag.Item1.TagId, DescendantId = tag.Item1.TagId });
+                    }
+                    context.TagTree.AddRange(list);
+                }
+                result &= (context.SaveChanges() > 0);
+
+                return result;
+            }
+        }
+
+        public static TagEditViewModel GetTagEditViewModel(int tagId)
+        {
+            if (tagId == TagTree.InvisibleRootId)
+            {
+                return new TagEditViewModel();
+            }
+
+            using (var context = new StoryModel())
+            {
+                context.Configuration.LazyLoadingEnabled = false;
+                return new TagEditViewModel()
+                {
+                    
+                    Tag = context.Tags.Where(t => t.TagId == tagId).FirstOrDefault(),
+                    //Translations =   context.Languages
+                    //                        .Join(
+                    //                            context.TranslatedTags, 
+                    //                            lang=>lang.LanguageId, 
+                    //                            tag=>tag.LanguageId, 
+                    //                            (lang, tag) => new TagTranslationDetails { 
+                    //                                LanguageId = lang.LanguageId, 
+                    //                                LanguageDescription = lang.Description, 
+                    //                                LanguageCode = lang.Code, 
+                    //                                TagText = tag.Text 
+                    //                            }
+                    //                        ).ToList()
+                    Translations = context.Languages.GroupJoin(
+                        context.TranslatedTags,
+                        lang => lang.LanguageId,
+                        tag => tag.LanguageId,
+                        (lang, tag) => new { lang, tag }
+                    ).SelectMany(
+                        x => x.tag.DefaultIfEmpty(),
+                        (x, tag) => new TagTranslationDetails
+                        {
+                            LanguageId = x.lang.LanguageId,
+                            LanguageDescription = x.lang.Description,
+                            LanguageCode = x.lang.Code,
+                            TagText = tag.Text
+                        }
+                    ).ToList()
+                };
+            }
+        }
+
+        private class TagNameComparer : IEqualityComparer<Tag>
+        {
+            bool IEqualityComparer<Tag>.Equals(Tag x, Tag y)
+            {
+                return  x != null 
+                        && y != null 
+                        && x.EnglishText.Equals(y.EnglishText, StringComparison.CurrentCultureIgnoreCase);
+            }
+
+            int IEqualityComparer<Tag>.GetHashCode(Tag obj)
+            {
+                return obj.EnglishText.GetHashCode();
+            }
+        }
+
+        public static bool AddTags(IEnumerable<Tag> children, Tag parent)
+        {
+            using (var context = new StoryModel())
+            {
+                // Double check the parent exists and is capable of containing children
+                var actualParent = context.Tags.Where(t => t.TagId == parent.TagId).FirstOrDefault();
+                if (
+                    actualParent == null 
+                    || actualParent.TagType == (byte)TagType.PendingSelectableTag 
+                    || actualParent.TagType == (byte)TagType.SelectableTag)
+                {
+                    return false;
+                }
+
+                // TODO: Filter out duplicate names already stored in database
+
+                // Add the tags themselves first
+                context.Tags.AddRange(children.Distinct(new TagNameComparer()));
+                var result = context.SaveChanges() > 0;
+
+                // Add structure after tags have been saved
+                foreach (var tag in children)
+                {
+                    if (actualParent.TagId < 0)
+                    {
+                        break;
+                    }
+
+                    var q = (from t in context.TagTree
+                             where actualParent.TagId >= TagTree.InvisibleRootId && t.DescendantId == actualParent.TagId
+                             select new
+                             {
+                                 anc = t.AncestorId,
+                                 pathlen = (byte)(t.PathLength + 1)
+                             }).ToList();
+
+                    var list = q.Select(tt =>
+                        new TagTree
+                        {
+                            AncestorId = tt.anc,
+                            DescendantId = tag.TagId,
+                            PathLength = tt.pathlen
+                        }).AsEnumerable();
+
+                    if (tag.TagId != TagTree.InvisibleRootId)
+                    {
+                        context.TagTree.Add(new TagTree { PathLength = 0, AncestorId = tag.TagId, DescendantId = tag.TagId });
+                    }
                     context.TagTree.AddRange(list);
                 }
                 result &= (context.SaveChanges() > 0);
@@ -326,6 +512,46 @@ namespace ProjectLightSwitch.Models
                     })
                     .OrderBy(t => t.Path)
                     .ToList();
+            }
+        }
+
+        public static string GetPaths_Json(int rootId, string searchTerm, bool returnAllDescendants, int languageId)
+        {
+            int resultLimit = 25;
+            using (var context = new StoryModel())
+            {
+                bool defaultLanguage = languageId == SiteSettings.DefaultLanguageId;
+
+                // TODO: improve query
+
+                var q = context.TagTree
+                    .Where(tt =>
+                        (searchTerm == null || tt.Descendant.EnglishText.Contains(searchTerm))
+                        && (rootId == TagTree.InvisibleRootId || context.TagTree.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
+                        && (returnAllDescendants || tt.PathLength == 1)
+                        && tt.DescendantId != TagTree.InvisibleRootId
+                     )
+                    .GroupBy(group => group.DescendantId)
+                    //.Select(group => new { TagId = group.Key, Nodes = group.OrderByDescending(t => t.PathLength).Select(t => t.Ancestor) })
+                    //.ToList()
+                    .Select(group => new
+                    {
+                        value = group.Key,
+                        //Nodes = t.Nodes.Select(n => new { n.TagId, n.TagType }),
+                        label = group.OrderByDescending(t => t.PathLength).Select(
+                            tt => defaultLanguage
+                                ? tt.Ancestor.EnglishText
+                                : tt.Ancestor.TranslatedTags
+                                    .Where(trans => trans.LanguageId == languageId)
+                                    .Select(trans => trans.Text)
+                                    .FirstOrDefault()).ToList()
+                    })
+                    // NOTE: limiting results before sorting on client side will cause unpredictable results
+                    .Take(resultLimit)
+                    //.OrderBy(t => t.label)
+                    .ToList();
+
+                return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(q);    
             }
         }
 

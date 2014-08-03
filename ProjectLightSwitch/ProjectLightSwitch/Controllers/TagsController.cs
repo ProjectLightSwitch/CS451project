@@ -25,24 +25,17 @@ namespace ProjectLightSwitch.Controllers
             return PartialView("~/Views/Shared/_TagNavigator.cshtml", TagSystem.GetCategories());
         }
 
-        [AjaxOnly]
-        public ActionResult GetCategories()
-        {
-            return Content(TagSystem.GetChildren_Json(TagTree.InvisibleRootId), "application/json");
-        }
-
-        [AjaxOnly]
-        [OutputCache(Duration = 30, VaryByParam = "*", VaryByHeader = "Accept-Language")]
-        public ActionResult Children(int parent)
-        {
-            return Content(TagSystem.GetChildren_Json(parent), "application/json");
-        }
-
         //[AjaxOnly]
         [OutputCache(Duration = 30, VaryByParam = "*", VaryByHeader = "Accept-Language")]
         public ActionResult Navigate(int id, bool childrenOnly = false, int language = -1)
         {
             return Content(TagSystem.GetFullTagNavigationPath_Json(id, childrenOnly, language), "application/json");
+        }
+
+        [HttpGet]
+        public ActionResult Search(string term)
+        {
+            return Content(TagSystem.GetPaths_Json(TagTree.InvisibleRootId, term, true, SiteSettings.DefaultLanguageId), "application/json");
         }
 
         [AjaxOnly]
