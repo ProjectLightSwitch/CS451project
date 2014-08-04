@@ -37,9 +37,10 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
                 return RedirectToAction("Index");
             }
 
-            bool success = true;
+            bool success = false;
             if (ModelState.IsValid)
             {
+                success = true;
                 foreach (var languageId in model.Names.Keys)
                 {
                     success &= TagSystem.ChangeTagTranslation(model.TagId, languageId, model.Names[languageId]);
@@ -77,18 +78,19 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         public ActionResult AddChildren(TagEditAddChildrenInputModel model)
         {
             model.Children.RemoveAll(t => t.EnglishText == null || t.EnglishText.Length == 0);
-            bool success = true;
+            bool success = false;
             if (ModelState.IsValid)
             {
+                success = true;
                 foreach (var child in model.Children)
                 {
                     success &= TagSystem.AddTag(child, model.ParentId);
                 }
             }
-            if (!success)
-            {
-                HelperFunctions.AddGlobalMessage(TempData, "Some or all child tags could not be added.");
-            }
+            string message = success
+                ? "Tag(s) added"
+                : "Some or all child tags could not be added.";
+            HelperFunctions.AddGlobalMessage(TempData, message);
             return RedirectToAction("Index", new { id = model.ParentId });
         }
     }
