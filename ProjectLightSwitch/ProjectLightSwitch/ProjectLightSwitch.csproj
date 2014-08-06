@@ -298,6 +298,7 @@
     <Content Include="Areas\SiteAdmin\Views\StoryType\Details.cshtml" />
     <Content Include="Areas\SiteAdmin\Views\Tags\Index.cshtml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
+    <Content Include="Scripts\holder.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -313,8 +314,10 @@
     <Content Include="Scripts\knockout-2.2.0.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\SiteAdmin.js" />
+    <Content Include="Scripts\slider.js" />
     <Content Include="Scripts\TagNavigator.js" />
     <Content Include="Scripts\Utilities.js" />
+    <Content Include="Content\Styles\FrontPages.css" />
     <Content Include="tagnavigator.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -363,6 +366,12 @@
     <Content Include="Views\Shared\_DynamicJavascript.cshtml" />
     <Content Include="Views\StoryPortal\Create.cshtml" />
     <Content Include="Views\StoryPortal\P2.cshtml" />
+    <Content Include="Views\Home\PageHome.cshtml" />
+    <Content Include="Views\Home\PageP1.cshtml" />
+    <Content Include="Views\Home\PageP2.cshtml" />
+    <Content Include="Views\Home\PageP3.cshtml" />
+    <Content Include="Views\Shared\_Layout1.cshtml" />
+    <Content Include="Views\Shared\_Layout2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

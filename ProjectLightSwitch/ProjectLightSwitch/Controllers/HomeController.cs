@@ -32,5 +32,25 @@ namespace ProjectLightSwitch.Controllers
             ViewBag.Message = "Your contact page.";
             return View();
         }
+
+        public ActionResult PageHome()
+        {
+            return View();
+        }
+
+        public ActionResult PageP1()
+        {
+            return View();
+        }
+
+        public ActionResult PageP2()
+        {
+            return View();
+        }
+
+        public ActionResult PageP3()
+        {
+            return View();
+        }
     }
 }

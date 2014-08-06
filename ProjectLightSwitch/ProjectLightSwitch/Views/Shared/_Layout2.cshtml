@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>@Page.Title</title>
+        <script src="~/Scripts/holder.js"></script>
+        <link href="~/Styles/Main.css" rel="stylesheet" />
+        @RenderSection("head", required: true)
+    </head>
+    <body>
+       
+        @RenderBody()
+        <div class="story_portal_container">
+            <div class="story_portal_text">
+                <h1>Story Portal</h1>
+                <p class="story_portal_content">
+                    Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there
+                    live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics,
+                    a large language ocean.
+                </p>
+                <p class="story_portal_content">
+                    A small river named Duden flows by their place and supplies it with the necessary regelialia. It
+                    is a paradisematic country, in which roasted parts of sentences fly into your mouth.
+                </p>
+            </div>
+            <div class="share_read_section">
+                <div class="share_read">
+                    <figure>
+                        <a href="P1.cshtml"><img id="Image1" src="holder.js/150x125" /></a>
+                        <figcaption>Share a Story</figcaption>
+                    </figure>
+                </div>
+                <div class="share_read">
+                    <figure>
+                        <a href="P1.cshtml"><img id="Image2" src="holder.js/150x125" /></a>
+                        <figcaption>Read Stories</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
