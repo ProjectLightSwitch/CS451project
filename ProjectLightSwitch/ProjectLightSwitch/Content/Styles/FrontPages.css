@@ -1,7 +1,14 @@
 ﻿body {
-    font-family:Calibri,Verdana,sans-serif;
+    /*font-family:Calibri,Verdana,sans-serif;
     font-size: 12pt;
-    background-color: #808080;
+    background-color: #808080;*/
+    background-color: #fff;
+    border-top: solid 10px #000;
+    color: #333;
+    font-size: .85em;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    margin: 0;
+    padding: 0;
 }
 
 #Header{
@@ -46,6 +53,7 @@ figure figcaption{
     height: 270px;
     text-align: left; 
     margin: 0 auto; 
+    background: #808080;
 }
 
 .story_portal_text{

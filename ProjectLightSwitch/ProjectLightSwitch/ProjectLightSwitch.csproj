@@ -371,7 +371,8 @@
     <Content Include="Views\Home\PageP2.cshtml" />
     <Content Include="Views\Home\PageP3.cshtml" />
     <Content Include="Views\Shared\_Layout1.cshtml" />
-    <Content Include="Views\Shared\_Layout2.cshtml" />
+    <Content Include="Views\Shared\_StoryPortal_Section.cshtml" />
+    <Content Include="Views\Shared\_StoryShare_Section.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
