@@ -9,8 +9,13 @@
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
     margin: 0;
     padding: 0;
+    width: 978px;
 }
 
+hr{
+    padding:0;
+    margin:0;
+}
 #Header{
 padding: 20px 20px 20px 20px;
 }
@@ -36,7 +41,7 @@ margin-top: 20px;
 
 .share_read_section{
     margin-top: 50px;
-    height: 175px;
+    height: 170px;
     float: right;
 }
 
@@ -50,7 +55,7 @@ figure figcaption{
 
 .story_portal_container{
     width: 978px;
-    height: 270px;
+    height: 220px;
     text-align: left; 
     margin: 0 auto; 
     background: #808080;
@@ -112,4 +117,18 @@ padding:10px 10px 10px 30px;
 
 .prviousLink{
     margin-left:20px;
+}
+
+.part_heading{
+    width:800px;
+    float:left;
+    display:inline;
+    height:50px;
+}
+
+.part_number{
+    width:178px;
+    height: 50px;
+    align-content:right;
+    display:inline;
 }
