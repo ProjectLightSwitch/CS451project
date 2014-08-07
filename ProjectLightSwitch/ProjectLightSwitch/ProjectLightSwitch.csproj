@@ -298,6 +298,12 @@
     <Content Include="Areas\SiteAdmin\Views\StoryType\Details.cshtml" />
     <Content Include="Areas\SiteAdmin\Views\Tags\Index.cshtml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
+    <Content Include="Images\orderedList1.png" />
+    <Content Include="Images\orderedList1faded.png" />
+    <Content Include="Images\orderedList2.png" />
+    <Content Include="Images\orderedList2faded.png" />
+    <Content Include="Images\orderedList3.png" />
+    <Content Include="Images\orderedList3faded.png" />
     <Content Include="Scripts\holder.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
@@ -332,9 +338,6 @@
     <Content Include="Images\bullet.png" />
     <Content Include="Images\heroAccent.png" />
     <Content Include="Images\orderedList0.png" />
-    <Content Include="Images\orderedList1.png" />
-    <Content Include="Images\orderedList2.png" />
-    <Content Include="Images\orderedList3.png" />
     <Content Include="Images\orderedList4.png" />
     <Content Include="Images\orderedList5.png" />
     <Content Include="Images\orderedList6.png" />
