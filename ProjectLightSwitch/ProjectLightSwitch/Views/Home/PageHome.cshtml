@@ -1,55 +1,33 @@
-﻿<!DOCTYPE html>
-<html>
-    <head>
-        <link href="~/Content/Styles/FrontPages.css" rel="stylesheet" />
-        <script src="~/Scripts/holder.js"></script>
-        <script src="~/Scripts/jquery-1.8.2.js"></script>
-        <script src="~/Scripts/slider.js"></script>
-        <title>Story Portal Home</title>
-    </head>
-    <body>
-        <div id="Container">
-            <div id="Header">
-                <img src="holder.js/257x50" />
-                <input id="Story_Portal" value="Story Portal" type="button" class="topbuttons" />
-                <input id="Media" value="Media" type="button" class="topbuttons" />
-                <input id="Happiness_Ninjas" value="Happiness Ninjas" type="button" class="topbuttons" />
-                <input id="Store" value="Store" type="button" class="topbuttons" />
-                <input id="About_Us" value="About Us" type="button" class="topbuttons" />
-             </div>
-            <hr/>
-            @RenderPage("~/Views/Shared/_StoryPortal_Section.cshtml")
-            <hr/>
-            <div>
-                <div class="slider">
-                    <a class="previousLink" href="#">Previous</a>
-                    <div class="slider_img">
-                        <img class="image-shown" src="~/Images/orderedList0.png" />
-                        <img class="image-hidden" src="~/Images/orderedList1.png" />
-                        <img class="image-hidden" src="~/Images/orderedList2.png" />
-                        <img class="image-hidden" src="~/Images/orderedList3.png" />
-                        <img class="image-hidden" src="~/Images/orderedList4.png" />
-                    </div>
-                    <a class="nextLink" href="#">Next</a>
-                </div>                
-            Slider
+﻿@{Layout = "~/Views/Shared/_Layout1.cshtml";}   
+@RenderPage("~/Views/Shared/_StoryPortal_Section.cshtml")
+<div id="Container">
+    <hr />
+    <div>
+        <div class="slider">
+            <a class="previousLink" href="#">Previous</a>
+            <div class="slider_img">
+                <img class="image-shown" src="~/Images/orderedList0.png" />
+                <img class="image-hidden" src="~/Images/orderedList1.png" />
+                <img class="image-hidden" src="~/Images/orderedList2.png" />
+                <img class="image-hidden" src="~/Images/orderedList3.png" />
+                <img class="image-hidden" src="~/Images/orderedList4.png" />
+            </div>
+            <a class="nextLink" href="#">Next</a>
+        </div>
+        Slider
 
-            </div>
-            <hr/>
-            <div class="most_popular"> 
-                <img class="most_popular_img" src="holder.js/300x200"/>
-                <p><h2 class="most_popular_tags">Most Popular Story Tags</h2></p>
-            </div>
-            <hr/>
-            <div class="recent_blog_posts">
-                <div><h2>Recent Blog Posts</h2></div>
-                <img class="recent_blog_img" src="holder.js/200x100" />
-                <img class="recent_blog_img" src="holder.js/200x100" />
-                <img class="recent_blog_img" src="holder.js/200x100" />
-                <img class="recent_blog_img" src="holder.js/200x100" />
-            </div>
-
-            </div>
-
-</body>
-</html>
+    </div>
+    <hr />
+    <div class="most_popular">
+        <img class="most_popular_img" src="holder.js/300x200" />
+        <p><h2 class="most_popular_tags">Most Popular Story Tags</h2></p>
+    </div>
+    <hr />
+    <div class="recent_blog_posts">
+        <div><h2>Recent Blog Posts</h2></div>
+        <img class="recent_blog_img" src="holder.js/200x100" />
+        <img class="recent_blog_img" src="holder.js/200x100" />
+        <img class="recent_blog_img" src="holder.js/200x100" />
+        <img class="recent_blog_img" src="holder.js/200x100" />
+    </div>
+</div>

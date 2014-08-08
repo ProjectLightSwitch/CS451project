@@ -1,7 +1,6 @@
 ﻿@{Layout = "~/Views/Shared/_Layout1.cshtml";}
         <div id="Container">
             @RenderPage("~/Views/Shared/_StoryShare_Section.cshtml")
-            <hr />
             <div>
                 <div class="part_heading">
                     <h3>Part One: About You</h3>
@@ -11,30 +10,31 @@
                     <img src="~/Images/orderedList2faded.png" />
                     <img src="~/Images/orderedList3faded.png" />
                 </div>
-
-                <h4>Age:</h4>
-                <select>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select>
-                <h4>Gender:</h4>
-                <select>
-                    <option value="male">male</option>
-                    <option value="female">female</option>
-                    <option value="other">other</option>
-                </select>
-                <h4>Country:</h4>
-                <select>
-                    <option value="USA">USA</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Mexico">Mexico</option>
-                    <option value="Other">Other</option>
-                </select>
-                <br />
-                <br />
-                <br />
-                <input type="submit" value="Next" onclick="location.href='PageP2.cshtml'" />
+                <div class="selection_agegencountry">
+                    <h4>Age:</h4>
+                    <select>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+                    <h4>Gender:</h4>
+                    <select>
+                        <option value="male">male</option>
+                        <option value="female">female</option>
+                        <option value="other">other</option>
+                    </select>
+                    <h4>Country:</h4>
+                    <select>
+                        <option value="USA">USA</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Mexico">Mexico</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <br />
+                    <br />
+                    <br />
+                    <input type="submit" value="Next" onclick="location.href='PageP2.cshtml'" />
+                </div>
             </div>
         </div>

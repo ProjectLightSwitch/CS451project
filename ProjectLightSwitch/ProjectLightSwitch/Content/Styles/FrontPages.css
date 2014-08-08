@@ -1,9 +1,8 @@
-﻿body {
+﻿.body {
     /*font-family:Calibri,Verdana,sans-serif;
     font-size: 12pt;
     background-color: #808080;*/
-    background-color: #fff;
-    border-top: solid 10px #000;
+    background-color: #808080;
     color: #333;
     font-size: .85em;
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
@@ -16,27 +15,28 @@ hr{
     padding:0;
     margin:0;
 }
-#Header{
+.Header{
 padding: 20px 20px 20px 20px;
 }
 
 #Container { 
-  width: 978px; 
-  background: #808080;
-  margin: 0 auto; 
-  text-align: left; 
+    width: 978px; 
+    background-color: #808080;
+    margin: 0 auto; 
+    text-align: center; 
 }
 
 .topbuttons {
-width: 120px; 
-float: right;
-margin-left: 5px;
-margin-top: 20px;
+    width: 120px; 
+    float: right;
+    left: 5px;
+    margin-top: 20px;
 }
 
 .narrowimg{
     width: 300px;
     display: inline;
+    padding-top:5px;
 }
 
 .share_read_section{
@@ -55,7 +55,7 @@ figure figcaption{
 
 .story_portal_container{
     width: 978px;
-    height: 220px;
+    height: 240px;
     text-align: left; 
     margin: 0 auto; 
     background: #808080;
@@ -91,7 +91,7 @@ padding:10px 10px 10px 30px;
 .recent_blog_posts{
     text-align:center;
     align-content: center;
-    height:150px;
+    height:200px;
 }
 
 .recent_blog_img{
@@ -124,6 +124,7 @@ padding:10px 10px 10px 30px;
     float:left;
     display:inline;
     height:50px;
+    text-align: left;
 }
 
 .part_number{
@@ -131,4 +132,8 @@ padding:10px 10px 10px 30px;
     height: 50px;
     align-content:right;
     display:inline;
+}
+
+.selection_agegencountry{
+    text-align:left;
 }

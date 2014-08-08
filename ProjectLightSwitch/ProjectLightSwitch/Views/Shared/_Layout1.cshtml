@@ -6,20 +6,19 @@
         <script src="~/Scripts/holder.js"></script>
         <script src="~/Scripts/jquery-1.10.2.min.js"></script>
         <script src="~/Scripts/slider.js"></script>
-        @RenderSection("head", required: false)
     </head>
     <body>
         <div id="Container">
             <div id="Header">
-                <img src="holder.js/257x50" />
+                <img class="narrowimg" src="holder.js/257x50"/>
                 <input id="Story_Portal" value="Story Portal" type="button" class="topbuttons" onclick="location.href='Home.cshtml'" />
                 <input id="Media" value="Media" type="button" class="topbuttons" />
                 <input id="Happiness_Ninjas" value="Happiness Ninjas" type="button" class="topbuttons" />
                 <input id="Store" value="Store" type="button" class="topbuttons" />
                 <input id="About_Us" value="About Us" type="button" class="topbuttons" />
             </div>
+            <hr />
         </div>
-        <hr />
         @RenderBody()
     </body>
 </html>
