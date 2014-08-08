@@ -137,3 +137,7 @@ padding:10px 10px 10px 30px;
 .selection_agegencountry{
     text-align:left;
 }
+
+.questions_div{
+    height: 200px;
+}

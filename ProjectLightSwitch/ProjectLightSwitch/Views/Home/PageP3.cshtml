@@ -3,13 +3,19 @@
 
 <div id="Container">
     @RenderPage("~/Views/Shared/_StoryShare_Section.cshtml")
-    <div class="part_heading">
-        <h3>Part Two: Share Your Story</h3>
+    <div>
+        <div class="part_heading">
+            <h3>Part Two: Questions</h3>
+        </div>
+        <div class="part_number">
+            <img src="~/Images/orderedList1faded.png" />
+            <img src="~/Images/orderedList2faded.png" />
+            <img src="~/Images/orderedList3.png" />
+        </div>
     </div>
-    <div class="part_number">
-        <img src="~/Images/orderedList1faded.png" />
-        <img src="~/Images/orderedList2faded.png" />
-        <img src="~/Images/orderedList3.png" />
-    </div>
+    <br />
     <hr />
+    @for (var i=1; i<5;i++)
+    {@RenderPage("~/Views/Shared/_Question_Section.cshtml",i);}
+    <input type="submit" value="Submit" />
 </div>
