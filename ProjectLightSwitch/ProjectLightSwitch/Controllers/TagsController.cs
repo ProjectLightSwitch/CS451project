@@ -32,6 +32,7 @@ namespace ProjectLightSwitch.Controllers
             return Content(TagSystem.GetFullTagNavigationPath_Json(id, childrenOnly, language), "application/json");
         }
 
+        [AjaxOnly]
         [HttpGet]
         public ActionResult Search(string term)
         {

@@ -13,16 +13,34 @@
 @section head {
     @Styles.Render("~/Content/tagnav")
     @Scripts.Render("~/bundles/tags")
+
+    <style type="text/css">
+    .ui-accordion-header {
+        padding-left: 100px;
+    }
+    </style>
+
 }
 
 @section scripts
 {
     <script type="text/javascript" language="javascript">
-        var tagnav = new TagNavigator('tagnav', null, null);
+
+        var browser = null;
+        $(document).load(new function () {
+            //browser = new CategoryBrowser('find', new TagAdapter(), 2);
+            var searcher = new TagSearcher($('#find'));
+        });
     </script>
 }
 
 Tab Navigator:
+
+
+
+<div id="find"></div>
+
+
 <form action="#" method="post">
     <div id="tagnav" />
 </form>

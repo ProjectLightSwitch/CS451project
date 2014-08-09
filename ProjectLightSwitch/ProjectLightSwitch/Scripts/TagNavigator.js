@@ -1,4 +1,135 @@
-﻿function TagNavigator(container, options) {
+﻿
+function TagAdapter()
+{
+    this._ajaxNavigateUrlUrl = "/Tags/Navigate";
+}
+
+TagAdapter.prototype.getCategories = function(callback, context)
+{
+    this.getChildTags(InvisibleRootId, callback, context);
+}
+
+TagAdapter.prototype.getChildTags = function(parentId, callback, context)
+{
+    $.ajax({
+        cache: false,
+        data: { 'id': parentId, 'childrenOnly': true },
+        url: this._ajaxNavigateUrlUrl,
+        type: "GET"
+    }).success(function (response) {
+        callback.call(context, response);
+    });
+}
+
+// --------------
+
+function TagSearcher(container)
+{
+    this.container = container;
+    this.adapter = new TagAdapter();
+
+    this.init();
+}
+
+TagSearcher.prototype.init = function()
+{
+    this.container.children().remove();
+    this.adapter.getCategories(function (response) {
+        if (response.results.length == 0) {
+            return;
+        }
+
+        response.results = response.results[0];
+        var children = response.results.children;
+        for (var i = 0; i < children.length; i++)
+        {
+            if (children[i].text == null) {
+                children[i].text = children[i].eng;
+                if (response.reqLangId != response.defLangId) {
+                    children[i].text = '<i>' + children[i].text + '</i>';
+                }
+            }
+            this.container.append('<h3>' + children[i].text + '</h3>');
+            this.container.append('<div data-id="' + children[i].id + '"></div>');
+        }
+
+        this.container.accordion({
+            beforeActivate: function (event, ui) {
+                if (ui.newPanel.attr('loaded') != '1') {
+                    ui.newPanel.attr('loaded', '1');
+                    new CategoryBrowser(ui.newPanel, this.adapter, ui.newPanel.attr('data-id'));
+                }
+            }
+        });
+
+    }, this);
+}
+
+function CategoryBrowser(container, adapter, categoryId)
+{
+    this.path = [];
+    this.selectedTagIds = {};
+    this.container = container;
+    this.adapter = adapter;
+    this.categoryId = categoryId;
+
+    this.navigateToTag(categoryId);
+}
+
+CategoryBrowser.prototype.back = function()
+{
+    if(this.path.length <= 1) {
+        return;
+    }
+
+    this.path.pop();
+    this.loadChildren(this.path[this.path.length - 1]);
+}
+
+CategoryBrowser.prototype.navigateToTag = function (arg)
+{
+    var id;
+    if (typeof arg == 'number') {
+        id = arg;
+    } else {
+        id = arg.data.id;
+    }
+
+    if (this.path.length == 0 || this.path[this.path.length - 1] != id) {
+        this.path.push(id);
+        this.loadChildren(id);
+    }
+}
+
+CategoryBrowser.prototype.loadChildren = function (tagId)
+{
+    this.adapter.getChildTags(tagId, function (response) {
+        this.container.children().remove();
+
+        if (tagId != this.categoryId) {
+            $('<a>').click(this.back.bind(this)).text('Back').appendTo(this.container);
+        }
+
+        if (response.results.length == 0) {
+            return;
+        }
+
+        var children = response.results[0].children;
+        
+        for (var i = 0; i < children.length; i++)
+        {
+            var div = $('<div>').attr('data-id', children[i].id).text(children[i]['eng']).appendTo(this.container);
+            div.on('click', { 'id': children[i].id }, this.navigateToTag.bind(this));
+        }
+    }, this);
+}
+
+
+
+// --------------
+
+
+function TagNavigator(container, options) {
     if (typeof container == 'string') {
         container = $('#' + container);
     }
