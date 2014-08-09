@@ -15,11 +15,55 @@
     @Scripts.Render("~/bundles/tags")
 
     <style type="text/css">
+
+    .ui-widget-content {
+        background:#eeeded;
+    }
+
+    .ui-accordion {
+        width:250px;
+        padding:0;
+    }
+
     .ui-accordion-header {
         padding-left: 100px;
+        background:#aaaaaa;
+        margin:0px;
+    }
+
+    .ui-accordion .ui-accordion-content {
+        padding:0;
+        
+
+    }
+
+    .ui-accordion-content .search_item {
+        padding: 7px;
+        border-top:1px solid #aaaaaa;
+        background:#eeeded;
+        
+        vertical-align:middle;
+    }
+
+    .ui-accordion-content .search_navTag, 
+    .ui-accordion-content .search_selTag label,
+    .ui-accordion-content .search_back {
+        cursor: pointer;
+    }
+
+    .ui-accordion-content .search_item span, .ui-accordion-content .search_item label {
+                vertical-align:middle;
+    }
+
+    .ui-accordion-content .search_item .decorator {
+        float:right;
+                vertical-align:middle;
+    }
+
+    .ui-accordion-content .search_item input[type="checkbox"] {
+
     }
     </style>
-
 }
 
 @section scripts
@@ -29,7 +73,9 @@
         var browser = null;
         $(document).load(new function () {
             //browser = new CategoryBrowser('find', new TagAdapter(), 2);
-            var searcher = new TagSearcher($('#find'));
+            var searcher = new TagSearcher($('#find'), new function (data) {
+                //alert(data[0][data.length - 1].label);
+            });
         });
     </script>
 }

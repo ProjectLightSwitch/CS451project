@@ -102,7 +102,7 @@ namespace ProjectLightSwitch.Models
         //    }
         //}
 
-        public static String GetFullTagNavigationPath_Json(int displayToTagId, bool childrenOnly, int languageId)
+        public static String GetFullTagNavigationPath_Json(int parentId, bool childrenOnly, int languageId)
         {
             if (languageId == SiteSettings.DefaultLanguageId)
             {
@@ -116,10 +116,10 @@ namespace ProjectLightSwitch.Models
                 context.Configuration.LazyLoadingEnabled = false;
                 var q =
                         context.TagTree.Where(tt =>
-                            tt.PathLength == 1
+                            tt.PathLength <= 1
                             && context.TagTree
                             .Where(
-                                tt2 => tt2.DescendantId == displayToTagId
+                                tt2 => tt2.DescendantId == parentId
                                 && (!childrenOnly || tt2.PathLength == 0)
                             )
                             .Select(tt2 => tt2.AncestorId)
@@ -133,20 +133,22 @@ namespace ProjectLightSwitch.Models
                                 id = grouped.Key.TagId,
                                 eng = grouped.Key.EnglishText,
                                 type = grouped.Key.TagType,
-                                text = languageId != -1 ? grouped.Key.TranslatedTags.Where(tt => tt.LanguageId == languageId).Select(t => t.Text).FirstOrDefault() : null
+                                text = languageId != -1 ? grouped.Key.TranslatedTags.Where(tt => tt.LanguageId == languageId).Select(t => t.Text).FirstOrDefault() : ""
                             },
-                            children = grouped.OrderBy(g => g.Descendant.EnglishText).Select(g => new
+                            children = grouped.Where(g=>g.DescendantId != parentId).OrderBy(g => g.Descendant.EnglishText).Select(g => new
                                 {
                                     id = g.Descendant.TagId,
                                     eng = g.Descendant.EnglishText,
                                     type = g.Descendant.TagType,
-                                    text = languageId != -1 ? g.Descendant.TranslatedTags.Where(tt => tt.LanguageId == languageId).Select(t => t.Text).FirstOrDefault() : null
+                                    text = languageId != -1 ? g.Descendant.TranslatedTags.Where(tt => tt.LanguageId == languageId).Select(t => t.Text).FirstOrDefault() : ""
                                 })
                         });
+
 
                 var result = new { defLangId=SiteSettings.DefaultLanguageId, reqLangId=languageId!=-1?languageId:SiteSettings.DefaultLanguageId, results=q };
 
                 return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(result);
+
             }
         }
 

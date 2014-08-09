@@ -23,12 +23,51 @@ TagAdapter.prototype.getChildTags = function(parentId, callback, context)
 
 // --------------
 
-function TagSearcher(container)
+function TagSearcher(container, selectionChangedCallback)
 {
     this.container = container;
     this.adapter = new TagAdapter();
+    this.selectedTags = [];
+    this.selectionChangedCallback = selectionChangedCallback;
 
     this.init();
+}
+
+
+/*
+    path: [{id, label},{id, label},...]
+*/
+TagSearcher.prototype.addTagSelection = function(path)
+{
+    if(typeof path != 'array' || path.length == 0) {
+        return;
+    }
+
+    var endTag = path[path.length - 1];
+    for(var tag in this.selectedTags) {
+        if(endTag.id == tag[tag.length - 1].id) {
+            return
+        }
+    }
+    this.selectedTags.push(path);
+    if(typeof this.selectionChangedCallback != 'function') {
+        this.selectionChangedCallback(this.selectedTags);
+    }
+}
+
+/*
+    path: [{id, label},{id, label},...]
+*/
+TagSearcher.prototype.removeTagSelection = function(tagId)
+{
+    for(var i = 0; i < this.selectedTags.length; i++) {
+        if(this.selectedTags[i][tag.length - 1].id == tagId) {
+            this.selectedTags.splice(i, 1);
+            if(typeof this.selectionChangedCallback != 'function') {
+                this.selectionChangedCallback(this.selectedTags);
+            }
+        }
+    }
 }
 
 TagSearcher.prototype.init = function()
@@ -43,47 +82,86 @@ TagSearcher.prototype.init = function()
         var children = response.results.children;
         for (var i = 0; i < children.length; i++)
         {
-            if (children[i].text == null) {
-                children[i].text = children[i].eng;
-                if (response.reqLangId != response.defLangId) {
-                    children[i].text = '<i>' + children[i].text + '</i>';
-                }
-            }
-            this.container.append('<h3>' + children[i].text + '</h3>');
-            this.container.append('<div data-id="' + children[i].id + '"></div>');
+            var labelInfo = this.getTagLabel(children[i], response.reqLangId != response.defLangId);
+            this.container.append($('<h3>' + labelInfo.label + '</h3>').css('font-style', labelInfo.success ? 'normal' : 'italic'));
+
+            var div = $('<div data-id="' + children[i].id + '"></div>');
+            this.container.append(div);
+
+            // TODO: Lazy load category children 
+            // (this way prevents graphical glitch when resizing during first expansion)
+            new CategoryBrowser(div, this, children[i].id);
         }
 
         this.container.accordion({
-            beforeActivate: function (event, ui) {
-                if (ui.newPanel.attr('loaded') != '1') {
-                    ui.newPanel.attr('loaded', '1');
-                    new CategoryBrowser(ui.newPanel, this.adapter, ui.newPanel.attr('data-id'));
-                }
-            }
+            collapsible: true,
+            heightStyle: "content",
+            active: false
         });
+
+
+        // Lazy load
+        // ---------
+        //this.container.accordion({
+        //    beforeActivate: function (event, ui) {
+        //        if (ui.newPanel.attr('loaded') != '1') {
+        //            event.stopPropagation();
+        //            event.preventDefault();
+        //            ui.newPanel.attr('loaded', '1');
+        //            new CategoryBrowser(ui.newPanel, this.adapter, parseInt(ui.newPanel.attr('data-id')));
+        //        }
+        //    }.bind(this),
+        //    heightStyle: "content",
+        //    active: false
+        //});
 
     }, this);
 }
 
-function CategoryBrowser(container, adapter, categoryId)
+TagSearcher.prototype.getTagLabel = function(tagInfo, translationAttempted)
+{
+    var transSuccess = true;
+    var label = translationAttempted ? tagInfo.text : tagInfo.eng;
+
+    if (label == null) {
+        label = tagInfo.eng;
+        transSuccess = false;
+    }
+    return {'success':transSuccess, 'label':label};
+}
+
+// ------------------------------
+
+function CategoryBrowser(container, searcher, categoryId)
 {
     this.path = [];
     this.selectedTagIds = {};
     this.container = container;
-    this.adapter = adapter;
+    this.searcher = searcher;
     this.categoryId = categoryId;
 
     this.navigateToTag(categoryId);
 }
 
-CategoryBrowser.prototype.back = function()
+CategoryBrowser.prototype.back = function(e)
 {
     if(this.path.length <= 1) {
         return;
     }
-
     this.path.pop();
-    this.loadChildren(this.path[this.path.length - 1]);
+    this.loadChildren(this.path[this.path.length - 1].id);
+    e.preventDefault();
+}
+
+CategoryBrowser.prototype.tagSelectionChanged = function (evt)
+{
+    if (this.checked) {
+        var fullPath = evt.data.context.path.slice(0);
+        fullPath.push({ label: evt.data.label, id: evt.data.id });
+        evt.data.context.searcher.addTagSelection(fullPath);
+    } else {
+        evt.data.context.searcher.removeTagSelection(evt.data.id);
+    }
 }
 
 CategoryBrowser.prototype.navigateToTag = function (arg)
@@ -96,39 +174,62 @@ CategoryBrowser.prototype.navigateToTag = function (arg)
     }
 
     if (this.path.length == 0 || this.path[this.path.length - 1] != id) {
-        this.path.push(id);
+        this.path.push({ 'id': id });
         this.loadChildren(id);
     }
 }
 
 CategoryBrowser.prototype.loadChildren = function (tagId)
 {
-    this.adapter.getChildTags(tagId, function (response) {
+    this.searcher.adapter.getChildTags(tagId, function (response) {
         this.container.children().remove();
 
+        // Update label in path
+        var translationAttempted = response.reqLangId != response.defLangId;
+        var parentLabelInfo = this.searcher.getTagLabel(response.results[0].parent, translationAttempted);
+        this.path[this.path.length - 1].label = parentLabelInfo;
+        
+        var encodedLabel = $('<div/>').html(parentLabelInfo.label).text();
+
         if (tagId != this.categoryId) {
-            $('<a>').click(this.back.bind(this)).text('Back').appendTo(this.container);
+            $('<div>').addClass('search_item').addClass('search_back').on('click', this.back.bind(this)).append(
+                $('<a>').attr('href', '#').html('&lt; Back').css('text-decoration', 'none')
+            ).append(
+                $('<span>').addClass('float-right').addClass('b').html(encodedLabel)
+            ).appendTo(this.container);
         }
 
-        if (response.results.length == 0) {
+        if (response.results.length == 0 || response.results[0].children.length == 0) {
+            $('<div><i>No Results Found</i></div>').appendTo(this.container);
             return;
         }
 
         var children = response.results[0].children;
-        
         for (var i = 0; i < children.length; i++)
         {
-            var div = $('<div>').attr('data-id', children[i].id).text(children[i]['eng']).appendTo(this.container);
-            div.on('click', { 'id': children[i].id }, this.navigateToTag.bind(this));
+            var labelInfo = this.searcher.getTagLabel(children[i]);
+
+            var div = $('<div>').addClass('search_item').attr('data-id', children[i].id).appendTo(this.container);
+
+            if(children[i].type == TagType.NavigationalTag)
+            {
+                div.text(labelInfo.label).addClass('search_navTag');
+                div.on('click', { 'id': children[i].id }, this.navigateToTag.bind(this));
+                div.append($('<span class="decorator">&gt;</span>'));
+            }
+            else if (children[i].type == TagType.SelectableTag)
+            {
+                div.addClass('search_selTag');
+                $('<label>').text(labelInfo.label).append(
+                    $('<input/>').addClass('decorator').attr({ 'type': 'checkbox' }).on(
+                        'change', { context:this, id:children[i].id, label:labelInfo.label }, this.tagSelectionChanged
+                )).appendTo(div);
+            }
         }
     }, this);
 }
 
-
-
 // --------------
-
-
 function TagNavigator(container, options) {
     if (typeof container == 'string') {
         container = $('#' + container);
