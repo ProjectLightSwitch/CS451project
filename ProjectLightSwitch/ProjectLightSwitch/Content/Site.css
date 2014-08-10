@@ -14,6 +14,10 @@ body {
     padding: 0;
 }
 
+a {
+    cursor: pointer;
+}
+
 .b {
     font-weight: bold;
 }

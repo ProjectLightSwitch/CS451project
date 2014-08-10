@@ -4,12 +4,12 @@ function TagAdapter()
     this._ajaxNavigateUrlUrl = "/Tags/Navigate";
 }
 
-TagAdapter.prototype.getCategories = function(callback, context)
+TagAdapter.prototype.getCategories = function(callback)
 {
-    this.getChildTags(InvisibleRootId, callback, context);
+    this.getChildTags(InvisibleRootId, callback);
 }
 
-TagAdapter.prototype.getChildTags = function(parentId, callback, context)
+TagAdapter.prototype.getChildTags = function(parentId, callback)
 {
     $.ajax({
         cache: false,
@@ -17,62 +17,29 @@ TagAdapter.prototype.getChildTags = function(parentId, callback, context)
         url: this._ajaxNavigateUrlUrl,
         type: "GET"
     }).success(function (response) {
-        callback.call(context, response);
+        callback(response);
     });
 }
 
 // --------------
 
-function TagSearcher(container, selectionChangedCallback)
+function TagSearcher(container)
 {
-    this.container = container;
     this.adapter = new TagAdapter();
-    this.selectedTags = [];
-    this.selectionChangedCallback = selectionChangedCallback;
 
-    this.init();
+    this._container = container;
+    this._selectedTags = [];
+    this._categoryBrowsers = {};
+    this._selectionListeners = {};
+
+    this._init();
 }
 
+// "PRIVATES"
 
-/*
-    path: [{id, label},{id, label},...]
-*/
-TagSearcher.prototype.addTagSelection = function(path)
-{
-    if(typeof path != 'array' || path.length == 0) {
-        return;
-    }
-
-    var endTag = path[path.length - 1];
-    for(var tag in this.selectedTags) {
-        if(endTag.id == tag[tag.length - 1].id) {
-            return
-        }
-    }
-    this.selectedTags.push(path);
-    if(typeof this.selectionChangedCallback != 'function') {
-        this.selectionChangedCallback(this.selectedTags);
-    }
-}
-
-/*
-    path: [{id, label},{id, label},...]
-*/
-TagSearcher.prototype.removeTagSelection = function(tagId)
-{
-    for(var i = 0; i < this.selectedTags.length; i++) {
-        if(this.selectedTags[i][tag.length - 1].id == tagId) {
-            this.selectedTags.splice(i, 1);
-            if(typeof this.selectionChangedCallback != 'function') {
-                this.selectionChangedCallback(this.selectedTags);
-            }
-        }
-    }
-}
-
-TagSearcher.prototype.init = function()
-{
-    this.container.children().remove();
+// There should only be one instance anyway
+TagSearcher.prototype._init = function () {
+    this._container.children().remove();
     this.adapter.getCategories(function (response) {
         if (response.results.length == 0) {
             return;
@@ -80,20 +47,18 @@ TagSearcher.prototype.init = function()
 
         response.results = response.results[0];
         var children = response.results.children;
-        for (var i = 0; i < children.length; i++)
-        {
-            var labelInfo = this.getTagLabel(children[i], response.reqLangId != response.defLangId);
-            this.container.append($('<h3>' + labelInfo.label + '</h3>').css('font-style', labelInfo.success ? 'normal' : 'italic'));
+        for (var i = 0; i < children.length; i++) {
+            var labelInfo = this._getTagLabel(children[i], response.reqLangId != response.defLangId);
+            this._container.append($('<h3>' + labelInfo.label + '</h3>').css('font-style', labelInfo.success ? 'normal' : 'italic'));
 
-            var div = $('<div data-id="' + children[i].id + '"></div>');
-            this.container.append(div);
+            var div = $('<div data-id="' + children[i].id + '"></div>').appendTo(this._container);
 
             // TODO: Lazy load category children 
             // (this way prevents graphical glitch when resizing during first expansion)
-            new CategoryBrowser(div, this, children[i].id);
+            this._categoryBrowsers[children[i].id] = new CategoryBrowser(div, this, children[i].id);
         }
 
-        this.container.accordion({
+        this._container.accordion({
             collapsible: true,
             heightStyle: "content",
             active: false
@@ -102,7 +67,7 @@ TagSearcher.prototype.init = function()
 
         // Lazy load
         // ---------
-        //this.container.accordion({
+        //this._container.accordion({
         //    beforeActivate: function (event, ui) {
         //        if (ui.newPanel.attr('loaded') != '1') {
         //            event.stopPropagation();
@@ -115,11 +80,36 @@ TagSearcher.prototype.init = function()
         //    active: false
         //});
 
-    }, this);
+    }.bind(this));
 }
 
-TagSearcher.prototype.getTagLabel = function(tagInfo, translationAttempted)
+TagSearcher.prototype._onTagSelected = function (path)
 {
+    var result = {
+        id: path.length > 0 ? path[path.length - 1].id : null,
+        'path': path
+    };
+
+    for (var i = 0; i < this._selectionListeners["all"].length; i++) {
+        this._selectionListeners["all"][i].tagSelected(result);
+    }
+    for (var i = 0; i < this._selectionListeners[path[0].id].length; i++) {
+        this._selectionListeners[path[0].id][i].tagSelected(result);
+    }
+}
+
+TagSearcher.prototype._onTagDeselected = function (catId, tagId)
+{
+    for (var i = 0; i < this._selectionListeners["all"].length; i++) {
+        this._selectionListeners["all"][i].tagDeselected(tagId);
+    }
+
+    for (var i = 0; i < this._selectionListeners[catId].length; i++) {
+        this._selectionListeners[catId][i].tagDeselected(tagId);
+    }
+}
+
+TagSearcher.prototype._getTagLabel = function(tagInfo, translationAttempted) {
     var transSuccess = true;
     var label = translationAttempted ? tagInfo.text : tagInfo.eng;
 
@@ -127,106 +117,225 @@ TagSearcher.prototype.getTagLabel = function(tagInfo, translationAttempted)
         label = tagInfo.eng;
         transSuccess = false;
     }
-    return {'success':transSuccess, 'label':label};
+    return { 'success': transSuccess, 'label': label };
+}
+
+// PUBLIC
+
+TagSearcher.prototype.getSelectedTagPaths = function () {
+    return this._selectedTags;
+}
+
+/*
+    path: [{id, label},{id, label},...]
+*/
+TagSearcher.prototype.selectTag = function (path)
+{
+    if (!(path instanceof Array) || path.length == 0) {
+        return;
+    }
+
+    // Check for duplicates
+    var endTag = path[path.length - 1];
+    for (var i = 0; i < this._selectedTags.length; i++) {
+        if (endTag.id == this._selectedTags[i][this._selectedTags[i].length - 1].id) {
+            return
+        }
+    }
+
+    this._selectedTags.push(path);
+
+    this._onTagSelected(path);
+}
+
+/*
+    path: [{id, label},{id, label},...]
+*/
+TagSearcher.prototype.deselectTag = function (tagId)
+{
+    for (var i = 0; i < this._selectedTags.length; i++)
+    {
+        var path = this._selectedTags[i];
+        
+        if (path[path.length - 1].id == tagId)
+        {
+            var catId = path[0].id;
+            this._selectedTags.splice(i, 1);
+            
+            // clear checkbox
+            var categoryBrowser = this._categoryBrowsers[path[0].id];
+            if (typeof(categoryBrowser.tagSelectionToggled) == 'function') {
+                categoryBrowser.tagSelectionToggled(tagId, false);
+            }
+
+            this._onTagDeselected(catId, tagId);
+        }
+    }
+}
+
+// subscriptionFor: The category tag ID, from which to receive notifications or "all" to receive updates for all categories
+// (Don't worry about removal for now)
+TagSearcher.prototype.addListener = function (handler, subscriptionFor)
+{
+    if (typeof (subscriptionFor) == 'undefined' || subscriptionFor == null) {
+        subscriptionFor = 'all';
+    }
+
+    if (handler instanceof Object) {
+        if (typeof(this._selectionListeners[subscriptionFor]) == 'undefined') {
+            this._selectionListeners[subscriptionFor] = [ handler ];
+        } else {
+            this._selectionListeners[subscriptionFor].push = handler;
+        }
+    }
 }
 
 // ------------------------------
 
-function CategoryBrowser(container, searcher, categoryId)
-{
-    this.path = [];
-    this.selectedTagIds = {};
-    this.container = container;
-    this.searcher = searcher;
-    this.categoryId = categoryId;
+function CategoryBrowser(container, searcher, categoryId) {
+    this._path = [];
+    this._selectedTagIds = {};
+    this._container = container;
+    this._searcher = searcher;
+    this._categoryId = categoryId;
 
-    this.navigateToTag(categoryId);
+    this._searcher.addListener(this, categoryId);
+
+    this._loadChildren(categoryId, true);
 }
 
-CategoryBrowser.prototype.back = function(e)
-{
-    if(this.path.length <= 1) {
+CategoryBrowser.prototype._back = function (e) {
+    if (this._path.length <= 1) {
         return;
     }
-    this.path.pop();
-    this.loadChildren(this.path[this.path.length - 1].id);
+    this._path.pop();
+    this._loadChildren(this._path[this._path.length - 1].id, true);
     e.preventDefault();
 }
 
-CategoryBrowser.prototype.tagSelectionChanged = function (evt)
-{
+// Listeners for TagSearcher
+CategoryBrowser.prototype.tagSelected = function (results) {
+    this._selectedTagIds[results.id] = true;
+    var cb = this._container.find('[data-id="' + results.id + '"] input[type="checkbox"]');
+    cb.prop('checked', true);
+}
+
+CategoryBrowser.prototype.tagDeselected = function (tagId) {
+    delete this._selectedTagIds[tagId];
+    var cb = this._container.find('[data-id="' + tagId + '"] input[type="checkbox"]');
+    cb.prop('checked', false);
+}
+// END Listeners
+
+// Tag selection changed because user (un)checked a tag
+CategoryBrowser.prototype._tagCheckStateChanged = function (evt) {
     if (this.checked) {
-        var fullPath = evt.data.context.path.slice(0);
+        var fullPath = evt.data.context._path.slice(0);
         fullPath.push({ label: evt.data.label, id: evt.data.id });
-        evt.data.context.searcher.addTagSelection(fullPath);
+        evt.data.context._searcher.selectTag(fullPath);
     } else {
-        evt.data.context.searcher.removeTagSelection(evt.data.id);
+        evt.data.context._searcher.deselectTag(evt.data.id);
     }
 }
 
-CategoryBrowser.prototype.navigateToTag = function (arg)
+CategoryBrowser.prototype._loadChildren = function (tagId, overrideDuplicationCheck)
 {
-    var id;
-    if (typeof arg == 'number') {
-        id = arg;
-    } else {
-        id = arg.data.id;
+    // Don't add path if it was set before coming here
+    if (this._path.length == 0 || this._path[this._path.length - 1].id != tagId) {
+        // Label gets loaded after data is returned
+        this._path.push({ 'id': tagId, 'label': '' });
     }
 
-    if (this.path.length == 0 || this.path[this.path.length - 1] != id) {
-        this.path.push({ 'id': id });
-        this.loadChildren(id);
-    }
-}
-
-CategoryBrowser.prototype.loadChildren = function (tagId)
-{
-    this.searcher.adapter.getChildTags(tagId, function (response) {
-        this.container.children().remove();
+    this._searcher.adapter.getChildTags(tagId, function (response) {
+        this._container.children().remove();
 
         // Update label in path
         var translationAttempted = response.reqLangId != response.defLangId;
-        var parentLabelInfo = this.searcher.getTagLabel(response.results[0].parent, translationAttempted);
-        this.path[this.path.length - 1].label = parentLabelInfo;
-        
-        var encodedLabel = $('<div/>').html(parentLabelInfo.label).text();
+        var parentLabelInfo = this._searcher._getTagLabel(response.results[0].parent, translationAttempted);
+        this._path[this._path.length - 1].label = parentLabelInfo.label;
 
-        if (tagId != this.categoryId) {
-            $('<div>').addClass('search_item').addClass('search_back').on('click', this.back.bind(this)).append(
-                $('<a>').attr('href', '#').html('&lt; Back').css('text-decoration', 'none')
+        var encodedLabel = $('<div>').html(parentLabelInfo.label).text();
+
+        if (tagId != this._categoryId) {
+            $('<div>').addClass('search_item').addClass('search_back').on('click', this._back.bind(this)).append(
+                $('<a href="#" style="text-decoration:none">&lt; Back</a>')
             ).append(
-                $('<span>').addClass('float-right').addClass('b').html(encodedLabel)
-            ).appendTo(this.container);
+                $('<span class="float-right b">' + encodedLabel + '</span>')
+            ).appendTo(this._container);
         }
 
         if (response.results.length == 0 || response.results[0].children.length == 0) {
-            $('<div><i>No Results Found</i></div>').appendTo(this.container);
+            $('<div class="search_item"><i>No Results Found</i></div>').appendTo(this._container);
             return;
         }
 
         var children = response.results[0].children;
-        for (var i = 0; i < children.length; i++)
-        {
-            var labelInfo = this.searcher.getTagLabel(children[i]);
+        for (var i = 0; i < children.length; i++) {
+            var labelInfo = this._searcher._getTagLabel(children[i]);
 
-            var div = $('<div>').addClass('search_item').attr('data-id', children[i].id).appendTo(this.container);
+            var div = $('<div>').addClass('search_item').attr('data-id', children[i].id).appendTo(this._container);
 
-            if(children[i].type == TagType.NavigationalTag)
-            {
+            if (children[i].type == TagType.NavigationalTag) {
                 div.text(labelInfo.label).addClass('search_navTag');
-                div.on('click', { 'id': children[i].id }, this.navigateToTag.bind(this));
+                div.on('click', this._loadChildren.bind(this, children[i].id, false));
                 div.append($('<span class="decorator">&gt;</span>'));
             }
-            else if (children[i].type == TagType.SelectableTag)
-            {
+            else if (children[i].type == TagType.SelectableTag) {
                 div.addClass('search_selTag');
                 $('<label>').text(labelInfo.label).append(
-                    $('<input/>').addClass('decorator').attr({ 'type': 'checkbox' }).on(
-                        'change', { context:this, id:children[i].id, label:labelInfo.label }, this.tagSelectionChanged
+                    $('<input>').addClass('decorator').attr({ 'type': 'checkbox', 'checked': this._selectedTagIds[children[i].id] == true }).on(
+                        'change', { context: this, id: children[i].id, label: labelInfo.label }, this._tagCheckStateChanged
                 )).appendTo(div);
             }
         }
-    }, this);
+    }.bind(this));
+}
+
+// --------------
+
+function SelectedTags(container, tagClosedCallback)
+{
+    this._container = container;
+
+    /* function(tagId) */
+    this._tagClosedCallback = tagClosedCallback;
+}
+
+// Listeners for TagSearcher
+SelectedTags.prototype.tagSelected = function(results)
+{
+    this.addTag(results.path);
+}
+
+SelectedTags.prototype.tagDeselected = function(tagId)
+{
+    this._container.find('[data-id="' + tagId + '"]').remove();
+}
+// END Listeners
+
+SelectedTags.prototype.addTag = function (path)
+{
+    var label = [path[0].label];
+    if (path.length > 3) {
+        label.push("...");
+    }
+    // Path should always be > 1
+    if (path.length > 2) {
+        label.push(path[path.length - 2].label);
+    }
+    if (path.length > 1) {
+        label.push(path[path.length - 1].label);
+    }
+    label = label.join(' > ');
+    var id = path[path.length - 1].id;
+    this._container.append(
+        $('<li>').text(label + ' ').attr('data-id', id).append(
+            $('<a>').css('color', 'red').text('X').click(function (tagId, evt) {
+                this._tagClosedCallback(tagId),
+                $(evt.target).parent().remove();
+            }.bind(this, id))
+        )
+    );
 }
 
 // --------------
@@ -237,7 +346,7 @@ function TagNavigator(container, options) {
     if (!container || !container.length) {
         throw "Tag navigation container not found.";
     }
-    this.container = container;
+    this._container = container;
     this.selectedEndTags = {};
     this.hierarchicalTagContainer = null;
     this.selectedBreadcrumbsContainer = null;
@@ -277,24 +386,24 @@ function TagNavigator(container, options) {
 }
 
 TagNavigator.prototype.init = function () {
-    this.container.children().remove();
-    this.container.addClass(this._cssContainerClassName);
+    this._container.children().remove();
+    this._container.addClass(this._cssContainerClassName);
 
     this.hierarchicalTagContainer = $('<div>').addClass(this._hierarchicalContainerDivClassName);
-    this.container.append(
+    this._container.append(
         this.hierarchicalTagContainer).append(
         $('<br>').css('clear', 'left'));
     
     if (this.options.enabled) {
         var autocomplete = $('<input>').addClass(this._searchTextClassName);
         this.wireAutocomplete(autocomplete);
-        this.container.append(autocomplete);
+        this._container.append(autocomplete);
 
         this.selectedBreadcrumbsContainer = $('<ul>').addClass(this._selectedBreadcrumbsUlClassName);
-        this.container.append(this.selectedBreadcrumbsContainer);
+        this._container.append(this.selectedBreadcrumbsContainer);
     }
     // See: http://www.quirksmode.org/css/clearing.html for possible workaround
-    this.container.append($('<br>').css('clear', 'left'));
+    this._container.append($('<br>').css('clear', 'left'));
         
     // Hook into form submission
     var tagnav = this;
@@ -347,7 +456,7 @@ TagNavigator.prototype.getHierarchicalListItemName = function (tagId) {
 TagNavigator.prototype.findByName = function (name, parent) {
     var selector = '[name="' + name + '"]';
     return (!parent || !parent.length)
-        ? this.container.find(selector)
+        ? this._container.find(selector)
         : parent.find(selector);
 }
 

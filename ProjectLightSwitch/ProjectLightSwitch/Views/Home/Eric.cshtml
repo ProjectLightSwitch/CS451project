@@ -33,8 +33,6 @@
 
     .ui-accordion .ui-accordion-content {
         padding:0;
-        
-
     }
 
     .ui-accordion-content .search_item {
@@ -51,17 +49,32 @@
         cursor: pointer;
     }
 
+    /*
     .ui-accordion-content .search_item span, .ui-accordion-content .search_item label {
                 vertical-align:middle;
-    }
+    }*/
 
     .ui-accordion-content .search_item .decorator {
         float:right;
-                vertical-align:middle;
     }
 
-    .ui-accordion-content .search_item input[type="checkbox"] {
+    ul.selectedTags {
+        margin:10px;
+        width:100%;
+        padding:0;
+    }
 
+    ul.selectedTags li {
+        list-style:none;
+        list-style-image:none;
+        display: inline-block;
+        position:static;
+        border-radius: 8px;
+        margin:5px;
+        padding:5px;
+        background:#646564;
+        color:white;
+        font-weight:bold;
     }
     </style>
 }
@@ -70,12 +83,16 @@
 {
     <script type="text/javascript" language="javascript">
 
-        var browser = null;
-        $(document).load(new function () {
-            //browser = new CategoryBrowser('find', new TagAdapter(), 2);
-            var searcher = new TagSearcher($('#find'), new function (data) {
-                //alert(data[0][data.length - 1].label);
-            });
+        $(document).ready(function () {
+            (function () {
+
+                var searcher = new TagSearcher($('#find'));
+
+                var selectedTags = new SelectedTags(
+                    $('.selectedTags'),
+                    searcher.deselectTag.bind(searcher));
+                searcher.addListener(selectedTags, 'all');
+            })();
         });
     </script>
 }
@@ -83,7 +100,7 @@
 Tab Navigator:
 
 
-
+<h3>My Tags:</h3><ul class="selectedTags"></ul>
 <div id="find"></div>
 
 
