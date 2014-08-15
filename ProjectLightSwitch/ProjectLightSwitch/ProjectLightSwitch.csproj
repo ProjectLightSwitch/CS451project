@@ -335,7 +335,10 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\SiteAdmin.js" />
     <Content Include="Scripts\slider.js" />
+    <Content Include="Scripts\TagChildrenViewer.js" />
+    <Content Include="Scripts\TagCommon.js" />
     <Content Include="Scripts\TagNavigator.js" />
+    <Content Include="Scripts\TagSearcher.js" />
     <Content Include="Scripts\Utilities.js" />
     <Content Include="Content\Styles\FrontPages.css" />
     <Content Include="tagnavigator.html" />

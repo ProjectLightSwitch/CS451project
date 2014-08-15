@@ -144,14 +144,10 @@ namespace ProjectLightSwitch.Models
                                 })
                         });
 
-
                 var result = new { defLangId=SiteSettings.DefaultLanguageId, reqLangId=languageId!=-1?languageId:SiteSettings.DefaultLanguageId, results=q };
-
                 return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(result);
-
             }
         }
-
 
         #endregion
 
@@ -519,16 +515,29 @@ namespace ProjectLightSwitch.Models
 
         public static string GetPaths_Json(int rootId, string searchTerm, bool returnAllDescendants, int languageId)
         {
-            int resultLimit = 25;
+            //int resultLimit = 25;
             using (var context = new StoryModel())
             {
-                bool defaultLanguage = languageId == SiteSettings.DefaultLanguageId;
+                bool defaultLanguage = languageId < 0 || languageId == SiteSettings.DefaultLanguageId;
 
-                // TODO: improve query
+                // TODO: simplify query if possible
+                // TODO: limit results?
 
                 var q = context.TagTree
                     .Where(tt =>
-                        (searchTerm == null || tt.Descendant.EnglishText.Contains(searchTerm))
+                        (
+                            searchTerm == null 
+                            || (
+                                !defaultLanguage 
+                                && context.TranslatedTags
+                                          .Where(trans => 
+                                              trans.LanguageId == languageId 
+                                              && trans.Text == searchTerm 
+                                              && trans.TagId == tt.DescendantId)
+                                          .Any()
+                            )
+                            || (defaultLanguage && tt.Descendant.EnglishText.Contains(searchTerm))
+                        )
                         && (rootId == TagTree.InvisibleRootId || context.TagTree.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
                         && (returnAllDescendants || tt.PathLength == 1)
                         && tt.DescendantId != TagTree.InvisibleRootId
@@ -540,19 +549,26 @@ namespace ProjectLightSwitch.Models
                     {
                         value = group.Key,
                         //Nodes = t.Nodes.Select(n => new { n.TagId, n.TagType }),
-                        label = group.OrderByDescending(t => t.PathLength).Select(
-                            tt => defaultLanguage
-                                ? tt.Ancestor.EnglishText
-                                : tt.Ancestor.TranslatedTags
-                                    .Where(trans => trans.LanguageId == languageId)
-                                    .Select(trans => trans.Text)
-                                    .FirstOrDefault()).ToList()
+                        path = group.OrderByDescending(t => t.PathLength).Select(
+                            tt => 
+                                new {
+                                    eng = tt.Ancestor.EnglishText,
+                                    text = defaultLanguage ? "" : 
+                                        tt.Ancestor.TranslatedTags
+                                            .Where(trans => trans.LanguageId == languageId)
+                                            .Select(trans => trans.Text)
+                                            .FirstOrDefault(),
+                                    id = tt.AncestorId,
+                                    type = tt.Ancestor.TagType
+                                
+                                }).ToList()
                     })
                     // NOTE: limiting results before sorting on client side will cause unpredictable results
-                    .Take(resultLimit)
+                    //.Take(resultLimit)
                     //.OrderBy(t => t.label)
                     .ToList();
 
+                var result = new { defLangId = SiteSettings.DefaultLanguageId, reqLangId = languageId != -1 ? languageId : SiteSettings.DefaultLanguageId, results = q };
                 return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(q);    
             }
         }
