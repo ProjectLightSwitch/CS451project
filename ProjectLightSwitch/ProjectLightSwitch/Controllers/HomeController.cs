@@ -52,5 +52,14 @@ namespace ProjectLightSwitch.Controllers
         {
             return View();
         }
+
+        public ActionResult Story_Search()
+        {
+            return View();
+        }
+        public ActionResult Story_Read()
+        {
+            return View();
+        }
     }
 }
