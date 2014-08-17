@@ -400,6 +400,7 @@
     <Content Include="Views\Home\Story_Read.cshtml" />
     <Content Include="Views\Shared\_SearchResult_Section.cshtml" />
     <Content Include="Views\Shared\_StoryReadMain_Section.cshtml" />
+    <Content Include="Views\Shared\_Range_Slider.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
