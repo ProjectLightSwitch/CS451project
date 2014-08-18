@@ -21,25 +21,26 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             var model = sb.StoryTypes;
             return View(model);
         }
-        
-        public ActionResult Created(object xxx)
-        {
-            return null;
-        }
 
-        public ActionResult Create([Bind(Include = "Description,QuestionText")] StoryType storyType)
-        {
-            if (this.ModelState.IsValid)
-            {
-                using (var context = new StoryModel())
-                {
-                    context.StoryTypes.Add(storyType);
-                    context.SaveChanges();
-                }
-            }
 
+        public ActionResult Create()
+        {
             return View();
         }
+
+        //public ActionResult Create([Bind(Include = "Description,QuestionText")] StoryType storyType)
+        //{
+        //    if (this.ModelState.IsValid)
+        //    {
+        //        using (var context = new StoryModel())
+        //        {
+        //            context.StoryTypes.Add(storyType);
+        //            context.SaveChanges();
+        //        }
+        //    }
+
+        //    return View();
+        //}
         public ActionResult Details(int id)
         {
             var model = sb.StoryTypes.Find(id);

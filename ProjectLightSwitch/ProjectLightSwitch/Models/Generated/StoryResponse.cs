@@ -34,6 +34,8 @@ namespace ProjectLightSwitch.Models
 
         public virtual ICollection<Answer> Answers { get; set; }
 
+        public virtual ICollection<StoryResponseRating> Ratings { get; set; }
+
         public virtual LocalizedStoryType LocalizedStoryType { get; set; }
 
         public virtual ICollection<Tag> Tags { get; set; }

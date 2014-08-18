@@ -24,7 +24,8 @@ namespace ProjectLightSwitch.Models
         public virtual DbSet<TagTree> TagTree { get; set; }
         public virtual DbSet<TranslatedString> TranslatedStrings { get; set; }
         public virtual DbSet<TranslatedTag> TranslatedTags { get; set; }
-
+        public virtual DbSet<StoryResponseRating> StoryResponseRatings { get; set; }
+        
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Language>()

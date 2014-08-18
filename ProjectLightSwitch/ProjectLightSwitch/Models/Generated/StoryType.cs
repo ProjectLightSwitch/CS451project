@@ -17,7 +17,7 @@ namespace ProjectLightSwitch.Models
 
         public int StoryTypeId { get; set; }
 
-        public Guid DescriptionStringId { get; set; }
+        
 
         [Column(TypeName = "datetime2")]
         public DateTime DateCreated { get; set; }

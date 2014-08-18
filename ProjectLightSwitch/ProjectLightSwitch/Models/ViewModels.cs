@@ -9,6 +9,20 @@ using System.Web.Mvc;
 
 namespace ProjectLightSwitch.Models
 {
+
+    public class StoryTypeCreationModel
+    {
+        public List<int> SelectedTags { get; set; }
+        public int LanguageId {get; set; }
+
+        public string Description { get; set; }
+
+        public List<string> Questions { get; set; }
+    
+    
+    }
+
+
     public class StoryResponseViewModel
     {
         // OUTPUT
