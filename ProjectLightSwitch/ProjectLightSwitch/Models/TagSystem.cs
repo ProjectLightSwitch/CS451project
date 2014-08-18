@@ -315,6 +315,17 @@ namespace ProjectLightSwitch.Models
             }
         }
 
+        public static bool AddRating(int storyResponseId)
+        {
+            using (var context = new StoryModel())
+            {
+                var newRating = new StoryResponseRating();
+                newRating.StoryResponseId = storyResponseId;
+                newRating.Rating = 1;
+                context.StoryResponseRatings.Add(newRating);
+                return context.SaveChanges() > 0;
+            }
+        }
         public static Tag GetParent(int tagId)
         {
             using (var context = new StoryModel())
