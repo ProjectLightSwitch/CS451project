@@ -22,10 +22,6 @@ namespace ProjectLightSwitch.Models
 
         public byte TagType { get; set; }
 
-        [Required]
-        [StringLength(1024)]
-        public string EnglishText { get; set; }
-
         public virtual ICollection<StoryTypeTag> StoryTypeTags { get; set; }
 
         public virtual ICollection<TranslatedTag> TranslatedTags { get; set; }

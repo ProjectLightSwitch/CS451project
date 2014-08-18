@@ -82,28 +82,23 @@
 @section scripts
 {
     <script type="text/javascript" language="javascript">
-
         $(document).ready(function () {
             (function () {
-
-                var searcher = new TagSearcher($('#find'));
-
-                var selectedTags = new SelectedTags(
-                    $('.selectedTags'),
-                    searcher.deselectTag.bind(searcher));
-                searcher.addListener(selectedTags, 'all');
+                var tagnav = new TagNavigator($('#tagnav'));
+                var breadcrumbs = new SelectedTagBreadCrumbs($('#selectedTags'), tagnav, { cssPrefix: '', separator: ' > ', closable: true });
             })();
         });
     </script>
 }
-
 Tab Navigator:
-
 
 <h3>My Tags:</h3><ul class="selectedTags"></ul>
 <div id="find"></div>
 
+@using(Html.BeginForm("TagSelTest", "Home", FormMethod.Post, null))
+{
+    <div id="selectedTags"></div>
+    <div id="tagnav"></div>
 
-<form action="#" method="post">
-    <div id="tagnav" />
-</form>
+    <input type="submit" value="Submit" />
+}

@@ -5,7 +5,6 @@ function TagSearcher(container) {
 
     //this._events = new TagSelectionEvents();
     this._container = container;
-    this._selectedTags = [];
     this._categoryBrowsers = {};
 
     this._init();
@@ -13,15 +12,16 @@ function TagSearcher(container) {
 
 // "PRIVATES"
 
-// There should only be one instance anyway
 TagSearcher.prototype._init = function ()
 {
     this._container.children().remove();
-    this.adapter.getCategories(function (response) {
+    this.adapter.getCategories(function (response)
+    {
         if (response.results.length == 0) {
             return;
         }
 
+        // Add a container for all parents
         response.results = response.results[0];
         var children = response.results.children;
         for (var i = 0; i < children.length; i++) {
@@ -60,45 +60,24 @@ TagSearcher.prototype._init = function ()
     }.bind(this));
 }
 
-TagSearcher.prototype.addListener = function (handler, subscriptionFor) {
-    this._events.addListener(handler, subscriptionFor);
-}
-
-TagSearcher.prototype._getTagLabel = function (tagInfo, translationAttempted) {
-    var transSuccess = true;
-    var label = translationAttempted ? tagInfo.text : tagInfo.eng;
-
-    if (label == null) {
-        label = tagInfo.eng;
-        transSuccess = false;
-    }
-    return { 'success': transSuccess, 'label': label };
-}
-
 // PUBLIC
-
-TagSearcher.prototype.getSelectedTagPaths = function () {
-    return this._selectedTags;
-}
 
 /*
     path: [{id, label},{id, label},...]
 */
-TagSearcher.prototype.selectTag = function (path)
+TagSearcher.prototype.selectTag = function (pathData)
 {
-    if (!(path instanceof Array) || path.length == 0) {
-        return;
-    }
-
+    pathData.id
+    
     // Check for duplicates
     var endTag = path[path.length - 1];
-    for (var i = 0; i < this._selectedTags.length; i++) {
-        if (endTag.id == this._selectedTags[i][this._selectedTags[i].length - 1].id) {
+    for (var i = 0; i < this._selectedPaths.length; i++) {
+        if (endTag.id == this._selectedPaths[i][this._selectedPaths[i].length - 1].id) {
             return
         }
     }
 
-    this._selectedTags.push(path);
+    this._selectedPaths.push(path);
 
     this._events.onTagSelected(path);
 }
@@ -108,13 +87,13 @@ TagSearcher.prototype.selectTag = function (path)
 */
 TagSearcher.prototype.deselectTag = function (tagId)
 {
-    for (var i = 0; i < this._selectedTags.length; i++)
+    for (var i = 0; i < this._selectedPaths.length; i++)
     {
-        var path = this._selectedTags[i];
+        var path = this._selectedPaths[i];
 
         if (path[path.length - 1].id == tagId) {
             var catId = path[0].id;
-            this._selectedTags.splice(i, 1);
+            this._selectedPaths.splice(i, 1);
 
             // clear checkbox
             var categoryBrowser = this._categoryBrowsers[path[0].id];
@@ -126,8 +105,6 @@ TagSearcher.prototype.deselectTag = function (tagId)
         }
     }
 }
-
-
 
 // ------------------------------
 
@@ -195,8 +172,8 @@ CategoryBrowser.prototype._loadChildren = function (tagId, overrideDuplicationCh
         var encodedLabel = $('<div>').html(parentLabelInfo.label).text();
 
         if (tagId != this._categoryId) {
-            $('<div>').addClass('search_item').addClass('search_back').on('click', this._back.bind(this)).append(
-                $('<a href="#" style="text-decoration:none">&lt; Back</a>')
+            $('<div>').addClass('search_item').addClass('search_back').append(
+                $('<a href="#" style="text-decoration:none">&lt; Back</a>').on('click', this._back.bind(this))
             ).append(
                 $('<span class="float-right b">' + encodedLabel + '</span>')
             ).appendTo(this._container);

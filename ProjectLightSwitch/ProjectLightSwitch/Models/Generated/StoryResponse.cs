@@ -18,12 +18,9 @@ namespace ProjectLightSwitch.Models
         [Key]
         public int StoryResponseId { get; set; }
 
-        public int StoryTypeId { get; set; }
+        public int LocalizedStoryTypeId { get; set; }
 
         public int? CountryId { get; set; }
-
-        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
-        public DateTime CreationDate { get; set; }
 
         public byte? Age { get; set; }
 
@@ -32,13 +29,12 @@ namespace ProjectLightSwitch.Models
 
         public string Story { get; set; }
 
-        public int? LanguageId { get; set; }
+        [Column(TypeName = "datetime2")]
+        public DateTime CreationDate { get; set; }
 
         public virtual ICollection<Answer> Answers { get; set; }
 
-        public virtual Language Language { get; set; }
-
-        public virtual StoryType StoryType { get; set; }
+        public virtual LocalizedStoryType LocalizedStoryType { get; set; }
 
         public virtual ICollection<Tag> Tags { get; set; }
     }

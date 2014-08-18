@@ -21,6 +21,24 @@ namespace ProjectLightSwitch.Controllers
             //return Json(TagSystem.GetFullTagNavigationPath_Json(26, null), JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult TagSearchTest()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult TagSelTest(List<int> SelectedTags)
+        {
+            if (ModelState.IsValid)
+            {
+                return Content("Selected Tags: " + String.Join(", ", SelectedTags), "text/text");
+            }
+            else
+            {
+                return Content("ERROR", "text/text");
+            }
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your app description page.";

@@ -10,6 +10,8 @@ namespace ProjectLightSwitch
         {
             bundles.Add(new ScriptBundle("~/bundles/tags").Include(
                         "~/Scripts/Utilities.js",
+                        "~/Scripts/TagCommon.js",
+                        "~/Scripts/TagSearcher2.js",
                         "~/Scripts/TagNavigator.js"
             ));
 

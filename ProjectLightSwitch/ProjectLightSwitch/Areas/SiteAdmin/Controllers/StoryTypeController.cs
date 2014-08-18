@@ -45,24 +45,25 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             var model = sb.StoryTypes.Find(id);
             return View(model);
         }
-        // TODO: this might be better suited for a separate tag controller
         public ActionResult View(string search, int id = 0)
         {
+            int languageId = Language.DefaultLanguageId;
             Tag tag = TagSystem.GetTag(id);
             int catId = (tag == null) ? 0 : tag.TagId;
-            var paths = TagSystem.GetPaths(catId, search, true);
+            var paths = TagSystem.GetPaths(catId, search, true, languageId);
             ViewBag.Category = tag;
             return View(paths);
         }
 
-        public ActionResult AddChildTag(int category, int id = 0)
-        {
-            // Hard coded for now
-            TagSystem.AddTag(new Tag { EnglishText = Guid.NewGuid().ToString(), TagType = (byte)ProjectLightSwitch.Models.Enums.TagType.SelectableTag }, id);
+        //public ActionResult AddChildTag(int category, int id = 0)
+        //{
+        //    // Hard coded for now
+        //    TagSystem.AddTag(
+        //        new Tag { EnglishText = Guid.NewGuid().ToString(), TagType = (byte)ProjectLightSwitch.Models.Enums.TagType.SelectableTag }, id);
 
-            ViewBag.Message = "Ancestors Added";
-            return RedirectToAction("View", new { id = category });
-        }
+        //    ViewBag.Message = "Ancestors Added";
+        //    return RedirectToAction("View", new { id = category });
+        //}
 
 
 

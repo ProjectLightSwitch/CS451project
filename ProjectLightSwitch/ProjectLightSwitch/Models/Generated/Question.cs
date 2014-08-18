@@ -16,14 +16,16 @@ namespace ProjectLightSwitch.Models
 
         public int QuestionId { get; set; }
 
-        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
-        public Guid PromptTranslatedStringId { get; set; }
-
-        public int? StoryTypeId { get; set; }
+        public int LocalizedStoryTypeId { get; set; }
 
         [StringLength(4000)]
         public string Options { get; set; }
 
+        [StringLength(4000)]
+        public string Prompt { get; set; }
+
         public virtual ICollection<Answer> Answers { get; set; }
+
+        public virtual LocalizedStoryType LocalizedStoryType { get; set; }
     }
 }

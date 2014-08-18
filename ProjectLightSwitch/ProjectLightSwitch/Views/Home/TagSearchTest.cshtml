@@ -1,0 +1,101 @@
+﻿@{
+    ViewBag.Title = "Tag Search Test";
+}
+
+@section featured {
+    <section class="featured">
+        <div class="content-wrapper">
+            <h1>Project Lightswitch</h1>
+        </div>
+    </section>
+}
+
+@section head {
+    @Styles.Render("~/Content/tagnav")
+    @Scripts.Render("~/bundles/tags")
+
+    <style type="text/css">
+            .ui-widget-content {
+                background: #eeeded;
+            }
+
+            .ui-accordion {
+                width: 250px;
+                padding: 0;
+            }
+
+            .ui-accordion-header {
+                padding-left: 100px;
+                background: #aaaaaa;
+                margin: 0px;
+            }
+
+            .ui-accordion .ui-accordion-content {
+                padding: 0;
+            }
+
+            .ui-accordion-content .search_item {
+                padding: 7px;
+                border-top: 1px solid #aaaaaa;
+                background: #eeeded;
+                vertical-align: middle;
+            }
+
+            .ui-accordion-content .search_navTag,
+            .ui-accordion-content .search_selTag label,
+            .ui-accordion-content .search_back {
+                cursor: pointer;
+            }
+
+            /*
+        .ui-accordion-content .search_item span, .ui-accordion-content .search_item label {
+                    vertical-align:middle;
+        }*/
+
+            .ui-accordion-content .search_item .decorator {
+                float: right;
+            }
+
+            ul.selectedTags {
+                margin: 10px;
+                width: 100%;
+                padding: 0;
+            }
+
+                ul.selectedTags li {
+                    list-style: none;
+                    list-style-image: none;
+                    display: inline-block;
+                    position: static;
+                    border-radius: 8px;
+                    margin: 5px;
+                    padding: 5px;
+                    background: #646564;
+                    color: white;
+                    font-weight: bold;
+                }
+    </style>
+}
+
+@section scripts
+{
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+            (function () {
+                var tagsearch = new TagSearcher($('#tagsearch'));
+                var breadcrumbs = new SelectedTagBreadCrumbs($('#selectedTags'), tagsearch, { cssPrefix: '', separator: ' > ', closable: true });
+            })();
+        });
+    </script>
+}
+Tab Navigator:
+
+<div id="find"></div>
+
+@using (Html.BeginForm("TagSelTest", "Home", FormMethod.Post, null))
+{
+    <div id="selectedTags"></div>
+    <div id="tagsearch"></div>
+
+    <input type="submit" value="Submit" />
+}

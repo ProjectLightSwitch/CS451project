@@ -211,6 +211,7 @@
     <Compile Include="Models\Generated\Answer.cs" />
     <Compile Include="Models\Generated\Country.cs" />
     <Compile Include="Models\Generated\Language.cs" />
+    <Compile Include="Models\Generated\LocalizedStoryType.cs" />
     <Compile Include="Models\Generated\Question.cs" />
     <Compile Include="Models\Generated\StoryModel.cs" />
     <Compile Include="Models\Generated\StoryResponse.cs" />
@@ -220,6 +221,7 @@
     <Compile Include="Models\Generated\TagTree.cs" />
     <Compile Include="Models\Generated\TranslatedString.cs" />
     <Compile Include="Models\Generated\TranslatedTag.cs" />
+    <Compile Include="Models\ModelMetadata.cs" />
     <Compile Include="Models\SiteSettings.cs" />
     <Compile Include="Models\StoryPortalInfo.cs" />
     <Compile Include="Models\TagSystem.cs" />
@@ -339,6 +341,7 @@
     <Content Include="Scripts\TagCommon.js" />
     <Content Include="Scripts\TagNavigator.js" />
     <Content Include="Scripts\TagSearcher.js" />
+    <Content Include="Scripts\TagSearcher2.js" />
     <Content Include="Scripts\Utilities.js" />
     <Content Include="Content\Styles\FrontPages.css" />
     <Content Include="tagnavigator.html" />
@@ -395,6 +398,7 @@
     <Content Include="Views\Shared\_StoryShare_Section.cshtml" />
     <Content Include="Views\Shared\_Question_Section.cshtml" />
     <Content Include="Views\Shared\Slider.cshtml" />
+    <Content Include="Views\Home\TagSearchTest.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
