@@ -1,83 +1,152 @@
-﻿div.TagNavigator {
+﻿div.tagnav {
     background:white;
     border: 2px solid black;
-    padding: 3px;
 }
 
-div.TagNavigator ul {
+div.tagsearch ul,
+div.tagsearch ul,
+div.tagnav ul,
+div.tagnav li {
     
     list-style: none;
     list-style-image: none;
     list-style-type: none;
+    padding:0;
+    margin:0;
 }
 
-div.TagNavigator .tags > ul {
+div.tagnav .tags > ul {
     width: 20%;
     float: left;
     border: 2px solid black;
-    padding:2px;
-    margin:2px;
 }
 
-div.TagNavigator .tags > ul label {
+div.tagnav .tags > ul label {
     display: inline;
 }
 
 /* Category List */
-div.TagNavigator .tags > ul:first-child {
+
+div.tagnav .tags {
+    overflow: hidden;
+}
+
+/* Lower tags */
+div.tagnav .tags > .depth_container 
+{
+    float:left;
+    border-right: 2px solid black;
+    border-left: 2px solid black;
+    border-top: none;
+    border-bottom: none;
+    width: 200px;
+    margin: 0 5px;
+}
+
+div.tagnav .tags > .depth_container li {
+    padding: 5px 10px;
+    border-bottom: 1px solid #808080;
+}
+
+div.tagnav .tags > .depth_container {
+    margin-bottom: 10px;
+    border-bottom: 2px solid black;
+
+}
+
+/* Category Tags */
+
+div.tagnav .tags > .depth_container:first-child 
+{
     width: 100%;
-    border: 2px solid black;
-    overflow:auto;
+    padding: 0px;
+    border-bottom: 2px solid black;
+    overflow: auto;
+    float:none;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+div.tagnav .tags > .depth_container:first-child 
+{
+    background-color: #dddddd;
+    width: 100%;
+    padding: 0px;
+    border-bottom: 2px solid black;
+    overflow: auto;
     float:none;
 }
 
-div.TagNavigator .tags > ul:first-child > li {
+div.tagnav .tags > .depth_container:first-child li {
     float: left;
-    padding: 10px;
+    padding: 5px 10px;
+    border-bottom: none;
     border-right: 2px solid black;
 }
 
-div.TagNavigator .tags > ul:first-child::after {
+div.tagnav .tags > .depth_container:first-child::after {
     clear:left;
 }
 
+/* Common Tags*/
 
-div.TagNavigator a, div.TagNavigator a:visited {
-    color:blue;
+
+
+div.tagsearch .depth_container li,
+div.tagnav .tags > .depth_container li {
+    cursor:pointer;
+    background-color: #dddddd;
+    padding: 5px;
+}
+
+div.tagnav .tags > .depth_container li.sel {
+    background-color: #a9a9a9;
+}
+
+div.tagnav a, div.tagnav a:visited {
+    color: blue;
     text-decoration: none;
 }
 
-div.TagNavigator li.sel {
+div.tagsearch .decorator,
+div.tagnav .decorator {
+    float: right;
+    margin-right: 25px;
+}
+/********/
+
+.tagsearch .searchback {
+    overflow: hidden;
 }
 
-div.TagNavigator li.sel a, div.TagNavigator li.sel span {
-    font-weight: bold;
-    color:red;
+/********/
+
+ul.tabBreadcrumbs {
+    padding: 0;
+    margin: 10px;
+    overflow: auto;    
 }
 
-div.TagNavigator a.editTag {
-    font-weight: normal;
-    color: blue;
+ul.tabBreadcrumbs::after {
+    clear:both;
 }
 
-div.TagNavigator ul.selectedTags > li {
+ul.tabBreadcrumbs li {
+    list-style: none;
+    list-style-image: none;
     float:left;
-    background: #272727;
-    color: White;
-    padding: 5px 3px;
-    margin: 4px;
-
+    background: #656565;
+    color: white;
+    font-weight: bold;
+    margin: 5px;
+    padding:10px;
 }
 
-div.TagNavigator ul.selectedTags {
-    padding:0px;
+ul.tabBreadcrumbs a, ul.tabBreadcrumbs a:visited, ul.tabBreadcrumbs a:hover  {
+    color: white;
+    text-decoration: none;
 }
 
-div.TagNavigator ul.selectedTags > li a {
-    color: Red;
-    
-}
-       
-.clear {
-    clear: both;
+.tabBreadcrumbs .close {
+    margin:0 4px;
 }

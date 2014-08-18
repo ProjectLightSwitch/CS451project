@@ -11,7 +11,7 @@ namespace ProjectLightSwitch.Models
     {
         public Language()
         {
-            StoryResponses = new HashSet<StoryResponse>();
+            LocalizedStoryTypes = new HashSet<LocalizedStoryType>();
             TranslatedStrings = new HashSet<TranslatedString>();
         }
 
@@ -25,7 +25,7 @@ namespace ProjectLightSwitch.Models
         [StringLength(256)]
         public string Description { get; set; }
 
-        public virtual ICollection<StoryResponse> StoryResponses { get; set; }
+        public virtual ICollection<LocalizedStoryType> LocalizedStoryTypes { get; set; }
 
         public virtual ICollection<TranslatedString> TranslatedStrings { get; set; }
     }

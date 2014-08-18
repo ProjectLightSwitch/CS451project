@@ -15,6 +15,7 @@ namespace ProjectLightSwitch.Models
         public virtual DbSet<Answer> Answers { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Language> Languages { get; set; }
+        public virtual DbSet<LocalizedStoryType> LocalizedStoryTypes { get; set; }
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<StoryResponse> StoryResponses { get; set; }
         public virtual DbSet<StoryType> StoryTypes { get; set; }
@@ -23,7 +24,6 @@ namespace ProjectLightSwitch.Models
         public virtual DbSet<TagTree> TagTree { get; set; }
         public virtual DbSet<TranslatedString> TranslatedStrings { get; set; }
         public virtual DbSet<TranslatedTag> TranslatedTags { get; set; }
-
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -34,6 +34,11 @@ namespace ProjectLightSwitch.Models
             modelBuilder.Entity<Language>()
                 .HasMany(e => e.TranslatedStrings)
                 .WithRequired(e => e.Language)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<LocalizedStoryType>()
+                .HasMany(e => e.StoryResponses)
+                .WithRequired(e => e.LocalizedStoryType)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Question>()
@@ -58,10 +63,6 @@ namespace ProjectLightSwitch.Models
                 .HasMany(e => e.StoryTypeTags)
                 .WithRequired(e => e.StoryType)
                 .HasForeignKey(e => e.TagId);
-
-            modelBuilder.Entity<Tag>()
-                .Property(e => e.EnglishText)
-                .IsUnicode(false);
 
             modelBuilder.Entity<Tag>()
                 .HasMany(e => e.Ancestors)

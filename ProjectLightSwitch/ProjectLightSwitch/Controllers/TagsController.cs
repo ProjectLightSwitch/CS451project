@@ -27,7 +27,7 @@ namespace ProjectLightSwitch.Controllers
 
         //[AjaxOnly]
         [OutputCache(Duration = 30, VaryByParam = "*", VaryByHeader = "Accept-Language")]
-        public ActionResult Navigate(int id, bool childrenOnly = false, int language = -1)
+        public ActionResult Navigate(int id, bool childrenOnly = false, int language = Language.DefaultLanguageId)
         {
             return Content(TagSystem.GetFullTagNavigationPath_Json(id, childrenOnly, language), "application/json");
         }
@@ -39,31 +39,31 @@ namespace ProjectLightSwitch.Controllers
             return Content(TagSystem.GetPaths_Json(TagTree.InvisibleRootId, term, true, SiteSettings.DefaultLanguageId), "application/json");
         }
 
-        [AjaxOnly]
-        public ActionResult AddChildTag(int parentId, string text, byte type)
-        {
-            if(!Enum.IsDefined(typeof(TagType), type) || type == TagTree.InvisibleRootId)
-            {
-                return Content("{'error':'Invalid Type.'}", "application/json");
-            }
+        //[AjaxOnly]
+        //public ActionResult AddChildTag(int tagId, string text, byte type, int languageId = Language.DefaultLanguageId)
+        //{
+        //    if(!Enum.IsDefined(typeof(TagType), type) || type == TagTree.InvisibleRootId)
+        //    {
+        //        return Content("{'error':'Invalid Type.'}", "application/json");
+        //    }
 
-            using (var context = new StoryModel())
-            {
-                var tagType = (TagType)type;
+        //    using (var context = new StoryModel())
+        //    {
+        //        var tagType = (TagType)type;
 
+        //        TagSystem.AddTag(new Tag() { TagType = type }, tagId);
+        //        TagSystem.AddTag(type, tagId, 
 
-                TagSystem.AddTag(new Tag() { EnglishText = text, TagType = type }, parentId);
-
-                var item = context.Tags.Where(t => t.TagId == type && t.TagId != TagTree.InvisibleRootId).FirstOrDefault();
-                if (item != null)
-                {
-                    context.Tags.Remove(item);
-                    bool success = context.SaveChanges() > 0;
-                    return Json(new { result = success, error = success ? null : "There was an error removing the tag." });
-                }
-                return Content("{'error':'Ancestors not found.'}", "application/json");
-            }
-        }
+        //        var item = context.Tags.Where(t => t.TagId == type && t.TagId != TagTree.InvisibleRootId).FirstOrDefault();
+        //        if (item != null)
+        //        {
+        //            context.Tags.Remove(item);
+        //            bool success = context.SaveChanges() > 0;
+        //            return Json(new { result = success, error = success ? null : "There was an error removing the tag." });
+        //        }
+        //        return Content("{'error':'Ancestors not found.'}", "application/json");
+        //    }
+        //}
 
         [AjaxOnly]
         public ActionResult RemoveTag(int tagId)

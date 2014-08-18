@@ -5,30 +5,54 @@ using System.Web;
 
 namespace ProjectLightSwitch.Models
 {
+    #region Tag Creation
 
-    #region Tag Editting 
-
-
-    public class TagTranslationDetails
-    {
-        public int LanguageId { get; set; }
-        public string LanguageDescription { get; set; }
-        public string LanguageCode { get; set; }
-        public string TagText { get; set; }
-    }
-
-    public class TagEditViewModel
+    
+    public class TagInputModel
     {
         public Tag Tag { get; set; }
-        public IEnumerable<TagTranslationDetails> Translations { get; set; }
+        public int ParentId { get; set; }
+        public Dictionary<int, string> TranslatedNames = new Dictionary<int, string>();
 
-        public TagEditViewModel()
+        public string EnglishText
         {
-            Translations = Enumerable.Empty<TagTranslationDetails>();
+            get { return TranslatedNames[Language.DefaultLanguageId]; }
+            set { TranslatedNames[Language.DefaultLanguageId] = value; }
         }
     }
 
-    public class TagEditChangeNameInputModel
+    #endregion
+
+    public class JSONTagModel
+    {
+        public byte type { get; set; }
+        public string text { get; set; }
+        public int id { get; set; }
+    }
+
+    public class JSONChildrenModel
+    {
+        public JSONTagModel parent { get; set; }
+        public IEnumerable<JSONTagModel> children { get; set; }
+    }
+
+
+    #region Tag Editing
+
+    // To display tags with all translations for editing
+    public class TagEditOutputModel
+    {
+        public List<Language> Languages { get; set; }
+        public Tag Tag { get; set; }
+        public Dictionary<int, string> Translations { get; set; }
+
+        public TagEditOutputModel()
+        {
+            Translations = new Dictionary<int, string>();
+        }
+    }
+
+    public class TagEditInputModel
     {
         public int TagId { get; set; }
         /// <summary>
@@ -36,14 +60,5 @@ namespace ProjectLightSwitch.Models
         /// </summary>
         public IDictionary<int, string> Names { get; set; }
     }
-
-    public class TagEditAddChildrenInputModel
-    {
-        public int ParentId { get; set; }
-
-        public List<Tag> Children { get; set; }
-    }
-
     #endregion
-
 }

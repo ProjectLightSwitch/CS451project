@@ -1,48 +1,25 @@
 ﻿
-function TagNavigator(container, options) {
-    if (typeof container == 'string') {
-        container = $('#' + container);
-    }
+function TagNavigator(container) {
     if (!container || !container.length) {
         throw "Tag navigation container not found.";
     }
 
-    this.adapter = new TagAdapter();
+    this.tagAdapter = new TagAdapter();
+    this.tagSelector = new TagSelector();
+
+    // JSONTagModel[]
+    this.fullPath = null;
+    
     this._container = container;
-    this._events = new TagEvents();
+    this._tagDepthContainer = null;
+    this._childBrowsers = [];
+    
+    // "PRIVATES"
+    this._containerClassName = "tagnav";
+    this._tagContainerClassName = "tags";
+    this._tagDepthContainerClassName = "depth_container"
 
-    this.currentPath = [];
-    this.selectedEndTags = {};
-
-    this._tagNavigationContainer = null;
-    this.selectedTagId = null;
-
-
-
-    // Set defaults
-    this.options = {
-        selectedTagSubmissionName: "SelectedTags[(0)]",
-        ajax_navigateToTagUrl: "/Tags/Navigate",
-        ajax_searchUrl: "/Tags/Search",
-        enabled: true,
-        editUrl: null,
-        pathSeparator: ' > '
-    };
-    if (options != null) {
-        //var providedOptionKeys = Object.keys(options);
-        for (var property in options) {
-            if (options.hasOwnProperty(property)) {
-                this.options[property] = options[property];
-            }
-        }
-    }
-
-    // PRIVATES
-    this._containerClassName = "TagNavigator";
-    this._tagColumnClassName = "tags";
-    this._hiddenInputContainerName = "selTagInputs";
-    this._searchTextClassName = "tagSearch";
-    this._selectedTagClassName = "sel";
+    // Attributes
     this._tagIdAttr = "data-tagid";
     this._depthAttr = "data-depth";
     this._parentIdAttr = "data-parentId";
@@ -57,8 +34,8 @@ TagNavigator.prototype.init = function ()
     this._container.children().remove();
     this._container.addClass(this._containerClassName);
 
-    // Add the container that holds for each column
-    this._tagNavigationContainer = $('<div>').addClass(this._tagColumnClassName);
+    // Add the category container
+    this._tagNavigationContainer = $('<div>').addClass(this._tagContainerClassName);
     this._container.append(
         this._tagNavigationContainer).append(
         $('<br>').css('clear', 'left'));
@@ -75,16 +52,17 @@ TagNavigator.prototype.init = function ()
     //this._container.append($('<br>').css('clear', 'left'));
         
     // Hook into form submission
-    var tagnav = this;
     $(document).ready(function () {
-        tagnav.container.closest('form').submit(tagnav.injectHiddenFields);
-    });
+        this._container.closest('form').submit(this._injectHiddenFields.bind(this));
+    }.bind(this));
 
-    // StartNavigation
     this.navigateToTag(this.findTagId());
 };
 
-TagNavigator.prototype.findTagId = function () {
+// Searches URL anchor, id querystring value and navigates to child
+// returns root children if not found
+TagNavigator.prototype.findTagId = function ()
+{
     var tagId = getUrlHash();
     if (tagId == null) {
         tagId = getUrlVars()['id'];
@@ -104,305 +82,91 @@ TagNavigator.prototype.findTagId = function () {
     return tagId;
 }
 
-
-TagNavigator.prototype.getSelectedTagPaths = function () {
-    return this._selectedTags;
-}
-
-/*
-    path: [{id, label},{id, label},...]
-*/
-TagNavigator.prototype.selectTag = function (path) {
+/* path: [{id, type, text},{id, type, text},...] */
+TagNavigator.prototype.selectTag = function (path)
+{
     if (!(path instanceof Array) || path.length == 0) {
         return;
     }
 
-
-
-
-
-
-    // Check for duplicates
-    var endTag = path[path.length - 1];
-    for (var i = 0; i < this._selectedTags.length; i++) {
-        if (endTag.id == this._selectedTags[i][this._selectedTags[i].length - 1].id) {
-            return
-        }
-    }
-
-    this._selectedTags.push(path);
-
-    this._events.onTagSelected(path);
+    this.tagSelector.onTagSelected(path);
 }
 
-/*
-    path: [{id, label},{id, label},...]
-*/
-TagSearcher.prototype.deselectTag = function (tagId) {
-    for (var i = 0; i < this._selectedTags.length; i++) {
-        var path = this._selectedTags[i];
-
-        if (path[path.length - 1].id == tagId) {
-            var catId = path[0].id;
-            this._selectedTags.splice(i, 1);
-
-            // clear checkbox
-            var categoryBrowser = this._categoryBrowsers[path[0].id];
-            if (typeof (categoryBrowser.tagSelectionToggled) == 'function') {
-                categoryBrowser.tagSelectionToggled(tagId, false);
-            }
-
-            this._events.onTagDeselected(catId, tagId);
-        }
-    }
+/* path: [{id, label},{id, label},...] */
+TagNavigator.prototype.deselectTag = function (tagId)
+{
+    this.tagSelector.onTagDeselected(tagId);
 }
 
 // This assumes the tagnav is placed inside a form
-TagNavigator.prototype.injectHiddenFields = function () {
-    var tagnav = this;
-    var tagIds = Object.keys(this.selectedEndTags);
-    $.each(tagIds, function (index, result) {
-        $('<input>').attr({
-            'name': tagnav.options.selectedTagSubmissionName.replace('(0)', index),
-            'value': result,
-            'type': 'hidden'
-        }).appendTo(tagnav.container);
-    });
-}
-
-TagNavigator.prototype.endTagSelected = function (tagId, status)
+TagNavigator.prototype._injectHiddenFields = function ()
 {
-    var container = this._tagNavigationContainer.find('[' + this._tagIdAttr + '="' + tagId + '"]');
-
-    depth = parseInt(container.attr(this._depthAttr));
-    name = container.find("label").text();
-
-    if (status)
+    var selectedPaths = this.tagSelector.getSelectedPaths();
+    for (var i = 0; i < selectedPaths.length; i++)
     {
-        // Add to internal list of selected tags
-        this.selectedEndTags[tagId] = true;
-
-        // Create breadcrumb
-        var path = [];
-        var navItems = this._tagNavigationContainer.children('ul').slice(1, depth + 1);
-        var pna = this._parentNameAttr;
-        navItems.each(function (index) {
-            path.push($(this).attr(pna));
-        });
-        path.push(name);
-
-        // Add breadcrumb
-        tagnav = this;
-        $('<li />').attr(this._tagIdAttr, tagId).text(path.join(this.options.pathSeparator)).append($('<a>').attr('href', '#').click(function () {
-            if (tagnav.options.enabled) {
-                tagnav.endTagSelected(tagId, false);
-            }
-            return false;
-        }).text('X')).appendTo(this.selectedBreadcrumbsContainer);
-    }
-    else {
-
-        // Delete from internal list of selected tags
-        delete this.selectedEndTags[tagId];
-
-        // Delete list item in breadcrumbs
-        this.selectedBreadcrumbsContainer.find('[' + this._tagIdAttr + '="' + tagId + '"]').remove();
-
-        //Uncheck box
-        var cb = this._tagNavigationContainer.find('[' + this._tagIdAttr + '="' + tagId + '"] input[type="checkbox"]');
-        cb.attr("checked", false);
+        var tagId = selectedPaths[i][selectedPaths[i].length - 1].id;
+        $('<input>').attr({
+            'name': TagOptions.selectedTagSubmissionName.replace('%s', i),
+            'value': tagId,
+            'type': 'hidden'
+        }).appendTo(this._container);
     }
 }
 
-TagNavigator.prototype.navigateToTag = function (id)
+// INTERFACE METHODS
+
+TagNavigator.prototype.selectTag = function (parentId, tagInfo)
 {
-
-    this.adapter.getChildTags(id, false, function () {
-        tagnav.selectedTagId = id;
-        this.currentPath = [];
-        $.each(response.results, function (index, result) {
-            tagnav.displayNavigationLevel(result, index, response.defLangId != response.reqLangId);
-        })
-    });
-}
-
-TagNavigator.prototype.tagManuallySelected = function (parentId, name, type, depth)
-{
-    var tagnav = this;
-
-    $.ajax({
-        cache: false,
-        data: { 'id': parentId, 'childrenOnly': true },
-        url: tagnav.options.ajax_navigateToTagUrl,
-        type: "GET"
-    }).success(function (response) {
-
-        var data = null;
-        if (response.results.length == 1) {
-            data = response.results[0];
-        }
-
-        tagnav.selectedTagId = parentId;
-        tagnav.displayNavigationLevel(data, depth + 1, response.defLangId != response.reqLangId);
-    });
-    return false;
-}
-
-TagNavigator.prototype.displayNavigationLevel = function (data, depth, isTranslated) 
-{
-    // Remove levels to right
-    this._tagNavigationContainer.children().slice(depth).remove();
-    this.currentPath.push({ id: result.id,label: result.text });
-
-    if (data == null || data.length == 0) {
-        return;
-    }
-
-    //this._tagNavigationContainer.find("ul:eq(" + depth + "),ul:eq(" + depth + ") ~ ul").remove();
-    // Create new unordered list
-    var ul = $('<ul>').attr(this._depthAttr, depth).attr(
-        this._parentIdAttr, data.parent.id).attr(
-        this._parentNameAttr, data.parent.text == null ? data.parent.eng : data.parent.text);
-    var tagnav = this;
-
-    var missingTranslation;
-    var label;
-    $.each(data.children, function (index, child) {
-        missingTranslation = false;
-
-        // Try to retrieve a translated version
-        label = child.text;
-
-        // Fall back on English if translated text isn't available
-        if (label === null) {
-            if (isTranslated) {
-                missingTranslation = true;
-            }
-            label = child.eng;
-        }
-
-        var li = $('<li>').attr(tagnav._depthAttr, depth).attr(tagnav._tagIdAttr, child.id).addClass('tagnav_tag');;
-        if (missingTranslation) {
-            li.addClass("noTrans");
-        }
-
-        if (child.id == tagnav.selectedTagId) {
-            li.addClass(tagnav._selectedTagClassName);
-        }
-
-        if (tagnav.options.enabled && tagnav.options.editUrl != null) {
-            li.append('<span class="editSpan">(<a class="editTag" href="' + tagnav.options.editUrl.replace('(0)', child.id) + '">Edit</a>)</span>');
-        }
-
-        if (child.type == TagType.NavigationalTag || child.type == TagType.Category)
+    var selectionPath = [];
+    for (var i = 0; i < this.fullPath.length; i++) {
+        if (this.fullPath[i].id == parentId)
         {
-            li.addClass(child.type == TagType.Category ? 'tagnav_cat' : 'tagnav_nav').addClass('tagnav_tag');
-            li.append(
-                tagnav.options.enabled 
-                ? $('<a>').attr('href', '#').click(function () {
-                    tagnav.tagManuallySelected(child.id, label, child.type, depth);
-                    return false;
-                }).text(label)
-                : $('<span>').text(label));
+            break;
         }
-        else if (child.type == TagType.SelectableTag) {
-            var isChecked = tagnav.selectedEndTags[child.id] === true;
-            li.addClass('tagnav_sel');
-            li.append(
-                tagnav.options.enabled 
-                ? $('<label>').attr({ 'for': 'tagnav_' + child.id }).text(label).after(
-                    $('<input>').click(function () {
-                        tagnav.endTagSelected(child.id, $(this)[0].checked);
-                    }
-                    ).attr({ 'name': 'tagnav_' + child.id, 'type': 'checkbox', 'checked': isChecked })
-                )
-                : $('<span>').text(label))
-        }
-        li.appendTo(ul);
-    });
-
-    // Ensure only parent is selected
-    var parentElement = this._tagNavigationContainer.children().last().find('[' + tagnav._tagIdAttr + '=' + data.parent.id + ']');
-    parentElement.addClass(this._selectedTagClassName);
-    parentElement.siblings().removeClass(this._selectedTagClassName);
-
-
-
-    ul.appendTo(tagnav._tagNavigationContainer).fadeIn('fast');
+        selectionPath.push(this.fullPath[i]);
+    }
+    selectionPath.push(tagInfo);
+    this.tagSelector.onTagSelected(selectionPath);
 }
 
-//TagNavigator.prototype.wireAutocomplete = function (textbox)
-//{
-//    var tagnav = this;
-//    $(function () {
-//        textbox.autocomplete({
-//            source: function (request, response) {
-//                $.ajax(tagnav.options.ajax_searchUrl, 
-//                {
-//                    cache: tagnav.options.editUrl == null,
-//                    data: { term: request.term },
-//                    success: function (data)
-//                    {
-//                        $.each(data, function(idx, item){
-//                            data[idx].label = item.label.join(tagnav.options.pathSeparator);
-//                        });
-//                        data.sort(function (a, b) { return a.label.localeCompare(b.label); });
-//                        response(data)
-//                    }
-//                })
-//            },
-//            minLength: 3,
-//            select: function (event, ui) {
-//                event.preventDefault();
-//                textbox.val(ui.item.label);
-//                tagnav.navigateToTag(ui.item.value);
-//            },
+TagNavigator.prototype.deselectTag = function (tagId) {
+    this.tagSelector.onTagDeselected(tagId);
+}
 
-//            //html: true, // optional (jquery.ui.autocomplete.html.js required)
-//            focus: function (event, ui) {
-//                event.preventDefault();
-//            },
-//            open: function (event, ui) {
-//                $(".ui-autocomplete").css("z-index", 1000);
-//            }
-//        });
-//    });
+TagNavigator.prototype.isTagSelected = function (tagId)
+{
+    return this.tagSelector.isTagSelected(tagId);
+}
 
-    //textbox.autocomplete({
-    //    source: function (request, response) {
-    //        // TODO: replace url
-    //        $.ajax({
-    //            dataType: "json",
-    //            type: 'Get',
-    //            url: '/Tags/Search',
+TagNavigator.prototype.navigateToTag = function(id)
+{
 
-    //            success: function (data) {
-    //                textbox.removeClass('ui-autocomplete-loading');  // hide loading image
+    // Remove previous child browsers as selection listeners and DOM elements
+    var childBrowserLen = this._childBrowsers.length;
+    for (var i = 0; i < childBrowserLen; i++) {
+        this.tagSelector.removeListener(this._childBrowsers[i], 'all');
+    }
+    this._childBrowsers = [];
 
-    //                response($.map(data, function (item) {
-    //                    // your operation on data
-    //                }));
-    //            },
-    //            error: function (data) {
-    //                textbox.removeClass('ui-autocomplete-loading');
-    //            }
-    //        });
-    //    },
-    //    minLength: 3,
-    //    open: function () {
+    this.tagAdapter.getDescendantTags(id, false, function (response) {
+        this._tagNavigationContainer.children().remove();
+        this.fullPath = [];
 
-    //    },
-    //    close: function () {
+        var len = response.results.length;
+        for (var i = 0; i < len; i++)
+        {
+            var result = response.results[i];
+            this.fullPath.push(result.parent);
+            var div = $('<div>').addClass(this._tagDepthContainerClassName).appendTo(this._tagNavigationContainer);
+            var selNavTag = (i < len - 1) ? response.results[i + 1].parent.id : null;
+            var childNav = new TagChildrenNavigator(div, this, result, null, { isSelfNavigating: false, cssPrefix: 'search', selNavTagId: selNavTag });
+        }
+    }.bind(this));
+}
 
-    //    },
-    //    focus: function (event, ui) {
+// END INTERFACE METHODS
 
-    //    },
-    //    select: function (event, ui) {
 
-    //    }
-    //});
-//}
 
 
 
