@@ -399,6 +399,12 @@
     <Content Include="Views\Shared\_Question_Section.cshtml" />
     <Content Include="Views\Shared\Slider.cshtml" />
     <Content Include="Views\Home\TagSearchTest.cshtml" />
+    <Content Include="Views\Home\Story_Search.cshtml" />
+    <Content Include="Views\Shared\_StorySearch_Section.cshtml" />
+    <Content Include="Views\Home\Story_Read.cshtml" />
+    <Content Include="Views\Shared\_SearchResult_Section.cshtml" />
+    <Content Include="Views\Shared\_StoryReadMain_Section.cshtml" />
+    <Content Include="Views\Shared\_Range_Slider.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

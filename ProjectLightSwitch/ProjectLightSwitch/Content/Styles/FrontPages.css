@@ -2,7 +2,7 @@
     /*font-family:Calibri,Verdana,sans-serif;
     font-size: 12pt;
     background-color: #808080;*/
-    background-color: #808080;
+    background-color: #ffffff;
     color: #333;
     font-size: .85em;
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
@@ -21,7 +21,7 @@ padding: 20px 20px 20px 20px;
 
 #Container { 
     width: 978px; 
-    background-color: #808080;
+    background-color: #ffffff;
     margin: 0 auto; 
     text-align: center; 
 }
@@ -58,7 +58,6 @@ figure figcaption{
     height: 240px;
     text-align: left; 
     margin: 0 auto; 
-    background: #808080;
 }
 
 .story_portal_text{
