@@ -141,6 +141,9 @@
   <data name="Part2Header" xml:space="preserve">
     <value>Part Two: Share Your Story</value>
   </data>
+  <data name="Part3Header" xml:space="preserve">
+    <value>Part Three: Questions</value>
+  </data>
   <data name="ResponsePrompt" xml:space="preserve">
     <value>Story</value>
   </data>

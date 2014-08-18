@@ -133,6 +133,15 @@ namespace ProjectLightSwitch.Views.StoryPortal {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Part Three: Questions.
+        /// </summary>
+        public static string Part3Header {
+            get {
+                return ResourceManager.GetString("Part3Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Story.
         /// </summary>
         public static string ResponsePrompt {

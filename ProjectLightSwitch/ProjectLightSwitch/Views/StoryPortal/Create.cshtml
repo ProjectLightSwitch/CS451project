@@ -21,17 +21,30 @@
                 var breadcrumbs = new SelectedTagBreadCrumbs($('#selectedTags'), tagnav, { cssPrefix: '', separator: ' > ', closable: true });
             })();
         });
+
+        function NavigateToPart(partIndex)
+        {
+            var container = $('storyWizard');
+            container.children().hide();
+            container.find('div').eq(partIndex).show();
+        }
     </script>
 }
 
-<div id="storyPart">
+@using(Html.BeginForm("Create", "StoryPortal", FormMethod.Post))
+{
+<div id="storyWizard">
     <div>
         @{ Html.RenderPartial("~/Views/StoryPortal/_PersonalInfoEntry.cshtml", Model); }
+        <div><a href="#" onclick="NavigateToPart(1); return false;">Next</a></div>
     </div>
     <div>
         @{ Html.RenderPartial("~/Views/StoryPortal/_StoryEntry.cshtml", Model); }
+        <div><a href="#" onclick="NavigateToPart(1); return false;">Next</a></div>
     </div>
     <div>
         @{ Html.RenderPartial("~/Views/StoryPortal/_AnswerEntry.cshtml", Model); }
+        <div><input type="submit" value="Submit Story" /></div>
     </div>
 </div>
+}
