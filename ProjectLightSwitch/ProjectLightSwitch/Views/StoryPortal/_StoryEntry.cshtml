@@ -1,0 +1,15 @@
+﻿@model ProjectLightSwitch.Models.StoryResponseViewModel
+
+<section>
+    <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part2Header</h3>
+
+    @Html.TextBoxFor(t=>t.StoryTitle)
+    @Html.ValidationMessageFor(t=>t.StoryTitle)
+    @Html.TextAreaFor(t => t.StoryResponse)
+    @Html.ValidationMessageFor(t => t.StoryResponse)
+
+    <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.TagPrompt</h3>
+    <div id="tagnav" />
+    <b>@ProjectLightSwitch.Views.StoryPortal.StoryResources.SelectedTagsLabel</b>
+    <span id="selectedTags" />
+</section>

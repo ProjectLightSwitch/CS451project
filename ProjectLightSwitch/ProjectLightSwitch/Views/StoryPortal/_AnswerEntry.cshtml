@@ -1,0 +1,27 @@
+﻿@model ProjectLightSwitch.Models.StoryResponseViewModel
+
+<section>
+    <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part3Header</h3>
+
+
+    @for(int i = 0; i < Model.Questions.Count; i++)
+    { 
+        @Model.Questions[i].Prompt
+        <br />
+
+                                    
+        
+    
+    }
+
+
+
+    @Html.TextBoxFor(t => t.StoryTitle)
+    @Html.ValidationMessageFor(t => t.StoryTitle)
+    @Html.TextAreaFor(t => t.StoryResponse)
+    @Html.ValidationMessageFor(t => t.StoryResponse)
+
+    <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.TagPrompt</h3>
+    <div id="tagnav" />
+    <b>Current Tags:</b><div id="selectedTags" />
+</section>

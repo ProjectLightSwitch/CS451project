@@ -201,6 +201,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\StoryPortalController.cs" />
+    <Compile Include="Controllers\StoryPortalController_ALT.cs" />
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -231,6 +232,11 @@
     <Compile Include="Models\webpages_OAuthMembership.cs" />
     <Compile Include="Models\webpages_Roles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\StoryPortal\StoryResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StoryResources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Styles\jcarousel.ajax.css" />
@@ -388,12 +394,11 @@
     <Content Include="Views\Home\Eric.cshtml" />
     <Content Include="Views\Shared\_DynamicJavascript.cshtml" />
     <Content Include="Views\StoryPortal\Create.cshtml" />
-    <Content Include="Views\StoryPortal\P2.cshtml" />
     <Content Include="Views\Home\PageHome.cshtml" />
     <Content Include="Views\Home\PageP1.cshtml" />
     <Content Include="Views\Home\PageP2.cshtml" />
     <Content Include="Views\Home\PageP3.cshtml" />
-    <Content Include="Views\Shared\_Layout1.cshtml" />
+    <Content Include="Views\Shared\StoryLayout.cshtml" />
     <Content Include="Views\Shared\_StoryPortal_Section.cshtml" />
     <Content Include="Views\Shared\_StoryShare_Section.cshtml" />
     <Content Include="Views\Shared\_Question_Section.cshtml" />
@@ -405,6 +410,10 @@
     <Content Include="Views\Shared\_SearchResult_Section.cshtml" />
     <Content Include="Views\Shared\_StoryReadMain_Section.cshtml" />
     <Content Include="Views\Shared\_Range_Slider.cshtml" />
+    <Content Include="Views\StoryPortal\_StoryCreationHeader.cshtml" />
+    <Content Include="Views\StoryPortal\_PersonalInfoEntry.cshtml" />
+    <Content Include="Views\StoryPortal\_StoryEntry.cshtml" />
+    <Content Include="Views\StoryPortal\_AnswerEntry.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -416,6 +425,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\StoryPortal\StoryResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>StoryResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

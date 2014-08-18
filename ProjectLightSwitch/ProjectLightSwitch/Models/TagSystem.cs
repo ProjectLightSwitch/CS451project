@@ -228,6 +228,27 @@ namespace ProjectLightSwitch.Models
 
         #endregion
 
+
+        #region View Model Creation
+
+        public static StoryResponseViewModel CreateStoryResponseModel(int storyTypeId, int languageId = Language.DefaultLanguageId)
+        {
+            var model = new StoryResponseViewModel();
+            using (var context = new StoryModel())
+            {
+                var localizedStoryType = context.LocalizedStoryTypes.Where(s => s.LanguageId == languageId && s.StoryTypeId == storyTypeId).FirstOrDefault();
+                if (localizedStoryType == null)
+                {
+                    return null;
+                }
+                model.Countries = context.Countries.Select(c => new KeyValuePair<int, string>(c.CountryId, c.Country1)).ToList();
+                model.StoryTypeDescription = localizedStoryType.Description;
+                model.Questions = localizedStoryType.Questions.ToList();
+            }
+            return model;
+        }
+        #endregion
+
         public static IEnumerable<Language> GetLanguages()
         {
             using (var context = new StoryModel())
