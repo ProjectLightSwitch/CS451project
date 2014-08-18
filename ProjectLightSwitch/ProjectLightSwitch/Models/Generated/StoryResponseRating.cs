@@ -16,7 +16,7 @@ namespace ProjectLightSwitch.Models
     {
         [Key]
         [Column(Order = 0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int RatingId { get; set; }
 
         [Key]

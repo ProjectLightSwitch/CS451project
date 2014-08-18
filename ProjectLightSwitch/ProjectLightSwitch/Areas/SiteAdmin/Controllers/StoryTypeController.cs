@@ -22,10 +22,15 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             return View(model);
         }
 
-
         public ActionResult Create()
         {
-            return View();
+            var model = new StoryTypeCreationModel();
+            using (var context = new StoryModel())
+            {
+                model.LanguageId = Language.DefaultLanguageId;
+            }
+
+            return View(model);
         }
 
         //public ActionResult Create([Bind(Include = "Description,QuestionText")] StoryType storyType)

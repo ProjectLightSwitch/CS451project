@@ -9,19 +9,25 @@ using System.Web.Mvc;
 
 namespace ProjectLightSwitch.Models
 {
-
     public class StoryTypeCreationModel
     {
+        [Display(Name="Story Type Tags: ")]
         public List<int> SelectedTags { get; set; }
+
+        [Required]
         public int LanguageId {get; set; }
 
+        [Display(Name = "Story Type Description: ")]
+        [Required]
         public string Description { get; set; }
 
+        [Display(Name = "Enter the Story Type Questions: ")]
         public List<string> Questions { get; set; }
-    
-    
+        public StoryTypeCreationModel()
+        {
+            Questions = new List<string>();
+        }
     }
-
 
     public class StoryResponseViewModel
     {
