@@ -9,6 +9,12 @@ using System.Web.Mvc;
 
 namespace ProjectLightSwitch.Models
 {
+    public class StoryPortalViewModel
+    {
+        public IEnumerable<int> TopRatedStoryIds { get; set; }
+
+
+    }
     public class StoryTypeCreationModel
     {
         [Display(Name="Story Type Tags: ")]

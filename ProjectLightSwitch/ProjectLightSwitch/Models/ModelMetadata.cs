@@ -19,6 +19,6 @@ namespace ProjectLightSwitch.Models
 
     public partial class StoryType
     {
-        public const int DefaultStoryType = 38;
+        public const int DefaultStoryTypeId = 38;
     }
 }
