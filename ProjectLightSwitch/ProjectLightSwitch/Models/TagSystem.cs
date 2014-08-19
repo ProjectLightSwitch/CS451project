@@ -128,8 +128,8 @@ namespace ProjectLightSwitch.Models
 
         //public class TagNavigatorDepthLevel
         //{
-        //    Tag Parent { get; set; }
-        //    IEnumerable<Tag> Children { get; set; }
+        //    Ancestor Parent { get; set; }
+        //    IEnumerable<Ancestor> Children { get; set; }
         //}
 
 
@@ -241,7 +241,11 @@ namespace ProjectLightSwitch.Models
                 {
                     return null;
                 }
-                model.Countries = context.Countries.Select(c => new KeyValuePair<int, string>(c.CountryId, c.Country1)).ToList();
+                
+                model.Countries = context.Countries.Select(c => 
+                    new CountryListData { 
+                        CountryId = c.CountryId, 
+                        CountryName = c.Country1 }).ToList();
                 model.StoryTypeDescription = localizedStoryType.Description;
                 model.Questions = localizedStoryType.Questions.ToList();
             }
@@ -475,22 +479,22 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        //private class TagNameComparer : IEqualityComparer<Tag>
+        //private class TagNameComparer : IEqualityComparer<Ancestor>
         //{
-        //    bool IEqualityComparer<Tag>.Equals(Tag x, Tag y)
+        //    bool IEqualityComparer<Ancestor>.Equals(Ancestor x, Ancestor y)
         //    {
         //        return  x != null 
         //                && y != null 
         //                && x.EnglishText.Equals(y.EnglishText, StringComparison.CurrentCultureIgnoreCase);
         //    }
 
-        //    int IEqualityComparer<Tag>.GetHashCode(Tag obj)
+        //    int IEqualityComparer<Ancestor>.GetHashCode(Ancestor obj)
         //    {
         //        return obj.EnglishText.GetHashCode();
         //    }
         //}
 
-        //public static bool AddTags(IEnumerable<Tag> children, Tag parent)
+        //public static bool AddTags(IEnumerable<Ancestor> children, Ancestor parent)
         //{
         //    using (var context = new StoryModel())
         //    {
@@ -593,7 +597,7 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-//        public static void AddTagsSql(IEnumerable<Tuple<Tag, int>> tags)
+//        public static void AddTagsSql(IEnumerable<Tuple<Ancestor, int>> tags)
 //        {
 //            using (var context = new StoryModel())
 //            {
@@ -713,7 +717,7 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        //public static List<Tag> GetTagsByType(
+        //public static List<Ancestor> GetTagsByType(
         //    bool showCategories = false,
         //    bool showTopLevelTags = false,
         //    bool showTags = false,

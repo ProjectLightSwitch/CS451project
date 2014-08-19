@@ -16,9 +16,9 @@ namespace ProjectLightSwitch.Controllers
         {
             return View();
         }
-        public ActionResult Create(int story)
+        public ActionResult Create(int id = StoryType.DefaultStoryType)
         {
-            var model = TagSystem.CreateStoryResponseModel(story);
+            var model = TagSystem.CreateStoryResponseModel(id);
             return View(model);
         }
     }

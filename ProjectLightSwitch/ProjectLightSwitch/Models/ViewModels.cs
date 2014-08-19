@@ -29,14 +29,21 @@ namespace ProjectLightSwitch.Models
         }
     }
 
+    public class CountryListData
+    {
+        public int CountryId { get; set; }
+        [Display(Name = "Country", ResourceType = typeof(Views.StoryPortal.StoryResources))]
+        public string CountryName { get; set; }
+    }
+
     public class StoryResponseViewModel
     {
         // OUTPUT
-        public List<KeyValuePair<int, string>> Countries { get; set; }
+        public List<CountryListData> Countries { get; set; }
 
         public IEnumerable<SelectListItem> CountryListItems
         {
-            get { return new SelectList(Countries, "Key", "Value"); }
+            get { return new SelectList(Countries, "CountryId", "CountryName"); }
         }
 
         public string StoryTypeDescription { get; set; }
@@ -73,7 +80,7 @@ namespace ProjectLightSwitch.Models
         public List<string> Answers { get; set; }
     }
 
-    #region Tag Creation
+    #region Ancestor Creation
     
     public class TagInputModel
     {
@@ -104,7 +111,7 @@ namespace ProjectLightSwitch.Models
     }
 
 
-    #region Tag Editing
+    #region Ancestor Editing
 
     // To display tags with all translations for editing
     public class TagEditOutputModel

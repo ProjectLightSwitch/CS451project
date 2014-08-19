@@ -51,7 +51,7 @@ namespace ProjectLightSwitch.Controllers
         //    {
         //        var tagType = (TagType)type;
 
-        //        TagSystem.AddTag(new Tag() { TagType = type }, tagId);
+        //        TagSystem.AddTag(new Ancestor() { TagType = type }, tagId);
         //        TagSystem.AddTag(type, tagId, 
 
         //        var item = context.Tags.Where(t => t.TagId == type && t.TagId != TagTree.InvisibleRootId).FirstOrDefault();

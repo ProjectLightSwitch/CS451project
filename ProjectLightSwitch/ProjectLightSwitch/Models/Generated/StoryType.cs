@@ -12,18 +12,17 @@ namespace ProjectLightSwitch.Models
         public StoryType()
         {
             LocalizedStoryTypes = new HashSet<LocalizedStoryType>();
-            StoryTypeTags = new HashSet<StoryTypeTag>();
+            Tags = new HashSet<Tag>();
         }
 
         public int StoryTypeId { get; set; }
 
-        
-
+        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
         [Column(TypeName = "datetime2")]
         public DateTime DateCreated { get; set; }
 
         public virtual ICollection<LocalizedStoryType> LocalizedStoryTypes { get; set; }
 
-        public virtual ICollection<StoryTypeTag> StoryTypeTags { get; set; }
+        public virtual ICollection<Tag> Tags { get; set; }
     }
 }

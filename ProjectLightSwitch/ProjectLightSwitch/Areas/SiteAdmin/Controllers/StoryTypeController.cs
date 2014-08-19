@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ProjectLightSwitch.Models;
+using System.Transactions;
 
 
 namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
@@ -40,31 +41,39 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             {
                 using (var context = new StoryModel())
                 {
-                    var storyType = new StoryType();
-                    context.StoryTypes.Add(storyType);
-                    context.SaveChanges();
-                    
-                    foreach (var tag in model.SelectedTags)
+                    using (var transaction = context.Database.BeginTransaction())
                     {
-                        storyType.StoryTypeTags.Add(new StoryTypeTag { StoryTypeId = storyType.StoryTypeId, TagId = tag });
+                        try
+                        {
+                            var storyType = new StoryType();
+                            context.StoryTypes.Add(storyType);
+                            storyType.Tags = context.Tags.Where(t2=> 
+                                model.SelectedTags.Contains(t2.TagId)).ToList();
+                            //context.SaveChanges();
+
+                            var localizedStoryType = new LocalizedStoryType
+                            {
+                                Description = model.Description,
+                                // TODO: Add real localization
+                                LanguageId = Language.DefaultLanguageId, // model.LanguageId;
+                                StoryType = storyType, 
+                                //StoryTypeId = storyType.StoryTypeId,
+                            };
+                            context.LocalizedStoryTypes.Add(localizedStoryType);
+
+                            foreach (var question in model.Questions)
+                            {
+                                localizedStoryType.Questions.Add(new Question { LocalizedStoryTypeId = localizedStoryType.LocalizedStoryTypeId, Prompt = question });
+                            }
+                            context.SaveChanges();
+                            transaction.Commit();
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                        }
+
                     }
-
-                    var localizedStoryType = new LocalizedStoryType
-                    {
-                        Description = model.Description,
-                        // TODO: Add real localization
-                        LanguageId = Language.DefaultLanguageId, // model.LanguageId;
-                        StoryTypeId = storyType.StoryTypeId,
-                    };
-
-                    context.LocalizedStoryTypes.Add(localizedStoryType);
-                    context.SaveChanges();
-
-                    foreach (var question in model.Questions)
-                    {
-                        localizedStoryType.Questions.Add(new Question { LocalizedStoryTypeId = localizedStoryType.LocalizedStoryTypeId, Prompt = question });
-                    }
-                    context.SaveChanges();
                 }
                 HelperFunctions.AddGlobalMessage(TempData, "Story Type Created");
                 return RedirectToAction("Index");
@@ -105,7 +114,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         //{
         //    // Hard coded for now
         //    TagSystem.AddTag(
-        //        new Tag { EnglishText = Guid.NewGuid().ToString(), TagType = (byte)ProjectLightSwitch.Models.Enums.TagType.SelectableTag }, id);
+        //        new Ancestor { EnglishText = Guid.NewGuid().ToString(), TagType = (byte)ProjectLightSwitch.Models.Enums.TagType.SelectableTag }, id);
 
         //    ViewBag.Message = "Ancestors Added";
         //    return RedirectToAction("View", new { id = category });

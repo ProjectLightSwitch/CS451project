@@ -23,6 +23,8 @@ namespace ProjectLightSwitch.Models
         [StringLength(1024)]
         public string Text { get; set; }
 
+        public virtual Language Language { get; set; }
+
         public virtual Tag Tag { get; set; }
     }
 }

@@ -17,15 +17,14 @@ namespace ProjectLightSwitch.Models
         public virtual DbSet<Language> Languages { get; set; }
         public virtual DbSet<LocalizedStoryType> LocalizedStoryTypes { get; set; }
         public virtual DbSet<Question> Questions { get; set; }
+        public virtual DbSet<StoryResponseRating> StoryResponseRatings { get; set; }
         public virtual DbSet<StoryResponse> StoryResponses { get; set; }
         public virtual DbSet<StoryType> StoryTypes { get; set; }
-        public virtual DbSet<StoryTypeTag> StoryTypeTags { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
         public virtual DbSet<TagTree> TagTree { get; set; }
         public virtual DbSet<TranslatedString> TranslatedStrings { get; set; }
         public virtual DbSet<TranslatedTag> TranslatedTags { get; set; }
-        public virtual DbSet<StoryResponseRating> StoryResponseRatings { get; set; }
-        
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Language>()
@@ -52,18 +51,14 @@ namespace ProjectLightSwitch.Models
                 .IsFixedLength();
 
             modelBuilder.Entity<StoryResponse>()
-                .Property(e => e.Story)
-                .IsUnicode(false);
-
-            modelBuilder.Entity<StoryResponse>()
                 .HasMany(e => e.Tags)
                 .WithMany(e => e.StoryResponses)
                 .Map(m => m.ToTable("StoryResponseTags", "pls").MapLeftKey("StoryResponseId").MapRightKey("TagId"));
 
             modelBuilder.Entity<StoryType>()
-                .HasMany(e => e.StoryTypeTags)
-                .WithRequired(e => e.StoryType)
-                .HasForeignKey(e => e.TagId);
+                .HasMany(e => e.Tags)
+                .WithMany(e => e.StoryTypes)
+                .Map(m => m.ToTable("StoryTypeTags", "pls").MapLeftKey("StoryTypeId").MapRightKey("TagId"));
 
             modelBuilder.Entity<Tag>()
                 .HasMany(e => e.Ancestors)

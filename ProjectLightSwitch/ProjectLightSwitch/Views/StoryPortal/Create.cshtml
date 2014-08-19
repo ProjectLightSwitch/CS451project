@@ -19,28 +19,34 @@
 
                 var tagnav = new TagNavigator($('#tagnav'));
                 var breadcrumbs = new SelectedTagBreadCrumbs($('#selectedTags'), tagnav, { cssPrefix: '', separator: ' > ', closable: true });
+
+                NavigateToStep(0);
             })();
         });
 
-        function NavigateToPart(partIndex)
+        function NavigateToStep(idx)
         {
-            var container = $('storyWizard');
+            var container = $('#storyWizard');
             container.children().hide();
-            container.find('div').eq(partIndex).show();
+            if (idx >= 0) {
+                container.children().eq(idx).show();
+            }
         }
     </script>
 }
 
 @using(Html.BeginForm("Create", "StoryPortal", FormMethod.Post))
 {
+    
+
 <div id="storyWizard">
     <div>
         @{ Html.RenderPartial("~/Views/StoryPortal/_PersonalInfoEntry.cshtml", Model); }
-        <div><a href="#" onclick="NavigateToPart(1); return false;">Next</a></div>
+        <div><a href="#" onclick="NavigateToStep(1); return false;">Next</a></div>
     </div>
     <div>
         @{ Html.RenderPartial("~/Views/StoryPortal/_StoryEntry.cshtml", Model); }
-        <div><a href="#" onclick="NavigateToPart(2); return false;">Next</a></div>
+        <div><a href="#" onclick="NavigateToStep(2); return false;">Next</a></div>
     </div>
     <div>
         @{ Html.RenderPartial("~/Views/StoryPortal/_AnswerEntry.cshtml", Model); }
