@@ -14,7 +14,16 @@ namespace ProjectLightSwitch.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            using (var context = new StoryModel())
+            {
+                StoryPortalViewModel model = new StoryPortalViewModel();
+
+                model.TopRatedStoryIds = context.StoryResponses.OrderByDescending(t => t.Ratings.Count).Take(3)
+                                                               .Select(id => id.StoryResponseId);
+
+
+                return View(model);
+            }
         }
         public ActionResult Create(int story)
         {
