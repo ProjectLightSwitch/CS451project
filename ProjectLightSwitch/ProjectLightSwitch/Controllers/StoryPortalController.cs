@@ -12,7 +12,7 @@ namespace ProjectLightSwitch.Controllers
         //
         // GET: /StoryPortal/
 
-        public ActionResult Index()
+        public ActionResult Home()
         {
             using (var context = new StoryModel())
             {
