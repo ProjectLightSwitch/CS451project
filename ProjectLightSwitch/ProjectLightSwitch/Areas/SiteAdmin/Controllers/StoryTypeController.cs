@@ -33,6 +33,46 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public ActionResult Create(StoryTypeCreationModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var context = new StoryModel())
+                {
+                    var storyType = new StoryType();
+                    context.StoryTypes.Add(storyType);
+                    context.SaveChanges();
+                    
+                    foreach (var tag in model.SelectedTags)
+                    {
+                        storyType.StoryTypeTags.Add(new StoryTypeTag { StoryTypeId = storyType.StoryTypeId, TagId = tag });
+                    }
+
+                    var localizedStoryType = new LocalizedStoryType
+                    {
+                        Description = model.Description,
+                        // TODO: Add real localization
+                        LanguageId = Language.DefaultLanguageId, // model.LanguageId;
+                        StoryTypeId = storyType.StoryTypeId,
+                    };
+
+                    context.LocalizedStoryTypes.Add(localizedStoryType);
+                    context.SaveChanges();
+
+                    foreach (var question in model.Questions)
+                    {
+                        localizedStoryType.Questions.Add(new Question { LocalizedStoryTypeId = localizedStoryType.LocalizedStoryTypeId, Prompt = question });
+                    }
+                    context.SaveChanges();
+                }
+                HelperFunctions.AddGlobalMessage(TempData, "Story Type Created");
+                return RedirectToAction("Index");
+            }
+            HelperFunctions.AddGlobalMessage(TempData, "Error");
+            return RedirectToAction("Index");
+        }
+
         //public ActionResult Create([Bind(Include = "Description,QuestionText")] StoryType storyType)
         //{
         //    if (this.ModelState.IsValid)

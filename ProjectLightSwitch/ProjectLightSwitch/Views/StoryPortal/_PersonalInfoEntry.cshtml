@@ -1,0 +1,21 @@
+﻿@model ProjectLightSwitch.Models.StoryResponseViewModel
+<section>
+
+    <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part1Header</h3>
+
+    @Html.LabelFor(t => t.Age)
+    <input id="age" name="age">
+    @Html.ValidationMessageFor(t => t.Age)
+
+    @Html.LabelFor(t => t.Gender)
+    <div id="gender">
+        <input type="radio" id="radioM" name="gender" value="Male"><label for="radioM">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Male</label>
+        <input type="radio" id="radioF" name="gender" value="Female"><label for="radioF">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Female</label>
+        <input type="radio" id="radioI" name="gender" value="Intersex"><label for="radioI">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Intersex</label>
+    </div>
+    @Html.ValidationMessageFor(t => t.Gender)
+
+    @Html.LabelFor(t => t.Country)
+    @Html.DropDownListFor(t => t.Country, Model.CountryListItems)
+    @Html.ValidationMessageFor(t => t.Country)
+</section>

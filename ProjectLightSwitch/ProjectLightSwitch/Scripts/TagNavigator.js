@@ -83,14 +83,14 @@ TagNavigator.prototype.findTagId = function ()
 }
 
 /* path: [{id, type, text},{id, type, text},...] */
-TagNavigator.prototype.selectTag = function (path)
-{
-    if (!(path instanceof Array) || path.length == 0) {
-        return;
-    }
+//TagNavigator.prototype.selectTag = function (path)
+//{
+//    if (!(path instanceof Array) || path.length == 0) {
+//        return;
+//    }
 
-    this.tagSelector.onTagSelected(path);
-}
+//    this.tagSelector.onTagSelected(path);
+//}
 
 /* path: [{id, label},{id, label},...] */
 TagNavigator.prototype.deselectTag = function (tagId)
@@ -119,11 +119,12 @@ TagNavigator.prototype.selectTag = function (parentId, tagInfo)
 {
     var selectionPath = [];
     for (var i = 0; i < this.fullPath.length; i++) {
-        if (this.fullPath[i].id == parentId)
-        {
+        selectionPath.push(this.fullPath[i]);
+
+        // BUG
+        if (this.fullPath[i].id == parentId) {
             break;
         }
-        selectionPath.push(this.fullPath[i]);
     }
     selectionPath.push(tagInfo);
     this.tagSelector.onTagSelected(selectionPath);
