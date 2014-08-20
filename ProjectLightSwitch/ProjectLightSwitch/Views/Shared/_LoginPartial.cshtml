@@ -5,6 +5,11 @@
             @Html.AntiForgeryToken()
             <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
         }
+        @if (User.IsInRole("Administrator"))
+        { 
+            <span> | </span>@Html.ActionLink("Administration", "Index", "SiteAdmin");
+        }
+
     </text>
 } else {
     <ul>

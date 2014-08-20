@@ -231,6 +231,60 @@ namespace ProjectLightSwitch.Models
 
         #region View Model Creation
 
+        public static void GetStorySearchResults(StorySearchInputModel searchModel)
+        {
+            using (var context = new StoryModel())
+            {
+                var minimumRecentDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(14));
+                //searchModel.
+                context.StoryResponses.Include("Tags").Where(r =>
+                    r.LocalizedStoryType.Language.IsActive
+                    && (searchModel.TranslatedStoryTypeId == 0 || r.LocalizedStoryTypeId == searchModel.TranslatedStoryTypeId)
+                    && (searchModel.Gender.Length == 0 || r.Gender == searchModel.Gender)
+                    && ((searchModel.MinAge == 0 || searchModel.MinAge <= r.Age) && (searchModel.MaxAge == 0 || searchModel.MaxAge >= r.Age))
+                    && (
+                        searchModel.SelectedTags.Count == 0
+                        || !searchModel.SelectedTags
+                                       .Any(t => r.LocalizedStoryType.StoryType.Tags
+                                                  .Select(stt => stt.TagId)
+                                                  .Union(searchModel.SelectedTags)
+                                                  .Contains(t)
+                                        )
+                    )
+                ).Select(sr => new StorySearchResultModel { 
+                    StoryResponse = sr, 
+                    OverallRating = context.StoryResponseRatings.Where(r=>r.StoryResponseId == sr.StoryResponseId).Sum(r=>r.Rating),
+                    RecentRating = context.StoryResponseRatings.Where(r => r.StoryResponseId == sr.StoryResponseId && r.DateLeft >= minimumRecentDate).Sum(r=>r.Rating),
+                    TranslatedStoryTypeId = sr.LocalizedStoryTypeId,
+                });
+            }
+        }
+        
+
+        public static List<StoryTypeResultsModel> GetAvailableStoryTypes(int languageId = Language.DefaultLanguageId)
+        {
+            using (var context = new StoryModel())
+            {
+                // TODO: Add paging?
+                return context.LocalizedStoryTypes
+                       .OrderByDescending(s => s.StoryType.DateCreated)
+                       .Where(s=>s.Language.IsActive)
+                       .Select(s => new StoryTypeResultsModel { 
+                           StoryTypeId = s.StoryTypeId,
+                           TranslatedStoryTypeId = s.LocalizedStoryTypeId,
+                           Description = s.Description, 
+                           LanguageId = s.LanguageId, 
+                           Tags = s.StoryType.Tags.Select(t=> 
+                               new JSONTagModel { 
+                                   id = t.TagId, 
+                                   type = t.TagType, 
+                                   text = t.TranslatedTags
+                                           .Where(tt=>tt.LanguageId == languageId)
+                                           .Select(tt=>tt.Text).FirstOrDefault() }).ToList()
+                       }).ToList();
+            }
+        }
+
         public static StoryResponseViewModel CreateStoryResponseModel(int storyTypeId, int languageId = Language.DefaultLanguageId)
         {
             var model = new StoryResponseViewModel();

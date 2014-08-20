@@ -84,10 +84,6 @@ div.tagnav .tags > .depth_container:first-child li {
     border-right: 2px solid black;
 }
 
-div.tagnav .tags > .depth_container:first-child::after {
-    clear:left;
-}
-
 /* Common Tags*/
 
 
@@ -122,13 +118,10 @@ div.tagnav .decorator {
 /********/
 
 ul.tabBreadcrumbs {
+    float:left;
     padding: 0;
     margin: 10px;
     overflow: auto;    
-}
-
-ul.tabBreadcrumbs::after {
-    clear:both;
 }
 
 ul.tabBreadcrumbs li {
@@ -139,7 +132,9 @@ ul.tabBreadcrumbs li {
     color: white;
     font-weight: bold;
     margin: 5px;
-    padding:10px;
+    padding:7px 10px;
+    border-radius: 10px;
+    border: 1px solid black;
 }
 
 ul.tabBreadcrumbs a, ul.tabBreadcrumbs a:visited, ul.tabBreadcrumbs a:hover  {

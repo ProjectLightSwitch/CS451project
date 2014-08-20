@@ -240,6 +240,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Styles\jcarousel.ajax.css" />
+    <Content Include="Content\Styles\Site_Custom.css" />
     <Content Include="Content\Styles\Slider2.css" />
     <Content Include="Content\Styles\TagNavigator.css" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
@@ -414,6 +415,8 @@
     <Content Include="Views\StoryPortal\_PersonalInfoEntry.cshtml" />
     <Content Include="Views\StoryPortal\_StoryEntry.cshtml" />
     <Content Include="Views\StoryPortal\_AnswerEntry.cshtml" />
+    <Content Include="Views\StoryPortal\Browse.cshtml" />
+    <Content Include="Views\StoryPortal\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

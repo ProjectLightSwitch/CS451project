@@ -25,6 +25,22 @@ namespace ProjectLightSwitch.Controllers
                 return View(model);
             }
         }
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Browse story types for a user to answer
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Browse()
+        {
+            var model = TagSystem.GetAvailableStoryTypes();
+            return View(model);
+        }
+
         public ActionResult Create(int id = StoryType.DefaultStoryTypeId)
         {
             var model = TagSystem.CreateStoryResponseModel(id);

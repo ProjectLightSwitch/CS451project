@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    string controller = Url.RequestContext.RouteData.Values["Controller"] as string;
+}
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -7,63 +10,75 @@
         <meta name="viewport" content="width=device-width" />
         @Styles.Render("~/Content/css")
         @Styles.Render("~/Content/themes/base/css")
+        
         @Scripts.Render("~/bundles/modernizr")
+
+        @* Add these to the correct pages*@
         @Scripts.Render("~/bundles/jquery")
         @Scripts.Render("~/bundles/jqueryui")
-        @{ Html.RenderPartial("~/Views/Shared/_DynamicJavascript.cshtml"); }
 
+        @{ Html.RenderPartial("~/Views/Shared/_DynamicJavascript.cshtml"); }
+        
+        @if(
+            "StoryPortal".Equals(controller, StringComparison.CurrentCultureIgnoreCase) 
+            || "SiteAdmin".Equals(controller, StringComparison.CurrentCultureIgnoreCase))
+        { 
+            @Styles.Render("~/Content/tagnav")
+            @Scripts.Render("~/bundles/tags")    
+        }
         @RenderSection("head", required: false)
     </head>
     <body>
-        <header>
-            <div class="content-wrapper">
+        <div>
+            <header class="clear-fix">
+                <section id="loginSection" class="clear-fix">
+                    @Html.Partial("_LoginPartial")
+                </section>
                 <div class="float-left">
-                    <p>PROJECT LIGHT SWITCH!</p>
-                    <p class="site-title">@Html.ActionLink("your logo here", "Index", "Home")</p>
+                    <h1>PROJECT LIGHT SWITCH!</h1>
                 </div>
                 <div>
-                    @{
-                        IEnumerable<string> messages = ProjectLightSwitch.HelperFunctions.GetGlobalMessages(TempData);
-                        if (messages.Count() > 0)
-                        {
-                            <ul id="globalMessages">
-                                @foreach(string message in messages)
-                                {
-                                    <li>@message</li>
-                                }
-                            </ul>
-                        }
-                    }
-                </div>
-                <div class="float-right">
-                    <section id="login">
-                        @Html.Partial("_LoginPartial")
-                    </section>
                     <nav>
-                        <ul id="menu">
-                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                            <li>@Html.ActionLink("About", "About", "Home")</li>
+                        <ul>
                             <li>@Html.ActionLink("StoryPortal", "Home", "StoryPortal")</li>
-                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                            <li>@Html.ActionLink("Media", "Index", "Home")</li>
+                            <li>@Html.ActionLink("Happiness Ninjas", "Index", "Home")</li>
+                            <li>@Html.ActionLink("Store", "Index", "Home")</li>
+                            <li>@Html.ActionLink("About Us", "About", "Home")</li>
                         </ul>
                     </nav>
                 </div>
+            </header>
+            <div id="global-messages">
+                @{
+                    IEnumerable<string> messages = ProjectLightSwitch.HelperFunctions.GetGlobalMessages(TempData);
+                    if (messages.Count() > 0)
+                    {
+                        <h2>Messages:</h2>
+                        <ul>
+                            @foreach (string message in messages)
+                            {
+                                <li>@message</li>
+                            }
+                        </ul>
+                    }
+                }
             </div>
-        </header>
-        <div id="body">
-            @RenderSection("featured", required: false)
-            <section class="content-wrapper main-content clear-fix">
-                @RenderBody()
-            </section>
-        </div>
-        <footer>
-            <div class="content-wrapper">
-                <div class="float-left">
-                    <p>&copy; @DateTime.Now.Year - Project Light Switch</p>
+            <div id="body">
+                @RenderSection("featured", required: false)
+                <section class="content-wrapper main-content clear-fix">
+                    @RenderBody()
+                </section>
+            </div>
+            <footer>
+                <div class="content-wrapper">
+                    <div class="float-left">
+                        <p>&copy; @DateTime.Now.Year - Project Light Switch</p>
+                    </div>
                 </div>
-            </div>
-        </footer>
+            </footer>
 
-        @RenderSection("scripts", required: false)
+            @RenderSection("scripts", required: false)
+        </div>
     </body>
 </html>

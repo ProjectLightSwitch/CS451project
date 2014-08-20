@@ -12,9 +12,74 @@ namespace ProjectLightSwitch.Models
     public class StoryPortalViewModel
     {
         public IEnumerable<int> TopRatedStoryIds { get; set; }
-
-
     }
+
+    public class StorySearchInputModel
+    {
+        public int TranslatedStoryTypeId { get; set; }
+        public List<int> SelectedTags { get; set; }
+        public int MinAge {get;set;}
+        public int MaxAge {get;set;}
+
+        public int Country { get; set; }
+
+        private string _gender;
+        [RegularExpression("^[MFI]?$")]
+        public string Gender {
+            get { return _gender;  }
+            set 
+            {
+                string genderFlag = "";
+                if (!string.IsNullOrEmpty(value)
+                    && Enum.IsDefined(typeof(ProjectLightSwitch.Models.Enums.Gender), value[0]))
+                {
+                    genderFlag = value[0].ToString();
+                }
+            }
+        }
+        
+        public StorySearchInputModel()
+        {
+            SelectedTags = new List<int>();
+        }
+    }
+
+    public class StorySearchResultModel
+    {
+        public int TranslatedStoryTypeId { get; set; }
+
+        public StoryResponse StoryResponse {get; set; }
+
+        [Display(Name = "Recent Rating")]
+        public int RecentRating { get; set; }
+
+        [Display(Name="Overall Rating")]
+        public int OverallRating { get; set; }
+
+
+        public StorySearchResultModel()
+        { 
+        
+        }
+    }
+
+    public class StoryTypeResultsModel
+    {
+        public int LanguageId { get; set; }
+
+        public int TranslatedStoryTypeId { get; set; }
+        public int StoryTypeId { get; set; }
+        [Display(Name="Story Type Description")]
+        public string Description { get; set; }
+        [Display(Name = "Associated Tags")]
+        public IEnumerable<JSONTagModel> Tags { get; set; }
+
+        public StoryTypeResultsModel()
+        {
+            Tags = Enumerable.Empty<JSONTagModel>();
+        }
+    }
+
     public class StoryTypeCreationModel
     {
         [Display(Name="Story Type Tags: ")]

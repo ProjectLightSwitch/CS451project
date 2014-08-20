@@ -1,0 +1,55 @@
+﻿ul, li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    list-style-image: none;
+}
+
+header h1 {
+    padding:0;
+    margin:0;
+}
+
+header nav ul {
+    float:right;
+    font-weight: bold;
+}
+
+header nav li {
+    float: right;
+    margin:10px;
+}
+
+section#loginSection {
+    text-align: right;
+}
+
+section#loginSection li {
+    margin:10px;
+    float: right;
+}
+
+
+/* Story Part */
+.steps > span {
+    color: white;
+    text-align: center;
+    float: left;
+    margin: 5px;
+    background: #8e8e8e;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    line-height: 24px;
+}
+
+.steps > span.sel {
+    background: black;
+}
+
+/**/
+.storyTypes > div {
+    border: 2px solid black;
+    margin: 15px;
+    padding: 10px;
+}

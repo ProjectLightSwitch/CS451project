@@ -1,0 +1,29 @@
+﻿@model List<ProjectLightSwitch.Models.StoryTypeResultsModel>
+@{
+    ViewBag.Title = "Browse available story types";
+}
+
+<h2>Browse Available Story Types</h2>
+<div class="storyTypes">
+    @foreach (var result in Model)
+    {
+        <div>
+            @Html.ActionLink("Create this story", "Create", new { id = result.TranslatedStoryTypeId }, null)
+            <h3>@result.Description</h3>
+            
+            <p><b>Description: </b>@result.Description</p>
+            
+            <div>
+                <h4 class="nopadding nomargin">Associated Tags: </h4>
+                <ul class="tabBreadcrumbs">
+                    @foreach (var tag in result.Tags)
+                    {
+                        <li>@tag.text</li>
+                    }
+                </ul>
+                <br class="clear" />
+            </div>
+            
+        </div>
+    }
+</div>

@@ -1,13 +1,6 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
-@section featured {
-    <section class="featured">
-        <div class="content-wrapper">
-            <h1>Home page of ProjectLightSwitch Project</h1>
-        </div>
-    </section>
-}
 
-@Html.ActionLink("Eric's Testing Section", "Eric")
-@Html.ActionLink("Tag Testing", "Index", "Tags", new { area = "SiteAdmin" }, null)
+<h2>Welcome to the Project Light Swich website.</h2>
+<p>Visit the @Html.ActionLink("StoryPortal", "Index", "StoryPortal") section to get started.</p>
