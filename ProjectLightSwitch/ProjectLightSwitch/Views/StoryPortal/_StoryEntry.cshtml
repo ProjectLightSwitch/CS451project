@@ -2,14 +2,18 @@
 
 <section>
     <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part2Header</h3>
-
+    @Html.LabelFor(t => t.StoryTitle)
     @Html.TextBoxFor(t=>t.StoryTitle, new { @class="full-width" })
     @Html.ValidationMessageFor(t=>t.StoryTitle)
+
+    @Html.LabelFor(t => t.StoryResponse)
     @Html.TextAreaFor(t => t.StoryResponse, new { @class = "full-width", rows="8", cols="50" })
     @Html.ValidationMessageFor(t => t.StoryResponse)
 
     <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.TagPrompt</h3>
     <div id="tagnav"></div>
+    <br class="clear" />
     <b>@ProjectLightSwitch.Views.StoryPortal.StoryResources.SelectedTagsLabel</b>
     <div id="selectedTags"></div>
+    <br class="clear" />
 </section>

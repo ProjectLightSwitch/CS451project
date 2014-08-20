@@ -30,9 +30,9 @@ namespace ProjectLightSwitch.Controllers
         /// </summary>
         /// <param name="storyType">Actually the <see cref="LocalizedStoryType.LocalizedStoryTypeId" /> to search for</param>
         /// <returns></returns>
-        public ActionResult Create(int storyType = -1)
+        public ActionResult Create(int id = -1)
         {
-            var model = TagSystem.CreateStoryResponseModel(storyType);
+            var model = TagSystem.CreateStoryResponseModel(id);
             return View(model);
         }
     }

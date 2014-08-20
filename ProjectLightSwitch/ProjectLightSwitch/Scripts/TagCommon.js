@@ -334,7 +334,7 @@ SelectedTagBreadCrumbs.prototype.tagSelected = function (path)
 
     if (this._closable) {
         crumb.append($('<a>').addClass('close').text('X').click(
-            this._navigator.deselectTag.bind(this._navigator, tagId)
+            this.deselectTag.bind(this._navigator, tagId)
         ));
     }
 }
