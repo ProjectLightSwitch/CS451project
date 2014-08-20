@@ -9,11 +9,6 @@ using System.Web.Mvc;
 
 namespace ProjectLightSwitch.Models
 {
-    public class StoryPortalViewModel
-    {
-        public IEnumerable<int> TopRatedStoryIds { get; set; }
-    }
-
     public class StorySearchInputModel
     {
         public int TranslatedStoryTypeId { get; set; }
@@ -65,16 +60,32 @@ namespace ProjectLightSwitch.Models
 
     public class StoryTypeResultsModel
     {
+        public IEnumerable<StoryTypeResultModel> StoryTypeModels {get;set;}
+
         public int LanguageId { get; set; }
 
+        [Display(Name = "Search by title, description, and tag")]
+        public string SearchTerm { get; set; }
+
+        public StoryTypeResultsModel()
+        {
+            StoryTypeModels = Enumerable.Empty<StoryTypeResultModel>();
+        }
+    }
+    public class StoryTypeResultModel
+    {
         public int TranslatedStoryTypeId { get; set; }
         public int StoryTypeId { get; set; }
-        [Display(Name="Story Type Description")]
+
+        [Display(Name = "Title")]
+        public string Title { get; set; }
+
+        [Display(Name="Description")]
         public string Description { get; set; }
         [Display(Name = "Associated Tags")]
         public IEnumerable<JSONTagModel> Tags { get; set; }
 
-        public StoryTypeResultsModel()
+        public StoryTypeResultModel()
         {
             Tags = Enumerable.Empty<JSONTagModel>();
         }
@@ -109,23 +120,25 @@ namespace ProjectLightSwitch.Models
 
     public class StoryResponseViewModel
     {
-        // OUTPUT
-        public List<CountryListData> Countries { get; set; }
+        // STORY TYPE
+        public StoryTypeResultModel StoryType { get; set; }
+        public IEnumerable<Question> StoryQuestions { get; set; }
 
+        public int LanguageId { get; set; }
+
+        // OUTPUT
+        public IEnumerable<CountryListData> Countries { get; set; }
         public IEnumerable<SelectListItem> CountryListItems
         {
             get { return new SelectList(Countries, "CountryId", "CountryName"); }
         }
-
-        public string StoryTypeDescription { get; set; }
-        public List<Question> Questions { get; set; }
 
         // INPUT
 
         // Personal Info
         [Required]
         [Display(Name = "Age", ResourceType = typeof(Views.StoryPortal.StoryResources))]
-        [Range(10, 100)]
+        [Range(13, 150)]
         public int Age { get; set; }
 
         [Required]
@@ -135,7 +148,6 @@ namespace ProjectLightSwitch.Models
 
         [Required]
         [Display(Name = "Country", ResourceType = typeof(Views.StoryPortal.StoryResources))]
-        
         public int Country { get; set; }
 
         [Required]
@@ -146,10 +158,25 @@ namespace ProjectLightSwitch.Models
         [Display(Name = "ResponsePrompt", ResourceType = typeof(Views.StoryPortal.StoryResources))]
         public string StoryResponse { get; set; }
 
-        public List<int> SelectedTags { get; set; }
+        public IEnumerable<int> SelectedTags { get; set; }
 
-        public List<string> Answers { get; set; }
+        public IEnumerable<string> StoryAnswers { get; set; }
+
+        public StoryResponseViewModel()
+        {
+            StoryQuestions = Enumerable.Empty<Question>();
+            StoryAnswers = Enumerable.Empty<string>();
+            Countries = Enumerable.Empty<CountryListData>();  
+        }
+
     }
+
+    public class StoryStepModel
+    {
+        public int NumSteps { get; set; }
+        public int CurrentStep { get; set; }
+    }
+
 
     #region Ancestor Creation
     

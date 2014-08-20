@@ -15,7 +15,7 @@
         $(document).ready(function () {
             (function () {
                 $('#gender').buttonset();
-                $('#age').spinner();
+                //$('#age').spinner();
 
                 var tagnav = new TagNavigator($('#tagnav'));
                 var breadcrumbs = new SelectedTagBreadCrumbs($('#selectedTags'), tagnav, { cssPrefix: '', separator: ' > ', closable: true });
@@ -41,16 +41,25 @@
 
 <div id="storyWizard">
     <div>
+        <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 1, NumSteps = 3 }, null); }</div>
         @{ Html.RenderPartial("~/Views/StoryPortal/_PersonalInfoEntry.cshtml", Model); }
         <div><a href="#" onclick="NavigateToStep(1); return false;">Next</a></div>
     </div>
     <div>
+        <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 2, NumSteps = 3 }, null); }</div>
         @{ Html.RenderPartial("~/Views/StoryPortal/_StoryEntry.cshtml", Model); }
-        <div><a href="#" onclick="NavigateToStep(2); return false;">Next</a></div>
+        <div>
+            <a href="#" onclick="NavigateToStep(1); return false;">Previous</a> | 
+            <a href="#" onclick="NavigateToStep(2); return false;">Next</a>
+        </div>
     </div>
     <div>
+        <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 3, NumSteps = 3 }, null); }</div>
         @{ Html.RenderPartial("~/Views/StoryPortal/_AnswerEntry.cshtml", Model); }
-        <div><input type="submit" value="Submit Story" /></div>
+        <div>
+            <a href="#" onclick="NavigateToStep(2); return false;">Previous</a> | 
+            <input type="submit" value="Submit Story" />
+        </div>
     </div>
 </div>
 }

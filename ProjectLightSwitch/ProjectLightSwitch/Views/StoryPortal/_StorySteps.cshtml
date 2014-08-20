@@ -1,0 +1,15 @@
+﻿@model ProjectLightSwitch.Models.StoryStepModel
+@* Requires .steps{} style in Site_Custom.css *@
+<ul class="steps">
+    @for (int i = 1; i <= Model.NumSteps; i++)
+    {
+        if (i == Model.CurrentStep)
+        {
+            <li class="sel">@i</li>
+        }
+        else
+        {
+            <li>@i</li>
+        }
+    }
+</ul>

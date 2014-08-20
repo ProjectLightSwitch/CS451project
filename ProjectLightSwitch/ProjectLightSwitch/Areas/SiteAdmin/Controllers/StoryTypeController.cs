@@ -88,7 +88,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         //    {
         //        using (var context = new StoryModel())
         //        {
-        //            context.StoryTypes.Add(storyType);
+        //            context.StoryTypeModels.Add(storyType);
         //            context.SaveChanges();
         //        }
         //    }

@@ -5,8 +5,7 @@
 
     @for(int i = 0; i < Model.Questions.Count; i++)
     { 
-        @Model.Questions[i].Prompt
-        <br />
-        <textarea name="Answers[@i]" style="width:100%" rows="8"></textarea>
+        <h4 class="nopadding nomargin">@Model.Questions[i].Prompt</h4>
+        <textarea name="Answers[@i]" class="full-width" cols="50" rows="3"></textarea>
     }
 </section>

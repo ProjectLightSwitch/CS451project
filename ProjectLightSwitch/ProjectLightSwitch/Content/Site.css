@@ -50,6 +50,22 @@ mark {
     margin:0;
 }
 
+.full-width {
+    width: 100%;
+}
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+.center {
+    text-align: center;
+}
+
 .float-left {
     float: left;
 }

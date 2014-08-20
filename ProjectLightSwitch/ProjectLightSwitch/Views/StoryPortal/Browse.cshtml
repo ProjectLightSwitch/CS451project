@@ -1,18 +1,29 @@
-﻿@model List<ProjectLightSwitch.Models.StoryTypeResultsModel>
+﻿@model ProjectLightSwitch.Models.StoryTypeResultsModel
 @{
     ViewBag.Title = "Browse available story types";
 }
 
 <h2>Browse Available Story Types</h2>
 <div class="storyTypes">
-    @foreach (var result in Model)
+
+    <h3>Search</h3>
+    <p></p>
+    @using (Html.BeginForm("Browse", "StoryPortal", FormMethod.Get, null))
+    {
+        @Html.LabelFor(t=>t.SearchTerm)
+        <span>: </span>
+        @Html.EditorFor(t=>t.SearchTerm)
+        <input type="submit" value="Search" />
+    }
+
+    <h3>Results</h3>
+    @foreach (var result in Model.StoryTypeModels)
     {
         <div>
             @Html.ActionLink("Create this story", "Create", new { id = result.TranslatedStoryTypeId }, null)
-            <h3>@result.Description</h3>
+            <h3>@result.Title</h3>
             
             <p><b>Description: </b>@result.Description</p>
-            
             <div>
                 <h4 class="nopadding nomargin">Associated Tags: </h4>
                 <ul class="tabBreadcrumbs">

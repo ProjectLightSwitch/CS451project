@@ -12,38 +12,27 @@ namespace ProjectLightSwitch.Controllers
         //
         // GET: /StoryPortal/
 
-        public ActionResult Home()
-        {
-            using (var context = new StoryModel())
-            {
-                StoryPortalViewModel model = new StoryPortalViewModel();
-
-                model.TopRatedStoryIds = context.StoryResponses.OrderByDescending(t => t.StoryResponseRatings.Count).Take(3)
-                                                               .Select(id => id.StoryResponseId);
-
-
-                return View(model);
-            }
-        }
-
         public ActionResult Index()
         {
             return View();
         }
 
-        /// <summary>
-        /// Browse story types for a user to answer
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Browse()
+        [HttpGet]
+        public ActionResult Browse([Bind(Include="SearchTerm,LanguageId")] StoryTypeResultsModel searchModel)
         {
-            var model = TagSystem.GetAvailableStoryTypes();
-            return View(model);
+            TagSystem.PopulateAvailableStoryTypes(searchModel);
+            return View(searchModel);
         }
 
-        public ActionResult Create(int id = StoryType.DefaultStoryTypeId)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="storyType">Actually the <see cref="LocalizedStoryType.LocalizedStoryTypeId" /> to search for</param>
+        /// <returns></returns>
+        public ActionResult Create(int storyType = -1)
         {
-            var model = TagSystem.CreateStoryResponseModel(id);
+            var model = TagSystem.CreateStoryResponseModel(storyType);
             return View(model);
         }
     }

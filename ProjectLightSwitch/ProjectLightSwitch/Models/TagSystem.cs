@@ -261,49 +261,91 @@ namespace ProjectLightSwitch.Models
         }
         
 
-        public static List<StoryTypeResultsModel> GetAvailableStoryTypes(int languageId = Language.DefaultLanguageId)
+        public static void PopulateAvailableStoryTypes(StoryTypeResultsModel model)
         {
+
+            if(model.LanguageId == 0)
+            {
+                model.LanguageId = Language.DefaultLanguageId;
+            }
+            if(String.IsNullOrEmpty(model.SearchTerm) || model.SearchTerm.Trim().Length == 0)
+            {
+                model.SearchTerm = null;
+            }
+            
             using (var context = new StoryModel())
             {
                 // TODO: Add paging?
-                return context.LocalizedStoryTypes
+                model.StoryTypeModels = context.LocalizedStoryTypes
                        .OrderByDescending(s => s.StoryType.DateCreated)
-                       .Where(s=>s.Language.IsActive)
-                       .Select(s => new StoryTypeResultsModel { 
+                       .Where(s => 
+                           s.LanguageId == model.LanguageId 
+                           && s.Language.IsActive 
+                           && (
+                                model.SearchTerm == null 
+                                || s.Title.Contains(model.SearchTerm)
+                                || s.Description.Contains(model.SearchTerm)
+                                || s.StoryType.Tags.SelectMany(t=>t.TranslatedTags).Any(t=>
+                                        t.LanguageId == model.LanguageId 
+                                        && t.Text.Contains(model.SearchTerm))
+                           )
+                        )
+                       .Select(s => new StoryTypeResultModel { 
                            StoryTypeId = s.StoryTypeId,
                            TranslatedStoryTypeId = s.LocalizedStoryTypeId,
+                           Title = s.Title,
                            Description = s.Description, 
-                           LanguageId = s.LanguageId, 
                            Tags = s.StoryType.Tags.Select(t=> 
                                new JSONTagModel { 
                                    id = t.TagId, 
                                    type = t.TagType, 
                                    text = t.TranslatedTags
-                                           .Where(tt=>tt.LanguageId == languageId)
+                                           .Where(tt=>tt.LanguageId == model.LanguageId)
                                            .Select(tt=>tt.Text).FirstOrDefault() }).ToList()
                        }).ToList();
             }
         }
 
-        public static StoryResponseViewModel CreateStoryResponseModel(int storyTypeId, int languageId = Language.DefaultLanguageId)
+        public static StoryResponseViewModel CreateStoryResponseModel(int translatedStoryTypeId = -1)
         {
-            var model = new StoryResponseViewModel();
             using (var context = new StoryModel())
             {
-                var localizedStoryType = context.LocalizedStoryTypes.Where(s => s.LanguageId == languageId && s.StoryTypeId == storyTypeId).FirstOrDefault();
-                if (localizedStoryType == null)
+                var q = context.LocalizedStoryTypes.Where(s=>s.LocalizedStoryTypeId == translatedStoryTypeId).FirstOrDefault();
+                if(q == null)
                 {
                     return null;
                 }
-                
-                model.Countries = context.Countries.Select(c => 
-                    new CountryListData { 
-                        CountryId = c.CountryId, 
-                        CountryName = c.Country1 }).ToList();
-                model.StoryTypeDescription = localizedStoryType.Description;
-                model.Questions = localizedStoryType.Questions.ToList();
+
+                var model = new StoryResponseViewModel()
+                {
+                    LanguageId = q.LanguageId,
+                    StoryType = new StoryTypeResultModel
+                    {
+                        Description = q.Description,
+                        StoryTypeId = q.StoryTypeId,
+                        Tags = q.StoryType.Tags.Select(t =>
+                            new JSONTagModel
+                            {
+                                id = t.TagId,
+                                type = t.TagType,
+                                text = t.TranslatedTags
+                                        .Where(tt => tt.LanguageId == q.LanguageId)
+                                        .Select(tt=>tt.Text)
+                                        .FirstOrDefault()
+                            }),
+                        Title = q.Title,
+                        TranslatedStoryTypeId = q.LocalizedStoryTypeId,
+                    },
+                    Countries = context.Countries.Select(c =>
+                        new CountryListData
+                        {
+                            CountryId = c.CountryId,
+                            CountryName = c.Country1
+                        }).ToList(),
+                    StoryQuestions = q.Questions.ToList(),
+                };
+                return model;
             }
-            return model;
         }
         #endregion
 
