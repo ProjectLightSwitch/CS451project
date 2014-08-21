@@ -14,7 +14,7 @@ namespace ProjectLightSwitch
             var messages = TempData["UserMessages"] as List<string>;
             if (messages == null)
             {
-                messages = new List<string>();
+                TempData["UserMessages"] = messages = new List<string>();
             }
             messages.Add(message);
         }

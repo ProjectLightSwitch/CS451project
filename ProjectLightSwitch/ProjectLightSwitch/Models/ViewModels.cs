@@ -177,12 +177,12 @@ namespace ProjectLightSwitch.Models
 
         public IEnumerable<int> SelectedTags { get; set; }
 
-        public IEnumerable<string> StoryAnswers { get; set; }
+        public Dictionary<int, string> StoryAnswers { get; set; }
 
         public StoryResponseViewModel()
         {
             StoryQuestions = Enumerable.Empty<Question>();
-            StoryAnswers = Enumerable.Empty<string>();
+            StoryAnswers = new Dictionary<int, string>();
             Countries = Enumerable.Empty<CountryListData>();  
         }
 

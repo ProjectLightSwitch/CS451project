@@ -53,3 +53,15 @@ section#loginSection li {
     margin: 15px;
     padding: 10px;
 }
+
+/* GLOBAL MESSAGES */
+#global-messages li,
+#global-messages ul {
+    list-style: circle;
+    list-style-type: circle;
+}
+#global-messages li {
+    color: red;
+    font-weight: bold;
+}
+

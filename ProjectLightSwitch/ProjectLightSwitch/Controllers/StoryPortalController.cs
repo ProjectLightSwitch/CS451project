@@ -36,10 +36,33 @@ namespace ProjectLightSwitch.Controllers
         /// </summary>
         /// <param name="storyType">Actually the <see cref="LocalizedStoryType.LocalizedStoryTypeId" /> to search for</param>
         /// <returns></returns>
-        public ActionResult Create(int id = -1)
+        public ActionResult Create(StoryResponseViewModel existingModel = null, int id = -1)
         {
-            var model = TagSystem.CreateStoryResponseModel(id);
-            return View(model);
+            existingModel = existingModel ?? new StoryResponseViewModel();
+            TagSystem.PopulateStoryResponseModelOutput(ref existingModel, id);
+            return View(existingModel);
+        }
+
+        [HttpPost]
+        public ActionResult Create(StoryResponseViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var error = TagSystem.SaveStoryResponse(model);
+                HelperFunctions.AddGlobalMessage(
+                    TempData,
+                    error ?? "Your story has been successfully saved.");
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                if (model == null || model.StoryType == null || model.StoryType.TranslatedStoryTypeId <= 0)
+                {
+                    return RedirectToAction("Index");
+                }
+                TagSystem.PopulateStoryResponseModelOutput(ref model, model.StoryType.TranslatedStoryTypeId);
+                return View(model);
+            }
         }
     }
 }

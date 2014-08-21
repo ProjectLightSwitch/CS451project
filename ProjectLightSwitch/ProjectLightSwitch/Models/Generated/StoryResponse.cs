@@ -32,6 +32,7 @@ namespace ProjectLightSwitch.Models
         [StringLength(50)]
         public string Story { get; set; }
 
+        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
         [Column(TypeName = "datetime2")]
         public DateTime CreationDate { get; set; }
 

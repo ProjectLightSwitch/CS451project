@@ -20,6 +20,6 @@ namespace ProjectLightSwitch.Models
 
         public virtual Question Question { get; set; }
 
-        public virtual StoryResponse StoryRespons { get; set; }
+        public virtual StoryResponse StoryResponse { get; set; }
     }
 }

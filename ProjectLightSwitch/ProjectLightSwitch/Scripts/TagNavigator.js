@@ -92,11 +92,7 @@ TagNavigator.prototype.findTagId = function ()
 //    this.tagSelector.onTagSelected(path);
 //}
 
-/* path: [{id, label},{id, label},...] */
-TagNavigator.prototype.deselectTag = function (tagId)
-{
-    this.tagSelector.onTagDeselected(tagId);
-}
+
 
 // This assumes the tagnav is placed inside a form
 TagNavigator.prototype._injectHiddenFields = function ()
@@ -134,6 +130,11 @@ TagNavigator.prototype.deselectTag = function (tagId) {
     this.tagSelector.onTagDeselected(tagId);
 }
 
+TagNavigator.prototype.tagDeselected = function (tagId) {
+    alert('test');
+}
+
+
 TagNavigator.prototype.isTagSelected = function (tagId)
 {
     return this.tagSelector.isTagSelected(tagId);
@@ -161,6 +162,7 @@ TagNavigator.prototype.navigateToTag = function(id)
             var div = $('<div>').addClass(this._tagDepthContainerClassName).appendTo(this._tagNavigationContainer);
             var selNavTag = (i < len - 1) ? response.results[i + 1].parent.id : null;
             var childNav = new TagChildrenNavigator(div, this, result, null, { isSelfNavigating: false, cssPrefix: 'search', selNavTagId: selNavTag });
+            this.tagSelector.addListener(childNav, 'all');
         }
     }.bind(this));
 }

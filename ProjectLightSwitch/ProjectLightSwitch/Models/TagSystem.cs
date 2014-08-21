@@ -369,16 +369,18 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public static StoryResponseViewModel CreateStoryResponseModel(int translatedStoryTypeId = -1, StoryResponseViewModel model)
+        public static void PopulateStoryResponseModelOutput(ref StoryResponseViewModel model, int translatedStoryTypeId = -1)
         {
             using (var context = new StoryModel())
             {
+                
                 model = model ?? new StoryResponseViewModel();
                 
                 var q = context.LocalizedStoryTypes.Where(s=>s.LocalizedStoryTypeId == translatedStoryTypeId).FirstOrDefault();
                 if(q == null)
                 {
-                    return null;
+                    model = null;
+                    return;
                 }
 
                 model.LanguageId = q.LanguageId;
@@ -409,7 +411,6 @@ namespace ProjectLightSwitch.Models
 
                 model.StoryQuestions = q.Questions.ToList();
             }
-            return model;
         }
         #endregion
 
