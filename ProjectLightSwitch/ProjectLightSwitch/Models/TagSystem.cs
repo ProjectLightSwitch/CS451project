@@ -368,13 +368,12 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public static void PopulateStoryResponseModelOutput(ref StoryResponseViewModel model, int translatedStoryTypeId = -1)
+        public static void PopulateStoryResponseModelOutput(ref StoryResponseViewModel model)
         {
             using (var context = new StoryModel())
             {
-                
-                model = model ?? new StoryResponseViewModel();
-                
+                int translatedStoryTypeId = model.StoryType.TranslatedStoryTypeId;
+
                 var q = context.LocalizedStoryTypes.Where(s=>s.LocalizedStoryTypeId == translatedStoryTypeId).FirstOrDefault();
                 if(q == null)
                 {
@@ -872,7 +871,7 @@ namespace ProjectLightSwitch.Models
                     //.OrderBy(t => t.label)
                     .ToList();
 
-                var result = new { defLangId = SiteSettings.DefaultLanguageId, reqLangId = languageId != -1 ? languageId : SiteSettings.DefaultLanguageId, results = q };
+                var result = new { defLangId = Language.DefaultLanguageId, reqLangId = languageId != -1 ? languageId : Language.DefaultLanguageId, results = q };
                 return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(q);    
             }
         }

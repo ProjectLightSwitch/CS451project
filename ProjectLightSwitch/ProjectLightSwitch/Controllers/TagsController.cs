@@ -36,7 +36,7 @@ namespace ProjectLightSwitch.Controllers
         [HttpGet]
         public ActionResult Search(string term)
         {
-            return Content(TagSystem.GetPaths_Json(TagTree.InvisibleRootId, term, true, SiteSettings.DefaultLanguageId), "application/json");
+            return Content(TagSystem.GetPaths_Json(TagTree.InvisibleRootId, term, true, Language.DefaultLanguageId), "application/json");
         }
 
         //[AjaxOnly]

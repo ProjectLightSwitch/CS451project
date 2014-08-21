@@ -30,11 +30,12 @@ namespace ProjectLightSwitch.Controllers
         /// </summary>
         /// <param name="storyType">Actually the <see cref="LocalizedStoryType.LocalizedStoryTypeId" /> to search for</param>
         /// <returns></returns>
-        public ActionResult Create(StoryResponseViewModel existingModel = null, int id = -1)
+        public ActionResult Create(int id = -1)
         {
-            existingModel = existingModel ?? new StoryResponseViewModel();
-            TagSystem.PopulateStoryResponseModelOutput(ref existingModel, id);
-            return View(existingModel);
+            var model = new StoryResponseViewModel();
+            model.StoryType.TranslatedStoryTypeId = id;
+            TagSystem.PopulateStoryResponseModelOutput(ref model);
+            return View(model);
         }
 
         [HttpPost]
@@ -54,7 +55,7 @@ namespace ProjectLightSwitch.Controllers
                 {
                     return RedirectToAction("Index");
                 }
-                TagSystem.PopulateStoryResponseModelOutput(ref model, model.StoryType.TranslatedStoryTypeId);
+                TagSystem.PopulateStoryResponseModelOutput(ref model);
                 return View(model);
             }
         }

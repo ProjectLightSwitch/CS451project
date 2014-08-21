@@ -11,94 +11,131 @@
 }
 
 @section head {
-    @Styles.Render("~/Content/tagnav")
-    @Scripts.Render("~/bundles/tags")
-
-    <style type="text/css">
-
-    .ui-widget-content {
-        background:#eeeded;
-    }
-
-    .ui-accordion {
-        width:250px;
-        padding:0;
-    }
-
-    .ui-accordion-header {
-        padding-left: 100px;
-        background:#aaaaaa;
-        margin:0px;
-    }
-
-    .ui-accordion .ui-accordion-content {
-        padding:0;
-    }
-
-    .ui-accordion-content .search_item {
-        padding: 7px;
-        border-top:1px solid #aaaaaa;
-        background:#eeeded;
-        
-        vertical-align:middle;
-    }
-
-    .ui-accordion-content .search_navTag, 
-    .ui-accordion-content .search_selTag label,
-    .ui-accordion-content .search_back {
-        cursor: pointer;
-    }
-
-    /*
-    .ui-accordion-content .search_item span, .ui-accordion-content .search_item label {
-                vertical-align:middle;
-    }*/
-
-    .ui-accordion-content .search_item .decorator {
-        float:right;
-    }
-
-    ul.selectedTags {
-        margin:10px;
-        width:100%;
-        padding:0;
-    }
-
-    ul.selectedTags li {
-        list-style:none;
-        list-style-image:none;
-        display: inline-block;
-        position:static;
-        border-radius: 8px;
-        margin:5px;
-        padding:5px;
-        background:#646564;
-        color:white;
-        font-weight:bold;
-    }
-    </style>
+    @Scripts.Render("~/bundles/jqueryval")
 }
 
 @section scripts
 {
     <script type="text/javascript" language="javascript">
         $(document).ready(function () {
-            (function () {
-                var tagnav = new TagNavigator($('#tagnav'));
-                var breadcrumbs = new SelectedTagBreadCrumbs($('#selectedTags'), tagnav, { cssPrefix: '', separator: ' > ', closable: true });
-            })();
+
+            //$.validator.setDefaults({
+            //    debug: true,
+            //    success: "valid"
+            //});
+
+            showSection(0);
+
+            $("#form").validate({
+                rules: {
+                    'name': {
+                        required: true,
+                        minlength: 2,
+                    },
+                    'age': {
+                        required: true
+                    },
+
+                    'name2': {
+                required: true,
+                minlength: 2,
+                },
+                'age2': {
+                required: true
+                },
+
+                'name3': {
+                    required: true,
+                    minlength: 2,
+                    },
+                    'age3': {
+                    required: true
+                }
+                },
+                messages: {
+                    'name': {
+                        required: "Name is required",
+                        minlength: $.validator.format("Please, at least {0} characters are necessary")
+                    }, 
+                    'age': {
+                        required: "Age is required",
+                    },
+                    'name2': {
+                        required: "Name is required",
+                        minlength: $.validator.format("Please, at least {0} characters are necessary")
+                    },
+                    'age2': {
+                        required: "Age is required",
+                    },
+                    'name3': {
+                        required: "Name is required",
+                        minlength: $.validator.format("Please, at least {0} characters are necessary")
+                    },
+                    'age3': {
+                        required: "Age is required",
+                    }
+                }
+            });
+            //$("#form").submit(function (ev) {
+
+            //});
         });
+        
+        function showSection(idx)
+        {
+            $('#form').find('section').hide();
+            $('#form section:nth-child(' + (idx + 1) + ')').show();
+        }
+
+        function validateForm(sender, target)
+        {
+            var isValid = true;
+            $.each($(sender).closest('section').find('input[data-val]'), function (idx, item) {
+                if (typeof ($(item).valid) == 'function' && !$(item).valid()) {
+                    isValid = false;
+                    return;
+                }
+            });
+            if (isValid) {
+                showSection(target);
+            }
+        }
     </script>
 }
 Tab Navigator:
+<h3>My Tags:</h3>
 
-<h3>My Tags:</h3><ul class="selectedTags"></ul>
-<div id="find"></div>
+<form id="form" action="#" method="get" onsubmit="validateForm()">
+    <section id="part1">
+        <div id="extra">part1</div>
 
-@using(Html.BeginForm("TagSelTest", "Home", FormMethod.Post, null))
-{
-    <div id="selectedTags"></div>
-    <div id="tagnav"></div>
+        <input id="name" name="name" type="text" data-val="1" />
+        <input id="age" name="age" type="text" data-val="1" />
 
-    <input type="submit" value="Submit" />
-}
+        <a href="#" onclick="validateForm(this, 1); return false;">Next</a>
+    </section>
+    
+    <section id="part2">
+        <div id="extra">part2</div>
+
+        <input id="name2" name="name2" type="text" data-val="1" />
+        <input id="age2" name="age2" type="text" data-val="1" />
+
+        <a href="#" onclick="validateForm(this, 2); return false;">Next</a>
+    </section>
+
+    <section id="part3">
+        <div id="extra">part3</div>
+
+        <input id="name3" name="name3" type="text" data-val="1" />
+        <input id="age3" name="age3" type="text" data-val="1" />
+
+        <a href="#" onclick="validateForm(this, 'done'); return false;">Next</a>
+    </section>
+    
+
+</form>
+
+
+
+

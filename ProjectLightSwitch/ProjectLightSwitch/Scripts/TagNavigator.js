@@ -50,7 +50,7 @@ TagNavigator.prototype.init = function ()
     //}
     // See: http://www.quirksmode.org/css/clearing.html for possible workaround
     //this._container.append($('<br>').css('clear', 'left'));
-        
+
     // Hook into form submission
     $(document).ready(function () {
         this._container.closest('form').submit(this._injectHiddenFields.bind(this));
