@@ -231,13 +231,13 @@ namespace ProjectLightSwitch.Models
 
         #region View Model Creation
 
-        public static void GetStorySearchResults(StorySearchInputModel searchModel)
+        public static List<StorySearchResultModel> GetStorySearchResults(StorySearchInputModel searchModel)
         {
             using (var context = new StoryModel())
             {
                 var minimumRecentDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(14));
                 //searchModel.
-                context.StoryResponses.Include("Tags").Where(r =>
+                return context.StoryResponses.Include("Tags").Where(r =>
                     r.LocalizedStoryType.Language.IsActive
                     && (searchModel.TranslatedStoryTypeId == 0 || r.LocalizedStoryTypeId == searchModel.TranslatedStoryTypeId)
                     && (searchModel.Gender.Length == 0 || r.Gender == searchModel.Gender)
@@ -253,10 +253,10 @@ namespace ProjectLightSwitch.Models
                     )
                 ).Select(sr => new StorySearchResultModel { 
                     StoryResponse = sr, 
-                    OverallRating = context.StoryResponseRatings.Where(r=>r.StoryResponseId == sr.StoryResponseId).Sum(r=>r.Rating),
+                    OverallRating = context.StoryResponseRatings.Where(r=> r.StoryResponseId == sr.StoryResponseId).Sum(r=>r.Rating),
                     RecentRating = context.StoryResponseRatings.Where(r => r.StoryResponseId == sr.StoryResponseId && r.DateLeft >= minimumRecentDate).Sum(r=>r.Rating),
                     TranslatedStoryTypeId = sr.LocalizedStoryTypeId,
-                });
+                }).OrderByDescending(sr=>sr.RecentRating).ToList();
             }
         }
         
@@ -306,46 +306,109 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public static StoryResponseViewModel CreateStoryResponseModel(int translatedStoryTypeId = -1)
+        public static string SaveStoryResponse(StoryResponseViewModel model)
+        {
+            string error = null;
+            using (var context = new StoryModel())
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var st = context.LocalizedStoryTypes.FirstOrDefault(s => s.LocalizedStoryTypeId == model.StoryType.TranslatedStoryTypeId);
+                        if (st == null)
+                        {
+                            error = "Story type not found.";
+                            throw new Exception(error);
+                        }
+                                                
+                        //Get fresh set of questions
+                        var questions = st.Questions.Select(q=>q.QuestionId).ToList();
+                        if (questions.Count() != model.StoryAnswers.Values.Count)
+                        {
+                            error = "Not all questions were answered.";
+                            throw new Exception(error);
+                        }
+                        var answers = new List<Answer>();
+                        foreach (int questionId in questions)
+                        { 
+                            answers.Add(new Answer 
+                            { 
+                                QuestionId = questionId,
+                                AnswerText = model.StoryAnswers[questionId],
+                            });
+                        }
+
+                        var response = new StoryResponse() 
+                        {
+                            LocalizedStoryType = st,
+                            Age = (byte)model.Age,
+                            Gender = model.Gender,
+                            CountryId = model.Country,
+                            Title = model.StoryTitle,
+                            Story = model.StoryResponse,
+                            Tags = context.Tags.Where(t=>model.SelectedTags.Contains(t.TagId)).ToList(),
+                            Answers = answers,
+                        };
+                        context.StoryResponses.Add(response);
+                        if (context.SaveChanges() == 0)
+                        {
+                            error = "There was an error saving your story.";
+                            throw new Exception(error);
+                        }
+                        transaction.Commit();
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        return error;
+                    }
+                }
+            }
+        }
+
+        public static StoryResponseViewModel CreateStoryResponseModel(int translatedStoryTypeId = -1, StoryResponseViewModel model)
         {
             using (var context = new StoryModel())
             {
+                model = model ?? new StoryResponseViewModel();
+                
                 var q = context.LocalizedStoryTypes.Where(s=>s.LocalizedStoryTypeId == translatedStoryTypeId).FirstOrDefault();
                 if(q == null)
                 {
                     return null;
                 }
 
-                var model = new StoryResponseViewModel()
+                model.LanguageId = q.LanguageId;
+                model.StoryType = new StoryTypeResultModel
                 {
-                    LanguageId = q.LanguageId,
-                    StoryType = new StoryTypeResultModel
-                    {
-                        Description = q.Description,
-                        StoryTypeId = q.StoryTypeId,
-                        Tags = q.StoryType.Tags.Select(t =>
-                            new JSONTagModel
-                            {
-                                id = t.TagId,
-                                type = t.TagType,
-                                text = t.TranslatedTags
-                                        .Where(tt => tt.LanguageId == q.LanguageId)
-                                        .Select(tt=>tt.Text)
-                                        .FirstOrDefault()
-                            }),
-                        Title = q.Title,
-                        TranslatedStoryTypeId = q.LocalizedStoryTypeId,
-                    },
-                    Countries = context.Countries.Select(c =>
-                        new CountryListData
+                    Description = q.Description,
+                    StoryTypeId = q.StoryTypeId,
+                    Tags = q.StoryType.Tags.Select(t =>
+                        new JSONTagModel
                         {
-                            CountryId = c.CountryId,
-                            CountryName = c.Country1
-                        }).ToList(),
-                    StoryQuestions = q.Questions.ToList(),
+                            id = t.TagId,
+                            type = t.TagType,
+                            text = t.TranslatedTags
+                                    .Where(tt => tt.LanguageId == q.LanguageId)
+                                    .Select(tt=>tt.Text)
+                                    .FirstOrDefault()
+                        }),
+                    Title = q.Title,
+                    TranslatedStoryTypeId = q.LocalizedStoryTypeId,
                 };
-                return model;
+
+                model.Countries = context.Countries.Select(c =>
+                    new CountryListData
+                    {
+                        CountryId = c.CountryId,
+                        CountryName = c.Country1
+                    }).ToList();
+
+                model.StoryQuestions = q.Questions.ToList();
             }
+            return model;
         }
         #endregion
 
