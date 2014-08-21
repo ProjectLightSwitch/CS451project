@@ -39,6 +39,23 @@ namespace ProjectLightSwitch.Models
         }
     }
 
+    public class StorySearchResultsModel
+    {
+        public int Page { get; set; }
+
+        public int ResultsPerPage { get; set; }
+
+        public int RecentDays { get; set; }
+
+        public List<StorySearchResultModel> StorySearchResults { get; set; }
+
+        public StorySearchResultsModel()
+        {
+            StorySearchResults = new List<StorySearchResultModel>();
+            ResultsPerPage = SiteSettings.DefaultResultsPerPage;
+            RecentDays = SiteSettings.DefaultRecentDays;
+        }
+    }
     public class StorySearchResultModel
     {
         public int TranslatedStoryTypeId { get; set; }
