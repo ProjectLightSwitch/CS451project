@@ -5,27 +5,25 @@
 
     <table class="input-form">
         <tr>
-            <td>@Html.LabelFor(t => t.Age)</td>
+            <td>@Html.LabelFor(t => t.Age):</td>
             <td>
                 <input id="age" name="age">
                 @Html.ValidationMessageFor(t => t.Age)
             </td>
         </tr>
         <tr>
-            <td>@Html.LabelFor(t => t.Gender)</td>
+            <td>@Html.LabelFor(t => t.Gender):</td>
             <td>
                 <div id="gender">
-                    <fieldset>
-                        <input type="radio" id="radioM" name="gender" value="Male"><label for="radioM">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Male</label>
-                        <input type="radio" id="radioF" name="gender" value="Female"><label for="radioF">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Female</label>
-                        <input type="radio" id="radioI" name="gender" value="Intersex"><label for="radioI">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Intersex</label>
-                    </fieldset>
+                    <input type="radio" id="radioM" name="gender" value="Male"><label for="radioM">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Male</label>
+                    <input type="radio" id="radioF" name="gender" value="Female"><label for="radioF">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Female</label>
+                    <input type="radio" id="radioI" name="gender" value="Intersex"><label for="radioI">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Intersex</label>
                     @Html.ValidationMessageFor(t => t.Gender)
                 </div>
             </td>
         </tr>
         <tr>
-            <td>@Html.LabelFor(t => t.Country)</td>
+            <td>@Html.LabelFor(t => t.Country):</td>
             <td>
                 @Html.DropDownListFor(t => t.Country, Model.CountryListItems)
                 @Html.ValidationMessageFor(t => t.Country)

@@ -333,8 +333,11 @@ SelectedTagBreadCrumbs.prototype.tagSelected = function (path)
             $('<a>').attr({ 'href': '#', 'title': title }).text(label)).appendTo(this._container);
 
     if (this._closable) {
-        crumb.append($('<a>').addClass('close').text('X').click(
-            this.deselectTag.bind(this._navigator, tagId)
+        crumb.append($('<a>').attr('href','#').addClass('close').text('X').bind('click',
+            function (id) {
+                this._tagSelector.onTagDeselected(id);
+                return false;
+            }.bind(this, tagId)
         ));
     }
 }

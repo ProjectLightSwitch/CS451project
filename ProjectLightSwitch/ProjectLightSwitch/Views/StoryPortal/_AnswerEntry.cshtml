@@ -3,8 +3,8 @@
 <section>
     <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part3Header</h3>
     @for (int i = 0; i < Model.StoryQuestions.Count(); i++)
-    { 
+    {
         <h4 class="nopadding nomargin">@Model.StoryQuestions.ElementAt(i).Prompt</h4>
-        <textarea name="Answers[@i]" class="full-width" cols="50" rows="3"></textarea>
+        <textarea name="Answers[@Model.StoryQuestions.ElementAt(i)]" class="full-width" cols="50" rows="3"></textarea>
     }
 </section>
