@@ -123,6 +123,12 @@
   <data name="Country" xml:space="preserve">
     <value>Country</value>
   </data>
+  <data name="DefaultRecentDays" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="DefaultResultsPerPage" xml:space="preserve">
+    <value>10</value>
+  </data>
   <data name="Female" xml:space="preserve">
     <value>Female</value>
   </data>

@@ -24,6 +24,12 @@ namespace ProjectLightSwitch.Controllers
             return View(searchModel);
         }
 
+        public ActionResult Search(StorySearchInputModel searchModel, int page = 0)
+        {
+            var model = new StorySearchResultsModel();
+            model.StorySearchResults = TagSystem.GetStorySearchResults(searchModel, page, model.ResultsPerPage, model.RecentDays);
+            return View(model);
+        }
 
         /// <summary>
         /// 

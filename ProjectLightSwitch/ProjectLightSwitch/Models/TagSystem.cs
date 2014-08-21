@@ -231,11 +231,11 @@ namespace ProjectLightSwitch.Models
 
         #region View Model Creation
 
-        public static List<StorySearchResultModel> GetStorySearchResults(StorySearchInputModel searchModel)
+        public static List<StorySearchResultModel> GetStorySearchResults(StorySearchInputModel searchModel, int page, int resultsPerPage, int recentDays)
         {
             using (var context = new StoryModel())
             {
-                var minimumRecentDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(14));
+                var minimumRecentDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(recentDays));
                 //searchModel.
                 return context.StoryResponses.Include("Tags").Where(r =>
                     r.LocalizedStoryType.Language.IsActive
@@ -256,7 +256,8 @@ namespace ProjectLightSwitch.Models
                     OverallRating = context.StoryResponseRatings.Where(r=> r.StoryResponseId == sr.StoryResponseId).Sum(r=>r.Rating),
                     RecentRating = context.StoryResponseRatings.Where(r => r.StoryResponseId == sr.StoryResponseId && r.DateLeft >= minimumRecentDate).Sum(r=>r.Rating),
                     TranslatedStoryTypeId = sr.LocalizedStoryTypeId,
-                }).OrderByDescending(sr=>sr.RecentRating).ToList();
+                }).OrderByDescending(sr=>sr.RecentRating).OrderByDescending(sr => sr.StoryResponse.CreationDate)
+                  .Skip(resultsPerPage*page).Take(resultsPerPage).ToList();
             }
         }
         
