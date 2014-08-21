@@ -17,125 +17,163 @@
 @section scripts
 {
     <script type="text/javascript" language="javascript">
-        $(document).ready(function () {
+        var val = {};
 
-            //$.validator.setDefaults({
-            //    debug: true,
-            //    success: "valid"
-            //});
+        (function (context, formId) {
+            
+            
+            
+            $(document).ready(function () {
+                context._init();
 
-            showSection(0);
+            });
 
-            $("#form").validate({
-                rules: {
+            context._init = function ()
+            {
+                this._form = $('#' + formId);
+                this._form.children('section').hide();
+                this._form.find('section:first-child').show();
+                this.currentSection = 0;
+
+                this._form.find('.next-section').bind('click', function (evt) {
+                    evt.preventDefault();
+                    this.navigateNext();
+                }.bind(this));
+                this._form.find('.prev-section').bind('click', function (evt) {
+                    evt.preventDefault();
+                    this.navigatePrevious();
+                }.bind(this));
+                this._form.submit(function (evt) {
+                    if (!this._validateCurrentSection) {
+                        evt.preventDefault();
+                    }
+                }.bind(this));
+
+
+
+                $.validator.addMethod(
+                    "regex",
+                    function (value, element, regexp) {
+                        //var re = new RegExp(regexp);
+                        return this.optional(element) || regexp.test(value);
+                    },
+                    "Invalid input"
+                );
+
+                this._rules = {
                     'name': {
+                        required: true,
+                        minlength: 8,
+                    },
+                    'age': {
+                        required: true,
+                        min: 13,
+                        max: 150
+                    },
+                    'name2': {
+                        regex: /^eric$/i,
+                        required: true,
+                    },
+                    'age2': {
+                        required: true
+                    },
+                    'name3': {
                         required: true,
                         minlength: 2,
                     },
-                    'age': {
+                    'age3': {
                         required: true
-                    },
-
-                    'name2': {
-                required: true,
-                minlength: 2,
-                },
-                'age2': {
-                required: true
-                },
-
-                'name3': {
-                    required: true,
-                    minlength: 2,
-                    },
-                    'age3': {
-                    required: true
-                }
-                },
-                messages: {
-                    'name': {
-                        required: "Name is required",
-                        minlength: $.validator.format("Please, at least {0} characters are necessary")
-                    }, 
-                    'age': {
-                        required: "Age is required",
-                    },
-                    'name2': {
-                        required: "Name is required",
-                        minlength: $.validator.format("Please, at least {0} characters are necessary")
-                    },
-                    'age2': {
-                        required: "Age is required",
-                    },
-                    'name3': {
-                        required: "Name is required",
-                        minlength: $.validator.format("Please, at least {0} characters are necessary")
-                    },
-                    'age3': {
-                        required: "Age is required",
                     }
-                }
-            });
-            //$("#form").submit(function (ev) {
+                };
 
-            //});
-        });
-        
-        function showSection(idx)
-        {
-            $('#form').find('section').hide();
-            $('#form section:nth-child(' + (idx + 1) + ')').show();
-        }
+                this._validator = context._form.validate({
+                    'rules': this._rules
+                });
+            }
 
-        function validateForm(sender, target)
-        {
-            var isValid = true;
-            $.each($(sender).closest('section').find('input[data-val]'), function (idx, item) {
-                if (typeof ($(item).valid) == 'function' && !$(item).valid()) {
-                    isValid = false;
+            context.navigateToSection = function (idx)
+            {
+                var sections = this._form.children('section');
+                if (idx == -1)
+                {
+                    this.currentSection = 0;
                     return;
                 }
-            });
-            if (isValid) {
-                showSection(target);
+                else if (idx == sections.length) {
+                    this.currentSection--;
+                    this._form.trigger('submit');
+                }
+                else
+                {
+                    sections.hide();
+                    $(sections[idx]).show();
+                    this.currentSection = idx;
+                }
             }
-        }
+
+            context.navigateNext = function()
+            {
+                if (this._validateCurrentSection())
+                {
+                    this.navigateToSection(this.currentSection + 1);
+                }
+            }
+
+            context.navigatePrevious = function () {
+                this.navigateToSection(this.currentSection - 1);
+            }
+
+            context._validateCurrentSection = function () {
+                var inputs = this._form.find('section:visible').find('input');
+                var len = inputs.length;
+
+                var result = true;
+                for (var i = 0; i < len; i++)
+                {
+                    if (!this._validator.element($(inputs[i])))
+                    {
+                        result = false;
+                    }
+                    //if (typeof (this._rules[$(inputs[i]).attr('name')]) != 'undefined' && !$(inputs[i]).valid()) {
+                    //    result = false;
+                    //}
+                }
+                
+                return result;
+            }
+        })(val, 'form');
     </script>
 }
 Tab Navigator:
 <h3>My Tags:</h3>
 
-<form id="form" action="#" method="get" onsubmit="validateForm()">
+<form id="form" action="#submitted" method="get">
     <section id="part1">
         <div id="extra">part1</div>
 
-        <input id="name" name="name" type="text" data-val="1" />
-        <input id="age" name="age" type="text" data-val="1" />
+        <input id="name" name="name" type="text" />
+        <input id="age" name="age" type="text" />
 
-        <a href="#" onclick="validateForm(this, 1); return false;">Next</a>
+        <a href="#" class="next-section">Next</a>
     </section>
     
     <section id="part2">
         <div id="extra">part2</div>
 
-        <input id="name2" name="name2" type="text" data-val="1" />
-        <input id="age2" name="age2" type="text" data-val="1" />
+        <input id="name2" name="name2" type="text" />
+        <input id="age2" name="age2" type="text" />
 
-        <a href="#" onclick="validateForm(this, 2); return false;">Next</a>
+        <a href="#" class="prev-section">Previous</a>
+        <a href="#" class="next-section">Next</a>
     </section>
 
     <section id="part3">
         <div id="extra">part3</div>
 
-        <input id="name3" name="name3" type="text" data-val="1" />
-        <input id="age3" name="age3" type="text" data-val="1" />
+        <input id="name3" name="name3" type="text" />
+        <input id="age3" name="age3" type="text" />
 
-        <a href="#" onclick="validateForm(this, 'done'); return false;">Next</a>
+        <a href="#" class="prev-section">Previous</a>
+        <a href="#" class="next-section">Next</a>
     </section>
-    
-
 </form>
-
-
-
-
