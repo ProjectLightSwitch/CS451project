@@ -1,127 +1,127 @@
-﻿@model ProjectLightSwitch.Models.TagEditViewModel
+﻿@model ProjectLightSwitch.Models.TagViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Edit";
-    string childTxtNameFormat = "Children[(0)].EnglishText";
-    string childRadioTypeFormat = "Children[(0)].TagType";
-    int initialChildBoxes = 3;
+    int initialChildBoxes = 6;
 }
 
 @section head {
 
-
-    <style type="text/css">
-
-    form {
-        background-color: lightgray;
-        padding:10px;
-        margin:10px;
-    }
-
-    </style>
-
     @Styles.Render("~/Content/tagnav")
     @Scripts.Render("~/bundles/tags")
+    @Scripts.Render("~/bundles/jqueryui")
 }
 
 @section scripts{
     <script type="text/javascript" language="javascript">
-
         $(document).ready(function () {
-            var tagnav = new TagNavigator('tagnav', {enabled: false});
-
-            for (var i = 0; i < '@(initialChildBoxes)'; i++) {
-                AddTextBox('addTextContainer');
-            }
+            var tagnav = new TagNavigator('tagnav', {
+                enabled: false,
+                editUrlFormat: '@Url.Action("Edit", "Tags", new { area = "SiteAdmin", id = "(tagid)" }).Replace("(tagid)", "{0}")',
+            });
+            $('.tag-type').buttonset();
         });
-
-        function AddTextBox(container) {
-            container = $('#' + container);
-            var childTxtNameFormat = '@childTxtNameFormat';
-            var idx = container.find('input[type=text]').length;
-            var radioName = '@childRadioTypeFormat'.replace("(0)", idx);
-            var html = [
-                '<tr><td><fieldset><legend>Type</legend>',
-                '<label>Navigational Tag <input type="radio" style="display:inline" checked="checked" name="', radioName, '" value="', @((int)ProjectLightSwitch.Models.Enums.TagType.NavigationalTag), '"></label>',
-                '<label>Selectable (End) Tag <input type="radio" style="display:inline" name="', radioName, '" value="', @((int)ProjectLightSwitch.Models.Enums.TagType.SelectableTag), '"> </label>',
-                '</fieldset></td><td>',
-                '<input style="display:block" type="text" name="' + childTxtNameFormat.replace('(0)', idx) + '" /></td></tr>'].join('');
-
-            var rows = container.find('tr');
-            if (rows.length > 0) {
-                container.find('tr:last').after(html);
-            }
-            else {
-                container.html(html);
-            }
-        }
     </script>
 }
 
-<h2>Edit @Model.Tag.EnglishText</h2>
+<h2>Edit Tag </h2>
 @Html.ActionLink("Go Back", "Index", new { id=Model.Tag.TagId })
 
-<form action="#" method="post">
-    <h3>Selected Tag</h3>
+<section class="tag-section">
+    <h3>Currently Selected Tag: <u>@Model.Translations[ProjectLightSwitch.Models.Language.DefaultLanguageId.ToString()]</u></h3>
     <div id="tagnav"></div>
-</form>
+</section>
 
-@using (Html.BeginForm("AddChildren", "Tags", new { area = "SiteAdmin" }, FormMethod.Post))
-{
-    @Html.Hidden("ParentId", Model.Tag.TagId)
-    <h3>Add Children</h3>
-    @:(Clear a textfield to delete a child.)
-    <table id="addTextContainer"></table>
-    <input type="button" value="Add another textbox" onclick="AddTextBox('addTextContainer');" />
-    <input type="submit" value="Add children" />
-}
+    @using (Html.BeginForm("Rename", "Tags", new { area = "SiteAdmin" }, FormMethod.Post))
+    {
+        <section class="tag-section">
+            <h3>Change Name</h3>
+            @Html.HiddenFor(m => m.Tag.TagId)
+            @Html.HiddenFor(m => m.Tag.TagType)
+            <div id="addTextContainer">
+                <table>
+                    @foreach (var lang in Model.Languages)
+                    {
+                        <tr>
+                            <td>
+                                @lang.Description:
+                            </td>
+                            <td>
+                                @{
+                        //string text;
+                        //Model.Translations.TryGetValue(lang.LanguageId, out text);
+                        var attrs = lang.LanguageId == ProjectLightSwitch.Models.Language.DefaultLanguageId
+                            ? new Dictionary<string, object>()
+                                {
+                                    { "class", "b" }, { "data-rules-required", "true" }
+                                }
+                    : null;
 
-@using (Html.BeginForm("Remove", "Tags", new { area = "SiteAdmin" }, FormMethod.Post))
-{ 
-    <h3>Delete Tag</h3>
-    @Html.Hidden("ParentId", Model.Tag.TagId)
-    <input type="submit" value="DELETE THIS TAG" onclick="return confirm('Do you really want to delete this tag?')" />
-}
+                        if (!Model.Translations.ContainsKey(lang.LanguageId.ToString()))
+                        {
+                            Model.Translations[lang.LanguageId.ToString()] = string.Empty;
+                        }
 
-
-@using (Html.BeginForm("ChangeName", "Tags", new { area = "SiteAdmin" }, FormMethod.Post))
-{
-    @Html.Hidden("TagId", Model.Tag.TagId)
-    <h3>Change Name</h3>
-    <div id="addTextContainer">
-        <table>
-            @foreach (var translation in Model.Translations)
-            {
-                if (translation.LanguageId != ProjectLightSwitch.Models.SiteSettings.DefaultLanguageId)
-                {
+                                }
+                                @Html.TextBoxFor(m => m.Translations[lang.LanguageId.ToString()], attrs)
+                            </td>
+                        </tr>
+                    }
                     <tr>
-                        <td>@translation.LanguageDescription:</td>
-                        <td>
-                            <input type="text"
-                                   name="@(childTxtNameFormat.Replace("(0)", translation.LanguageId.ToString()))"
-                                   value="@(translation.TagText ?? string.Empty)" />
+                        <td colspan="2">
+                            <input type="submit" class="full-width" value="Update Tag Names">
                         </td>
                     </tr>
-                }
-                else
-                {
+                </table>
+            </div>
+        </section>
+    }
+
+    @* Can this tag have children?*@
+    @if (Model.Tag.TagType == (byte)ProjectLightSwitch.Models.Enums.TagType.Category || Model.Tag.TagType == (byte)ProjectLightSwitch.Models.Enums.TagType.NavigationalTag)
+    {
+        using (Html.BeginForm("AddChildren", "Tags", new { area = "SiteAdmin" }, FormMethod.Post))
+        {
+            <section class="tag-section">
+                <h3>Add Children</h3>
+                <table id="addTextContainer">
+                    <thead>
+                        <tr>
+                            <th>Tag Type</th>
+                            <th>English Text</th>
+                        </tr>
+                    </thead>
+
+                    @for (int i = 0; i < initialChildBoxes; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.Hidden("model[" + i + "].Tag.TagId", Model.Tag.TagId)
+                                <div class="tag-type">
+                                    <input type="radio" id="tt_@(i)_sel" name="model[@i].Tag.TagType" value="@((int)ProjectLightSwitch.Models.Enums.TagType.SelectableTag)" checked />
+                                    <label for="tt_@(i)_sel">Selectable tag</label>
+                                    <input type="radio" id="tt_@(i)_nav" name="model[@i].Tag.TagType" value="@((int)ProjectLightSwitch.Models.Enums.TagType.NavigationalTag)" />
+                                    <label for="tt_@(i)_nav">Navigational tag</label>
+                                </div>
+                            </td>
+                            <td>
+                                @Html.TextBox("model[" + i + "].EnglishText")
+                            </td>
+                        </tr>
+                    }
                     <tr>
-                        <td><b>@translation.LanguageDescription:</b></td>
-                        <td>
-                            <input type="text" 
-                                   style="font-weight:bold;"
-                                   name="@(childTxtNameFormat.Replace("(0)", translation.LanguageId.ToString()))"
-                                   value="@Model.Tag.EnglishText" />
-                        </td>
+                        <td colspan="2"><input class="full-width" type="submit" value="Add children" /></td>
                     </tr>
-                }
-            }
-        </table>
-    </div>
-    <input type="button" value="Add another textbox" onclick="AddTextBox('addTextContainer', '@childTxtNameFormat');" />
-    <input type="submit" value="Add children" />
-}
-
-
-
+                </table>
+            </section>
+        }
+    }
+    @using (Html.BeginForm("Remove", "Tags", new { area = "SiteAdmin" }, FormMethod.Post))
+    {
+        <section class="tag-section">
+            <h3>Delete Tag</h3>
+            @Html.Hidden("TagId", Model.Tag.TagId)
+            <input type="submit" value="DELETE THIS TAG" onclick="return confirm('Do you really want to delete this tag?')" />
+        </section>
+    }
 

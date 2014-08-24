@@ -75,21 +75,21 @@ namespace ProjectLightSwitch.Models
         }
     }
 
-    public class StoryTypeResultsModel
+    public class StoryTypeResultsModel_OLD
     {
-        public IEnumerable<StoryTypeResultModel> StoryTypeModels {get;set;}
+        public IEnumerable<StoryTypeResultModel_OLD> StoryTypeModels {get;set;}
 
         public int LanguageId { get; set; }
 
         [Display(Name = "Search by title, description, and tag")]
         public string SearchTerm { get; set; }
 
-        public StoryTypeResultsModel()
+        public StoryTypeResultsModel_OLD()
         {
-            StoryTypeModels = Enumerable.Empty<StoryTypeResultModel>();
+            StoryTypeModels = Enumerable.Empty<StoryTypeResultModel_OLD>();
         }
     }
-    public class StoryTypeResultModel
+    public class StoryTypeResultModel_OLD
     {
         public int TranslatedStoryTypeId { get; set; }
         public int StoryTypeId { get; set; }
@@ -102,9 +102,43 @@ namespace ProjectLightSwitch.Models
         [Display(Name = "Associated Tags")]
         public IEnumerable<JSONTagModel> Tags { get; set; }
 
-        public StoryTypeResultModel()
+        public StoryTypeResultModel_OLD()
         {
             Tags = Enumerable.Empty<JSONTagModel>();
+        }
+    }
+
+    public class StoryTypesViewModel
+    {
+        public int TotalAvailableResults { get; set; }
+        public string SearchTerm { get; set; }
+        public int? LanguageId { get; set; }
+        public IEnumerable<StoryTypeViewModel> StoryTypeViewModels { get; set; }
+
+        [Range(0, int.MaxValue)]
+        public int Page { get; set; }
+
+        public int ResultsPerPage { get { return 500; } }
+
+        public StoryTypesViewModel()
+        {
+            LanguageId = Language.DefaultLanguageId;
+            StoryTypeViewModels = Enumerable.Empty<StoryTypeViewModel>();
+            Page = 0;
+        }
+    }
+
+    public class StoryTypeViewModel
+    {
+        public int StoryTypeId { get; set; }
+        public DateTime DateCreated { get; set; }
+        public IEnumerable<LocalizedStoryType> LocalizedStoryTypes { get; set; }
+        public IEnumerable<JSONTagModel> Tags { get; set; }
+
+        public StoryTypeViewModel()
+        {
+            Tags = Enumerable.Empty<JSONTagModel>();
+            LocalizedStoryTypes = Enumerable.Empty<LocalizedStoryType>();
         }
     }
 
@@ -116,6 +150,13 @@ namespace ProjectLightSwitch.Models
         [Required]
         public int LanguageId {get; set; }
 
+
+        [MaxLength(1024)]
+        [Display(Name = "Story Type Title: ")]
+        [Required]
+        public string Title { get; set; }
+
+        [MaxLength(4000)]
         [Display(Name = "Story Type Description: ")]
         [Required]
         public string Description { get; set; }
@@ -138,7 +179,7 @@ namespace ProjectLightSwitch.Models
     public class StoryResponseViewModel
     {
         // STORY TYPE
-        public StoryTypeResultModel StoryType { get; set; }
+        public StoryTypeResultModel_OLD StoryType { get; set; }
         public IEnumerable<Question> StoryQuestions { get; set; }
 
         public int LanguageId { get; set; }
@@ -195,22 +236,7 @@ namespace ProjectLightSwitch.Models
     }
 
 
-    #region Ancestor Creation
-    
-    public class TagInputModel
-    {
-        public Tag Tag { get; set; }
-        public int ParentId { get; set; }
-        public Dictionary<int, string> TranslatedNames = new Dictionary<int, string>();
 
-        public string EnglishText
-        {
-            get { return TranslatedNames[Language.DefaultLanguageId]; }
-            set { TranslatedNames[Language.DefaultLanguageId] = value; }
-        }
-    }
-
-    #endregion
 
     public class JSONTagModel
     {
@@ -225,29 +251,56 @@ namespace ProjectLightSwitch.Models
         public IEnumerable<JSONTagModel> children { get; set; }
     }
 
+    #region Tag Management
 
-    #region Ancestor Editing
-
-    // To display tags with all translations for editing
-    public class TagEditOutputModel
+    public class TagViewModel
     {
-        public List<Language> Languages { get; set; }
         public Tag Tag { get; set; }
-        public Dictionary<int, string> Translations { get; set; }
+        public List<Language> Languages { get; set; }
 
-        public TagEditOutputModel()
+        /// <summary>
+        /// Use this dictionary for binding because the 
+        /// </summary>
+        public Dictionary<string, string> Translations {get;set;}
+
+        public Dictionary<int, string> TranslationsWithIntKeys 
         {
-            Translations = new Dictionary<int, string>();
+            get
+            {
+                try
+                {
+                    return Translations.ToDictionary(kv => int.Parse(kv.Key), kv => kv.Value);
+                }
+                catch
+                {
+                    return new Dictionary<int, string>();
+                }
+            }
+        }
+
+        [Required]
+        public string EnglishText 
+        {
+            get
+            {
+                return Translations.Where(kv => kv.Key == Language.DefaultLanguageId.ToString()).Select(kv => kv.Value).FirstOrDefault();
+            }
+            set 
+            {
+                if(!string.IsNullOrWhiteSpace(value))
+                {
+                    Translations[Language.DefaultLanguageId.ToString()] = value;
+                }
+            }
+        }
+
+        public TagViewModel()
+        {
+            Tag = new Tag();
+            Translations = new Dictionary<string, string>();
         }
     }
 
-    public class TagEditInputModel
-    {
-        public int TagId { get; set; }
-        /// <summary>
-        /// [languageID, text] of tag name
-        /// </summary>
-        public IDictionary<int, string> Names { get; set; }
-    }
+  
     #endregion
 }

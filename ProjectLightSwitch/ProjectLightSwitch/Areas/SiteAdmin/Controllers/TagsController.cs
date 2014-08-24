@@ -7,6 +7,7 @@ using System.Web.Mvc;
 
 namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
 {
+    [Authorize(Roles = SiteSettings.AdminRole)]
     public class TagsController : Controller
     {
         //
@@ -19,35 +20,30 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
 
         public ActionResult Edit(int id)
         {
-            if (id == TagTree.InvisibleRootId)
+            if (id == TagTree.InvisibleRootId || TagSystem.GetTag(id) == null)
             {
                 return RedirectToAction("Index");
             }
-            return View(TagSystem.GetTagEditOutputModel(id));
+            return View(TagSystem.GetTagOutputViewModel(id));
         }
 
         [HttpPost]
-        public ActionResult ChangeName(TagEditInputModel model)
+        public ActionResult Rename(TagViewModel model)
         {
-            if (model.TagId == TagTree.InvisibleRootId)
+            if (
+                model.Tag != null
+                && !string.IsNullOrWhiteSpace(model.EnglishText)
+                && model.Tag.TagId != TagTree.InvisibleRootId
+                && ModelState.IsValid)
             {
-                return RedirectToAction("Index");
+                TagSystem.EditTag(model.Tag.TagId, model.TranslationsWithIntKeys);
+                HelperFunctions.AddGlobalMessage(TempData, "Tag updated.");
             }
-
-            bool success = false;
-            if (ModelState.IsValid)
+            else
             {
-                success = true;
-                foreach (var languageId in model.Names.Keys)
-                {
-                    success &= TagSystem.ChangeTagTranslation(model.TagId, languageId, model.Names[languageId]);
-                }
+                HelperFunctions.AddGlobalMessage(TempData, "Error updating tag.");
             }
-            string message = success 
-                ? "The tag name(s) were changed."
-                : "Not all tag names could be saved.";
-            HelperFunctions.AddGlobalMessage(TempData, message);
-            return RedirectToAction("Index", new { id = model.TagId });
+            return RedirectToAction("Edit", new { id = model.Tag != null ? model.Tag.TagId : 0 });
         }
 
         [HttpPost]
@@ -60,30 +56,30 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
 
             // Where to return after deletion
             var parent = TagSystem.GetParent(tagId);
-            int returnId = (parent != null) ? parent.TagId : TagTree.InvisibleRootId;
+
+            if (parent == null)
+            {
+                HelperFunctions.AddGlobalMessage(TempData, "Tag doesn't exist");
+                return RedirectToAction("Index");
+            }
 
             bool success = TagSystem.RemoveTag(tagId);
-            
             string message = success 
                 ? "The tag and its descendants were all removed." 
                 : "An error occurred while attempting to delete this tag.";
             HelperFunctions.AddGlobalMessage(TempData, message);
-            return RedirectToAction("Index", new { id = returnId });
+            return RedirectToAction("Index", new { id = parent.TagId });
         }
 
         [HttpPost]
-        public ActionResult AddChildren(TagInputModel model)
+        public ActionResult AddChildren(List<TagViewModel> model)
         {
-            bool success = false;
-            if (ModelState.IsValid)
-            {
-                TagSystem.AddTag(model);
-            }
-            string message = success
-                ? "Tags added"
-                : "Some or all child tags could not be added.";
+            model.RemoveAll(m => string.IsNullOrWhiteSpace(m.EnglishText));
+            int numAdded = (model.Count > 0) ? TagSystem.AddTags(model) : 0;
+            string message = string.Format("{0} of {1} tags were added.", numAdded, model.Count);
             HelperFunctions.AddGlobalMessage(TempData, message);
-            return RedirectToAction("Index", new { id = model.ParentId });
+            return RedirectToAction("Index", model.Count > 0 && model[0].Tag != null ? new { id = model[0].Tag.TagId } : null);
         }
     }
+
 }

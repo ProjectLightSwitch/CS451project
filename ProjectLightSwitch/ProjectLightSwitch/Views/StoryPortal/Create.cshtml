@@ -6,6 +6,8 @@
 
 @section scripts
 {
+    @Scripts.Render("~/Scripts/StoryWizard.js")
+
     <script type="text/javascript" language="javascript">
         $(document).ready(function () {
             (function () {
@@ -15,47 +17,46 @@
                 var tagnav = new TagNavigator($('#tagnav'));
                 var breadcrumbs = new SelectedTagBreadCrumbs($('#selectedTags'), tagnav, { cssPrefix: '', separator: ' > ', closable: true });
 
-                NavigateToStep(0);
+                //NavigateToStep(0);
             })();
         });
 
-        function NavigateToStep(idx)
-        {
-            var container = $('#storyWizard');
-            container.children().hide();
-            if (idx >= 0) {
-                container.children().eq(idx).show();
-            }
-        }
+        var wizard = new StoryWizard('storyForm', null);
+
     </script>
 }
 
-@using(Html.BeginForm("Create", "StoryPortal", FormMethod.Post))
+@using (Html.BeginForm("Create", "StoryPortal", FormMethod.Post, new { id="storyForm" }))
 {
-    @Html.HiddenFor(m => m.StoryType.TranslatedStoryTypeId, new { value=Model.StoryType.TranslatedStoryTypeId })
+    @Html.HiddenFor(m => m.StoryType.TranslatedStoryTypeId, new { value = Model.StoryType.TranslatedStoryTypeId })
 
-    @Html.ValidationSummary(    
+    @Html.ValidationSummary()
+    
     <div id="storyWizard">
-        <div>
+        <section>
             <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 1, NumSteps = 3 }, null); }</div>
             @{ Html.RenderPartial("~/Views/StoryPortal/_PersonalInfoEntry.cshtml", Model, null); }
-            <div><a href="#" onclick="NavigateToStep(1); return false;">Next</a></div>
-        </div>
-        <div>
+            <div>
+                <a href="#" class="next-section">Next</a>
+            </div>
+        </section>
+
+        <section>
             <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 2, NumSteps = 3 }, null); }</div> 
             @{ Html.RenderPartial("~/Views/StoryPortal/_StoryEntry.cshtml", Model, null);  }
-            <div>
-                <a href="#" onclick="NavigateToStep(0); return false;">Previous</a> | 
-                <a href="#" onclick="NavigateToStep(2); return false;">Next</a>
+            <div class="right">
+                <a href="#" class="prev-section">Previous</a> | 
+                <a href="#" class="next-section">Next</a>
             </div>
-        </div>
-        <div>
+        </section>
+
+        <section>
             <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 3, NumSteps = 3 }, null); }</div>
             @{ Html.RenderPartial("~/Views/StoryPortal/_AnswerEntry.cshtml", Model, null); }
-            <div>
-                <a href="#" onclick="NavigateToStep(1); return false;">Previous</a> | 
-                <input type="submit" value="Submit Story" />
+            <div class="right">
+                <a href="#" class="prev-section">Previous</a> |
+                <input class="next-section" type="submit" value="Submit Story" />
             </div>
-        </div>
+        </section>
     </div>
 }

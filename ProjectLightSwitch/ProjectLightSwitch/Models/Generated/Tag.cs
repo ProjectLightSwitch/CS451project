@@ -11,8 +11,8 @@ namespace ProjectLightSwitch.Models
     {
         public Tag()
         {
-            Ancestors = new HashSet<TagTree>();
             Descendants = new HashSet<TagTree>();
+            Ancestors = new HashSet<TagTree>();
             TranslatedTags = new HashSet<TranslatedTag>();
             StoryResponses = new HashSet<StoryResponse>();
             StoryTypes = new HashSet<StoryType>();
@@ -22,9 +22,9 @@ namespace ProjectLightSwitch.Models
 
         public byte TagType { get; set; }
 
-        public virtual ICollection<TagTree> Ancestors { get; set; }
-
         public virtual ICollection<TagTree> Descendants { get; set; }
+
+        public virtual ICollection<TagTree> Ancestors { get; set; }
 
         public virtual ICollection<TranslatedTag> TranslatedTags { get; set; }
 

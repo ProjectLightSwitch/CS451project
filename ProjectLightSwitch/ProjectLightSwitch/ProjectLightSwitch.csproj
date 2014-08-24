@@ -192,9 +192,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\SiteAdmin\Controllers\DataController.cs" />
-    <Compile Include="Areas\SiteAdmin\Controllers\SiteController.cs" />
+    <Compile Include="Areas\SiteAdmin\Controllers\HomeController.cs" />
     <Compile Include="Areas\SiteAdmin\Controllers\StoryTypeController.cs" />
     <Compile Include="Areas\SiteAdmin\Controllers\TagsController.cs" />
+    <Compile Include="Areas\SiteAdmin\Controllers\UserController.cs" />
     <Compile Include="Areas\SiteAdmin\SiteAdminAreaRegistration.cs" />
     <Compile Include="Attributes\Attributes.cs" />
     <Compile Include="Code\HelperFunctions.cs" />
@@ -324,6 +325,9 @@
     <Content Include="Images\orderedList3faded.png" />
     <Content Include="Scripts\holder.js" />
     <Content Include="Scripts\jcarousel.ajax.js" />
+    <Content Include="Areas\SiteAdmin\Views\User\Index.cshtml" />
+    <Content Include="Areas\SiteAdmin\Views\Site.cshtml" />
+    <Content Include="Areas\SiteAdmin\Views\Home\Index.cshtml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
@@ -344,6 +348,7 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\SiteAdmin.js" />
     <Content Include="Scripts\slider.js" />
+    <Content Include="Scripts\StoryWizard.js" />
     <Content Include="Scripts\TagChildrenViewer.js" />
     <Content Include="Scripts\TagCommon.js" />
     <Content Include="Scripts\TagNavigator.js" />
@@ -395,7 +400,6 @@
     <Content Include="Views\Home\PageP1.cshtml" />
     <Content Include="Views\Home\PageP2.cshtml" />
     <Content Include="Views\Home\PageP3.cshtml" />
-    <Content Include="Views\Shared\Slider.cshtml" />
     <Content Include="Views\Home\TagSearchTest.cshtml" />
     <Content Include="Views\Home\Story_Search.cshtml" />
     <Content Include="Views\Home\Story_Read.cshtml" />

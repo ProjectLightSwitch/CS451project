@@ -1,7 +1,8 @@
-﻿@model IEnumerable<ProjectLightSwitch.Models.StoryType>
+﻿@model ProjectLightSwitch.Models.StoryTypesViewModel
 
 @{
     ViewBag.Title = "Index";
+    var DescriptionSnippetLength = 200;
 }
 
 <h2>Index</h2>
@@ -11,21 +12,49 @@
 </p>
 <table>
     <tr>
-        <th>
-        </th>
+        <th></th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.StoryTypeId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.StoryTypeId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.StoryTypeId })
-        </td>
-    </tr>
-}
+    @foreach(var storyType in Model.StoryTypeViewModels)
+    {
+        <tr class="story-type">
+            <td>
+                Story Type #@storyType.StoryTypeId (created on: @(storyType.DateCreated.ToShortDateString()))
+            </td>
+            <td>
+                @* Add translations when there's time *@
+                @Html.ActionLink("Create Translation", "Edit", new { disabled="disabled", id = storyType.StoryTypeId }) |
 
+                @Html.ActionLink("Details", "Details", new { id=storyType.StoryTypeId }) |
+                @Html.ActionLink("DeleteST", "Delete", new { id=storyType.StoryTypeId })
+            </td>
+        </tr>
+        <tr class="story-type">
+            <td colspan="2">
+                Associated Tags:
+                <ul class="tagBreadcrumbs">
+                @foreach(var tag in storyType.Tags)
+                {
+                    <li>@tag.text</li>
+                }
+                </ul>
+            </td>
+        </tr>
+
+        @foreach(var localizedStory in storyType.LocalizedStoryTypes)
+        {
+            <tr class="localized-story-type">
+                <td>
+                    <h3>@localizedStory.Title</h3>
+                    (@localizedStory.Language.Description)
+                </td>
+                <td>
+                    @* Add translations when there's time *@
+                    @Html.ActionLink("Details", "Details", new { id = localizedStory.LocalizedStoryTypeId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = localizedStory.LocalizedStoryTypeId, onclick="return confirm('Are you sure you want to delete this translation?');" })
+                </td>
+            </tr>
+        }
+    }
 </table>

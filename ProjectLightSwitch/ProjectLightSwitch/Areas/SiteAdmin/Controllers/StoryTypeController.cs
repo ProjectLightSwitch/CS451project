@@ -9,17 +9,13 @@ using System.Transactions;
 
 namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class StoryTypeController : Controller
     {
-        //
-        // GET: /SiteAdmin/Survey/
-        // TODO: this might be better suited for a separate tag controller
-        StoryModel sb = new StoryModel();
-        public ActionResult Index()
+
+        public ActionResult Index(StoryTypesViewModel model)
         {
-            
-           // var context = TagSystem.GetTagsByType(showCategories: true);
-            var model = sb.StoryTypes;
+            TagSystem.PopulateAvailableStoryTypes(model);
             return View(model);
         }
 
@@ -61,9 +57,10 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
                             };
                             context.LocalizedStoryTypes.Add(localizedStoryType);
 
+                            model.Questions.RemoveAll(q => string.IsNullOrWhiteSpace(q));
                             foreach (var question in model.Questions)
                             {
-                                localizedStoryType.Questions.Add(new Question { LocalizedStoryTypeId = localizedStoryType.LocalizedStoryTypeId, Prompt = question });
+                                localizedStoryType.Questions.Add(new Question { Prompt = question });
                             }
                             context.SaveChanges();
                             transaction.Commit();
@@ -72,7 +69,6 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
                         {
                             transaction.Rollback();
                         }
-
                     }
                 }
                 HelperFunctions.AddGlobalMessage(TempData, "Story Type Created");
@@ -116,7 +112,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         //    TagSystem.AddTag(
         //        new Ancestor { EnglishText = Guid.NewGuid().ToString(), TagType = (byte)ProjectLightSwitch.Models.Enums.TagType.SelectableTag }, id);
 
-        //    ViewBag.Message = "Ancestors Added";
+        //    ViewBag.Message = "Descendants Added";
         //    return RedirectToAction("View", new { id = category });
         //}
 
@@ -125,7 +121,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         public ActionResult RemoveTag(int category, int id)
         {
             bool result = TagSystem.RemoveTag(id);
-            ViewBag.Message = result ? "Ancestors was deleted" : "Ancestors could not be deleted";
+            ViewBag.Message = result ? "Descendants was deleted" : "Descendants could not be deleted";
             return RedirectToAction("View", new { id = category });
         }
     }

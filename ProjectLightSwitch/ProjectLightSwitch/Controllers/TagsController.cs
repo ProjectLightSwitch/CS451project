@@ -13,17 +13,17 @@ namespace ProjectLightSwitch.Controllers
     public class TagsController : Controller
     {
         //
-        // GET: /Ancestors/
+        // GET: /Descendants/
         public ActionResult Index()
         {
             return View();
         }
 
         // TODO: make partial
-        public ActionResult TagNavigator()
-        {
-            return PartialView("~/Views/Shared/_TagNavigator.cshtml", TagSystem.GetCategories());
-        }
+        //public ActionResult TagNavigator()
+        //{
+        //    return PartialView("~/Views/Shared/_TagNavigator.cshtml", TagSystem.GetCategories());
+        //}
 
         //[AjaxOnly]
         [OutputCache(Duration = 30, VaryByParam = "*", VaryByHeader = "Accept-Language")]
@@ -61,24 +61,41 @@ namespace ProjectLightSwitch.Controllers
         //            bool success = context.SaveChanges() > 0;
         //            return Json(new { result = success, error = success ? null : "There was an error removing the tag." });
         //        }
-        //        return Content("{'error':'Ancestors not found.'}", "application/json");
+        //        return Content("{'error':'Descendants not found.'}", "application/json");
         //    }
         //}
 
-        [AjaxOnly]
-        public ActionResult RemoveTag(int tagId)
-        {
-            using (var context = new StoryModel())
-            {
-                var item = context.Tags.Where(t => t.TagId == tagId && t.TagId != TagTree.InvisibleRootId).FirstOrDefault();
-                if (item != null)
-                {
-                    context.Tags.Remove(item);
-                    bool success = context.SaveChanges() > 0;
-                    return Json(new { error = success ? null : "There was an error removing the tag." });
-                }
-                return Content("{'error':'Ancestors not found.'}", "application/json");
-            }
-        }
+    //    public ActionResult RemoveTag(int TagId)
+    //    {
+    //        var parent = TagSystem.GetParent(TagId);
+    //        string message = TagSystem.RemoveTag(TagId) ? "Tag and all child tags removed." : "There was an error removing the tag";
+    //        HelperFunctions.AddGlobalMessage(TempData, message);
+    //        return RedirectToAction("Index", (parent != null) ? new { id = parent.TagId } : null);
+    //    }
+
+    //    public ActionResult AddChildTags(List<TagViewModel> model)
+    //    {
+    //        var childrenToAdd = new List<TagViewModel>(model);
+
+    //        model.RemoveAll(m => string.IsNullOrWhiteSpace(m.EnglishText));
+
+    //        if (model.Count > 0 && ModelState.IsValid)
+    //        {
+    //            foreach(var child in model)
+    //            {
+    //                //don't add tags with no english tag
+    //                if (String.IsNullOrWhiteSpace(child.Translations[Language.DefaultLanguageId]))
+    //                { 
+    //                    childrenToAdd.Remove(child);
+    //                    HelperFunctions.AddGlobalMessage(TempData, "A tag could not be added because it lacked an English name.");
+    //                    continue;
+    //                }
+    //            }
+
+    //            return RedirectToAction("Index", new { id = model.First().ParentId });
+    //        }
+
+    //        return RedirectToAction("Index");
+    //    }
     }
 }

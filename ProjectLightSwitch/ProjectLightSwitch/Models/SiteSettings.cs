@@ -5,12 +5,12 @@ using System.Web;
 
 namespace ProjectLightSwitch.Models
 {
-    public static class SiteSettings
+    public class SiteSettings
     {
-        public static int DefaultResultsPerPage = 10;
+        public const int DefaultResultsPerPage = 10;
 
-        public static int DefaultRecentDays = 7;
+        public const int DefaultRecentDays = 7;
 
-
+        public const string AdminRole = "Administrator";
     }
 }

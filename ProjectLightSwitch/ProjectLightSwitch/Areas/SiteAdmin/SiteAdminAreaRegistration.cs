@@ -17,7 +17,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin
             context.MapRoute(
                 "SiteAdmin_default",
                 "SiteAdmin/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional },
+                new { action = "Index", controller = "Home", id = UrlParameter.Optional },
                 namespaces: new[] { "ProjectLightSwitch.Areas.SiteAdmin.Controllers" }
             );
         }

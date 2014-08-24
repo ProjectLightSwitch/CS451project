@@ -1,20 +1,28 @@
-﻿
-function TagNavigator(container) {
-    if (!container || !container.length) {
-        throw "Tag navigation container not found.";
-    }
-
+﻿function TagNavigator(containerId, options) {
     this.tagAdapter = new TagAdapter();
     this.tagSelector = new TagSelector();
 
     // JSONTagModel[]
     this.fullPath = null;
     
-    this._container = container;
+    // Override defaults
+    for (option in options)
+    {
+        if (options.hasOwnProperty(option)) {
+            TagOptions[option] = options[option];
+        }
+    }
+
+    
+
+    this._container = containerId ? '#' + containerId : '.tagnav';
     this._tagDepthContainer = null;
     this._childBrowsers = [];
     
     // "PRIVATES"
+    options = options || {};
+    this._enabled = getDefault(options.enabled, true);
+    this._editUrlFormat = getDefault(options.editUrlFormat, null);
     this._containerClassName = "tagnav";
     this._tagContainerClassName = "tags";
     this._tagDepthContainerClassName = "depth_container"
@@ -25,11 +33,13 @@ function TagNavigator(container) {
     this._parentIdAttr = "data-parentId";
     this._parentNameAttr = "data-parentName";
 
-    this.init();
+    $(document).ready(this.init.bind(this));
 }
 
 TagNavigator.prototype.init = function ()
 {
+    this._container = $(this._container);
+
     // The overall container
     this._container.children().remove();
     this._container.addClass(this._containerClassName);
@@ -130,11 +140,6 @@ TagNavigator.prototype.deselectTag = function (tagId) {
     this.tagSelector.onTagDeselected(tagId);
 }
 
-TagNavigator.prototype.tagDeselected = function (tagId) {
-    alert('test');
-}
-
-
 TagNavigator.prototype.isTagSelected = function (tagId)
 {
     return this.tagSelector.isTagSelected(tagId);
@@ -161,7 +166,7 @@ TagNavigator.prototype.navigateToTag = function(id)
             this.fullPath.push(result.parent);
             var div = $('<div>').addClass(this._tagDepthContainerClassName).appendTo(this._tagNavigationContainer);
             var selNavTag = (i < len - 1) ? response.results[i + 1].parent.id : null;
-            var childNav = new TagChildrenNavigator(div, this, result, null, { isSelfNavigating: false, cssPrefix: 'search', selNavTagId: selNavTag });
+            var childNav = new TagChildrenNavigator(div, this, result, null, { isSelNavigating: false, cssPrefix: 'search', selNavTagId: selNavTag, editUrlFormat: this._editUrlFormat, enabled: this._enabled });
             this.tagSelector.addListener(childNav, 'all');
         }
     }.bind(this));

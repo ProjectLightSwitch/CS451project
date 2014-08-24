@@ -18,7 +18,7 @@ namespace ProjectLightSwitch.Controllers
         }
 
         [HttpGet]
-        public ActionResult Browse([Bind(Include="SearchTerm,LanguageId")] StoryTypeResultsModel searchModel)
+        public ActionResult Browse([Bind(Include="SearchTerm,LanguageId")] StoryTypeResultsModel_OLD searchModel)
         {
             TagSystem.PopulateAvailableStoryTypes(searchModel);
             return View(searchModel);

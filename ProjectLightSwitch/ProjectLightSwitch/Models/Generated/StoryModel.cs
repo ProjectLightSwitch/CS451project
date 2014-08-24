@@ -61,13 +61,13 @@ namespace ProjectLightSwitch.Models
                 .Map(m => m.ToTable("StoryTypeTags", "pls").MapLeftKey("StoryTypeId").MapRightKey("TagId"));
 
             modelBuilder.Entity<Tag>()
-                .HasMany(e => e.Ancestors)
+                .HasMany(e => e.Descendants)
                 .WithRequired(e => e.Ancestor)
                 .HasForeignKey(e => e.AncestorId)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Tag>()
-                .HasMany(e => e.Descendants)
+                .HasMany(e => e.Ancestors)
                 .WithRequired(e => e.Descendant)
                 .HasForeignKey(e => e.DescendantId)
                 .WillCascadeOnDelete(false);

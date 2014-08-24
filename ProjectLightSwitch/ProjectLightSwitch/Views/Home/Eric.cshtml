@@ -12,146 +12,51 @@
 
 @section head {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/StoryWizard.js")
 }
 
 @section scripts
 {
+
     <script type="text/javascript" language="javascript">
-        var val = {};
+        $(document).ready(function () {
+            $('#form').validate();
+        });
 
-        (function (context, formId) {
-            
-            
-            
-            $(document).ready(function () {
-                context._init();
+        //var rules = 
+        //        this._rules = {
+        //            'radio': {
+        //                required: true
+        //            },
+        //            'name': {
+        //                required: true,
+        //                minlength: 8,
+        //            },
+        //            'age': {
+        //                required: true,
+        //                min: 13,
+        //                max: 150
+        //            },
+        //            'name2': {
+        //                regex: /^eric$/i,
+        //                required: true,
+        //            },
+        //            'age2': {
+        //                required: true
+        //            },
+        //            'name3': {
+        //                required: true,
+        //                minlength: 2,
+        //            },
+        //            'age3': {
+        //                required: true
+        //            }
+        //        };
 
-            });
+        //(function (form, rules) {
+        //    var wizard = new StoryWizard('form', rules);
+        //})('form', rules);
 
-            context._init = function ()
-            {
-                this._form = $('#' + formId);
-                this._form.children('section').hide();
-                this._form.find('section:first-child').show();
-                this.currentSection = 0;
-
-                this._form.find('.next-section').bind('click', function (evt) {
-                    evt.preventDefault();
-                    this.navigateNext();
-                }.bind(this));
-                this._form.find('.prev-section').bind('click', function (evt) {
-                    evt.preventDefault();
-                    this.navigatePrevious();
-                }.bind(this));
-                this._form.submit(function (evt) {
-                    if (!this._validateCurrentSection) {
-                        evt.preventDefault();
-                    }
-                }.bind(this));
-
-
-
-                $.validator.addMethod(
-                    "regex",
-                    function (value, element, regexp) {
-                        //var re = new RegExp(regexp);
-                        return this.optional(element) || regexp.test(value);
-                    },
-                    "Invalid input"
-                );
-
-                this._rules = {
-                    'radio' : {
-                        required: true
-                    },
-                    'name': {
-                        required: true,
-                        minlength: 8,
-                    },
-                    'age': {
-                        required: true,
-                        min: 13,
-                        max: 150
-                    },
-                    'name2': {
-                        regex: /^eric$/i,
-                        required: true,
-                    },
-                    'age2': {
-                        required: true
-                    },
-                    'name3': {
-                        required: true,
-                        minlength: 2,
-                    },
-                    'age3': {
-                        required: true
-                    }
-                };
-
-                this._validator = this._form.validate({
-                    'rules': this._rules,
-                    'errorPlacement': function (error, element) {
-                        if (element.attr("type") == "radio") {
-                            error.insertAfter(element.closest('form').find('[name="' +  element.attr('name') +'"]:last'));
-                        } else {
-                            error.insertAfter(element);
-                        }
-                    }
-                });
-            }
-
-            context.navigateToSection = function (idx)
-            {
-                var sections = this._form.children('section');
-                if (idx == -1)
-                {
-                    this.currentSection = 0;
-                    return;
-                }
-                else if (idx == sections.length) {
-                    this.currentSection--;
-                    this._form.trigger('submit');
-                }
-                else
-                {
-                    sections.hide();
-                    $(sections[idx]).show();
-                    this.currentSection = idx;
-                }
-            }
-
-            context.navigateNext = function()
-            {
-                if (this._validateCurrentSection())
-                {
-                    this.navigateToSection(this.currentSection + 1);
-                }
-            }
-
-            context.navigatePrevious = function () {
-                this.navigateToSection(this.currentSection - 1);
-            }
-
-            context._validateCurrentSection = function () {
-                var inputs = this._form.find('section:visible').find('input');
-                var len = inputs.length;
-
-                var result = true;
-                for (var i = 0; i < len; i++)
-                {
-                    if (!this._validator.element($(inputs[i])))
-                    {
-                        result = false;
-                    }
-                    //if (typeof (this._rules[$(inputs[i]).attr('name')]) != 'undefined' && !$(inputs[i]).valid()) {
-                    //    result = false;
-                    //}
-                }
-                
-                return result;
-            }
-        })(val, 'form');
     </script>
 }
 Tab Navigator:
@@ -161,12 +66,12 @@ Tab Navigator:
     <section id="part1">
         <div id="extra">part1</div>
 
-        <input type="radio" name="radio" value="1" />
-        <input type="radio" name="radio" value="2" />
-        <input type="radio" name="radio" value="3" />
+        <input type="radio" name="radio" value="1" data-rule-required="true" />
+        <input type="radio" name="radio" value="2" data-rule-required="true" />
+        <input type="radio" name="radio" value="3" data-rule-required="true" />
 
-        <input id="name" name="name" type="text" />
-        <input id="age" name="age" type="text" />
+        <input id="name" name="name" type="text" data-rule-required="true" />
+        <input id="age" name="age" type="text" data-rule-required="true" />
 
         <a href="#" class="next-section">Next</a>
     </section>

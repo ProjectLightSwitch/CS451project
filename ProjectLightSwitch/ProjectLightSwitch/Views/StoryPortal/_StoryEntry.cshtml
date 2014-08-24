@@ -1,13 +1,18 @@
 ﻿@model ProjectLightSwitch.Models.StoryResponseViewModel
 
+@{
+    var minStoryLength = "30";
+    
+}
+
 <section>
     <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part2Header</h3>
     @Html.LabelFor(t => t.StoryTitle)
-    @Html.TextBoxFor(t=>t.StoryTitle, new { @class="full-width" })
+    @Html.TextBoxFor(t=>t.StoryTitle, new Dictionary<string,object> { { "class", "full-width" }, {"data-rules-required", "true"}})
     @Html.ValidationMessageFor(t=>t.StoryTitle)
 
     @Html.LabelFor(t => t.StoryResponse)
-    @Html.TextAreaFor(t => t.StoryResponse, new { @class = "full-width", rows="8", cols="50" })
+    @Html.TextAreaFor(t => t.StoryResponse, new Dictionary<string,object> { { "class", "full-width" }, {"data-rules-required", "true"}, {"data-rule-minlength", minStoryLength}, {"rows","8"}, {"cols","50"}})
     @Html.ValidationMessageFor(t => t.StoryResponse)
 
     <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.TagPrompt</h3>

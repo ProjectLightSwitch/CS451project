@@ -22,25 +22,25 @@
 @section scripts {
 
     <script language="javascript" type="text/javascript">
-
+        var questionPrompt = 'Add a Question:';
 
         $(document).ready(function () {
             (function () {
-                var tagnav = new TagNavigator($('#tagnav'));
+                var tagnav = new TagNavigator('tagnav');
                 var breadcrumbs = new SelectedTagBreadCrumbs($('#selectedTags'), tagnav, { cssPrefix: '', separator: ' > ', closable: true });
 
                 var numInitialQuestions = 3;
                 for (var i = 0; i < numInitialQuestions; i++) {
-                    AddQuestionRow('questions', 'Add a Question:');
+                    AddQuestionRow('questions');
                 }
             })();
         });
 
-
+        
         var NumRows = 0;
-        function AddQuestionRow(tableId, prompt) {
+        function AddQuestionRow(tableId) {
             $('<tr>').append(
-                $('<td>').text(prompt)
+                $('<td>').text(questionPrompt)
             ).append(
                 $('<td>').append(
                     $('<input>').attr('name', 'Questions[' + NumRows + ']'))
@@ -57,15 +57,23 @@
     <fieldset>
         <legend>StoryType</legend>
         <div class="editor-label">
+            @Html.LabelFor(model => model.Title)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.Title, new { @class = "full-width" })
+            @Html.ValidationMessageFor(model => model.Title)
+        </div>
+
+        <div class="editor-label">
             @Html.LabelFor(model => model.Description)
         </div>
         <div class="editor-field">
-            @Html.EditorFor(model => model.Description)
+            @Html.TextAreaFor(model => model.Description, new { @class = "full-width", cols="50", rows="8"})
             @Html.ValidationMessageFor(model => model.Description)
         </div>
 
         <table id="questions"></table>
-        <input type="button" value="Add Row" onclick="AddQuestionRow('questions', 'Add a question');" />
+        <input type="button" value="Add Row" onclick="AddQuestionRow('questions');" />
         <h3></h3>
         <div id="tagnav"></div>
         <h4>Current Tags:</h4>

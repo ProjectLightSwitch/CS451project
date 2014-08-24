@@ -1,0 +1,12 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@using (@Html.BeginForm("AddAdmin", "User"))
+{
+    @:User: @Html.TextBox("username")
+    <input type="submit" value="Add user as admin" />
+}

@@ -1,13 +1,13 @@
-﻿div.tagnav {
+﻿/*
+    
+*/
+
+div.tagnav {
     background:white;
     border: 2px solid black;
 }
 
-div.tagsearch ul,
-div.tagsearch ul,
-div.tagnav ul,
-div.tagnav li {
-    
+.depth_container ul {
     list-style: none;
     list-style-image: none;
     list-style-type: none;
@@ -15,32 +15,24 @@ div.tagnav li {
     margin:0;
 }
 
-div.tagnav .tags > ul {
-    width: 20%;
-    float: left;
-    border: 2px solid black;
-}
-
-div.tagnav .tags > ul label {
-    display: inline;
-}
-
 /* Category List */
 
 div.tagnav .tags {
-    overflow: hidden;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 /* Lower tags */
 div.tagnav .tags > .depth_container 
 {
-    float:left;
-    border-right: 2px solid black;
-    border-left: 2px solid black;
-    border-top: none;
-    border-bottom: none;
+    display: inline-block;
+    vertical-align: top;
+    border-color: black;
+    border-style: solid;
+    border-width: 0 2px 1px 2px;
     width: 200px;
-    margin: 0 5px;
+    margin: 0 3px;
 }
 
 div.tagnav .tags > .depth_container li {
@@ -48,25 +40,22 @@ div.tagnav .tags > .depth_container li {
     border-bottom: 1px solid #808080;
 }
 
-div.tagnav .tags > .depth_container {
-    margin-bottom: 10px;
-    border-bottom: 2px solid black;
-
-}
-
 /* Category Tags */
 
 div.tagnav .tags > .depth_container:first-child 
 {
     width: 100%;
+    height: 50px;
+    overflow:auto;
+    display:block;
     padding: 0px;
+    border:none;
     border-bottom: 2px solid black;
-    overflow: auto;
-    float:none;
     font-weight: bold;
-    margin-bottom: 0;
+    margin: 0;
+    background-color: #dddddd;
 }
-
+/*
 div.tagnav .tags > .depth_container:first-child 
 {
     background-color: #dddddd;
@@ -76,23 +65,35 @@ div.tagnav .tags > .depth_container:first-child
     overflow: auto;
     float:none;
 }
-
+*/
 div.tagnav .tags > .depth_container:first-child li {
-    float: left;
-    padding: 5px 10px;
+    vertical-align: middle;
+    text-align: center;
+    display:inline-block;
+    height: 50px;
+    line-height: 50px;
     border-bottom: none;
     border-right: 2px solid black;
+    overflow: hidden;
+    padding: 0 20px;
+    margin: 0;
 }
 
 /* Common Tags*/
 
-
-
-div.tagsearch .depth_container li,
-div.tagnav .tags > .depth_container li {
-    cursor:pointer;
+.depth_container li {
     background-color: #dddddd;
     padding: 5px;
+    overflow:hidden;
+}
+
+.depth_container li label {
+    cursor: inherit;
+}
+
+
+.depth_container li.enabled {
+    cursor:pointer;
 }
 
 div.tagnav .tags > .depth_container li.sel {
@@ -107,8 +108,15 @@ div.tagnav a, div.tagnav a:visited {
 div.tagsearch .decorator,
 div.tagnav .decorator {
     float: right;
-    margin-right: 25px;
 }
+
+
+.tag-edit {
+    padding: 0 6px;
+}
+
+
+
 /********/
 
 .tagsearch .searchback {
@@ -117,14 +125,14 @@ div.tagnav .decorator {
 
 /********/
 
-ul.tabBreadcrumbs {
+ul.tagBreadcrumbs {
     float:left;
     padding: 0;
     margin: 10px;
     overflow: auto;    
 }
 
-ul.tabBreadcrumbs li {
+ul.tagBreadcrumbs li {
     list-style: none;
     list-style-image: none;
     float:left;
@@ -137,11 +145,20 @@ ul.tabBreadcrumbs li {
     border: 1px solid black;
 }
 
-ul.tabBreadcrumbs a, ul.tabBreadcrumbs a:visited, ul.tabBreadcrumbs a:hover  {
+ul.tagBreadcrumbs a, ul.tagBreadcrumbs a:visited, ul.tagBreadcrumbs a:hover  {
     color: white;
     text-decoration: none;
 }
 
-.tabBreadcrumbs .close {
+.tagBreadcrumbs .close {
     margin:0 4px;
+}
+
+/* Misc */
+
+.tag-section {
+    background-color: #dddddd;
+    margin: 10px 0 ;
+    padding: 10px;
+    border: 1px black solid;
 }

@@ -10,10 +10,10 @@
 var TagOptions =
 {
     selectedTagSubmissionName: "SelectedTags[%s]",
+    editUrlFormat: null,
     ajax_navigateToTagUrl: "/Tags/Navigate",
     ajax_searchUrl: "/Tags/Search",
     enabled: true,
-    editUrl: null,
     pathSeparator: ' > '
 };
 
@@ -165,11 +165,18 @@ TagSelector.prototype.removeListener = function (handler, subscriptionFor)
 // -------------------------- CATEGORY BROWSER ---------------------------------------
 // -----------------------------------------------------------------------------------
 
+function getDefault(value, def)
+{
+    return (typeof(value) != 'undefined') ? value : def;
+}
+
+
 // Example settings
 var TagChildrenNavigatorDefaultOptions = {
     isSelfNavigating: true,
     cssPrefix: 'search',
-    selNavTagId: null
+    selNavTagId: null,
+    enabled: true
 };
 
 function TagChildrenNavigator(
@@ -188,9 +195,12 @@ function TagChildrenNavigator(
     this._navigator = navigator;
 
     // Set option defaults
-    this._cssPrefix = options.cssPrefix || 'TagChildrenNavigator_';
-    this._isSelfNavigating = options.isSelfNavigating || false;
-    this._selNavTagId = options.selNavTagId || null;
+    options = options || {};
+    this._enabled = getDefault(options.enabled, true);
+    this._cssPrefix = getDefault(options.cssPrefix, 'TagChildrenNavigator_');
+    this._isSelfNavigating = getDefault(options.isSelfNavigating, false);
+    this._selNavTagId = getDefault(options.selNavTagId, null);
+    this._editUrlFormat = getDefault(options.editUrlFormat, null);
     
     this._loadTags(tagData);
 }
@@ -229,6 +239,12 @@ TagChildrenNavigator.prototype._loadTags = function (childrenInfo)
 {
     this.container.children().remove();
 
+    if (childrenInfo.parent.type != TagType.Category && childrenInfo.parent.type != TagType.InvisibleRoot && childrenInfo.parent.type != TagType.NavigationalTag)
+    {
+        this.container.hide();
+        return;
+    }
+    this.container.show();
     var ul = $('<ul>').appendTo(this.container);
     // Update label in path
     if (this._isSelfNavigating) {
@@ -258,29 +274,38 @@ TagChildrenNavigator.prototype._loadTags = function (childrenInfo)
     for (var i = 0; i < childrenLen; i++)
     {
         var tagContainer = $('<li>').addClass(this._cssPrefix + 'tag').attr('data-id', children[i].id).appendTo(ul);
-
-        if (this._selNavTagId == children[i].id)
+        tagContainer.addClass(this._enabled ? 'enabled' : null);
+        tagContainer.addClass((this._selNavTagId == children[i].id) ? 'sel' : null);
+        if (TagOptions.editUrlFormat)
         {
-            tagContainer.addClass('sel');
+            tagContainer.append($('<a>').attr('href', TagOptions.editUrlFormat.replace('{0}', children[i].id)).text('(Edit)').addClass('tag-edit'));
         }
 
         if (children[i].type == TagType.Category) {
-            tagContainer.text(children[i].text).addClass(this._cssPrefix + 'catTag');
-            tagContainer.on('click', this._navigator.navigateToTag.bind(this._navigator, children[i].id));
+            tagContainer.addClass(this._cssPrefix + 'catTag').append(
+                $('<span>').text(children[i].text));
+            if (this._enabled) {
+                tagContainer.on('click', this._navigator.navigateToTag.bind(this._navigator, children[i].id));
+            }
             tagContainer.append($('<span class="decorator">&gt;</span>'));
         }
         else if (children[i].type == TagType.NavigationalTag) {
-            tagContainer.text(children[i].text).addClass(this._cssPrefix + 'navTag');
-            tagContainer.on('click', this._navigator.navigateToTag.bind(this._navigator, children[i].id));
+            tagContainer.addClass(this._cssPrefix + 'navTag').append($('<span>').text(children[i].text));
+            if (this._enabled) {
+                tagContainer.on('click', this._navigator.navigateToTag.bind(this._navigator, children[i].id));
+            }
             tagContainer.append($('<span class="decorator">&gt;</span>'));
         }
         else if (children[i].type == TagType.SelectableTag) {
             tagContainer.addClass(this._cssPrefix + 'selTag');
             var isChecked = this._navigator.isTagSelected(children[i].id);
-            $('<label>').text(children[i].text).append(
-                $('<input>').addClass('decorator').attr({ 'type': 'checkbox'}).prop('checked', isChecked).on(
-                    'change', { context: this, tagInfo: children[i] }, this._tagCheckStateChanged
-            )).appendTo(tagContainer);
+            var input = $('<input>').addClass('decorator').attr({ 'type': 'checkbox' }).prop('checked', isChecked).on(
+                    'change', { context: this, tagInfo: children[i] }, this._tagCheckStateChanged);
+            if (!this._enabled) {
+                input.attr('disabled', 'disabled');
+            }
+
+            $('<label>').text(children[i].text).append(input).appendTo(tagContainer);
         }
     }
 }
@@ -313,7 +338,7 @@ SelectedTagBreadCrumbs.prototype.init = function(container)
     container.children().remove();
     this._container = $('<ul>');
     container.append(this._container);
-    this._container.addClass(this._cssPrefix + "tabBreadcrumbs")
+    this._container.addClass(this._cssPrefix + "tagBreadcrumbs")
     this._tagSelector.addListener(this, 'all');
 }
 

@@ -62,6 +62,7 @@ TagSearcher.prototype.init = function () {
                     catChildren,
                     catChildren.parent.id,
                     {
+                        enabled: true,
                         isSelfNavigating: true,
                         cssPrefix: 'search'
                     });
@@ -191,7 +192,7 @@ TagSearcher.prototype.navigateToTag = function (id)
         this.tagSelector.removeListener(oldBrowser, catId);
 
         // Recycle the container
-        var browser = new TagChildrenNavigator(container, this, leaves, catId, { isSelfNavigating: true, cssPrefix: 'search' })
+        var browser = new TagChildrenNavigator(container, this, leaves, catId, { isSelfNavigating: true, cssPrefix: 'search', enabled: true })
         this._categoryBrowsers[catId] = { 'path':path, 'browser': browser };
     }.bind(this));
 }
