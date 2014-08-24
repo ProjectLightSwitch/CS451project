@@ -127,7 +127,6 @@ namespace ProjectLightSwitch.Models
             Page = 0;
         }
     }
-
     public class StoryTypeViewModel
     {
         public int StoryTypeId { get; set; }
@@ -140,6 +139,13 @@ namespace ProjectLightSwitch.Models
             Tags = Enumerable.Empty<JSONTagModel>();
             LocalizedStoryTypes = Enumerable.Empty<LocalizedStoryType>();
         }
+    
+    }
+    public class LocalizedStoryTypeViewModel
+    {
+        public int LocalizedStoryTypeId { get; set; }
+        public List<JSONTagModel> Tags { get; set; }
+        public LocalizedStoryType LocalizedStoryType { get; set; }
     }
 
     public class StoryTypeCreationModel

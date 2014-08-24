@@ -1,8 +1,9 @@
 ﻿@model ProjectLightSwitch.Models.StoryTypesViewModel
 
 @{
-    ViewBag.Title = "Index";
-    var DescriptionSnippetLength = 200;
+    ViewBag.Title = "Story Type Management";
+    var languages = ProjectLightSwitch.Models.TagSystem.GetLanguages();
+
 }
 
 <h2>Index</h2>
@@ -42,12 +43,12 @@
             </td>
         </tr>
 
-        @foreach(var localizedStory in storyType.LocalizedStoryTypes)
+        foreach(var localizedStory in storyType.LocalizedStoryTypes)
         {
             <tr class="localized-story-type">
                 <td>
                     <h3>@localizedStory.Title</h3>
-                    (@localizedStory.Language.Description)
+                    (@languages.Where(l=>l.LanguageId == localizedStory.LanguageId).Select(l=>l.Description).FirstOrDefault())
                 </td>
                 <td>
                     @* Add translations when there's time *@

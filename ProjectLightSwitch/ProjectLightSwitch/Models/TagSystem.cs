@@ -203,7 +203,30 @@ namespace ProjectLightSwitch.Models
 
         #region Story Types
 
-        public static void PopulateAvailableStoryTypes(StoryTypesViewModel model)
+        public static void PopulateLocalizedStoryTypeModel(LocalizedStoryTypeViewModel model)
+        {
+            using (var context = new StoryModel())
+            {
+                var q = context.LocalizedStoryTypes.Include("Questions").FirstOrDefault(s => s.LocalizedStoryTypeId == model.LocalizedStoryTypeId);
+
+                if (q == null)
+                {
+                    return;
+                }
+                model.LocalizedStoryType = q;
+                model.Tags = q.StoryType.Tags.Select(t=>
+                    new JSONTagModel { 
+                            id = t.TagId, 
+                            type = t.TagType, 
+                            text = t.TranslatedTags
+                                    .Where(tt=>tt.LanguageId == q.LanguageId)
+                                    .Select(tt=>tt.Text)
+                                    .FirstOrDefault()
+                    }).ToList();
+            }
+        }
+
+        public static void PopulateStoryTypesViewModel(StoryTypesViewModel model)
         {
             model.Page = Math.Max(0, model.Page);
             if(model.LanguageId == 0)
@@ -220,6 +243,8 @@ namespace ProjectLightSwitch.Models
 
             using (var context = new StoryModel())
             {
+                context.Configuration.LazyLoadingEnabled = false;
+
                 var q = context.LocalizedStoryTypes.Include("Language")
                        .Where(s =>
                            (
@@ -235,71 +260,76 @@ namespace ProjectLightSwitch.Models
                                         && t.Text.Contains(model.SearchTerm))
                            )
                         )
-                        .OrderBy(s=>s.StoryTypeId)
-                        .OrderBy(s=>s.LanguageId)
+
+                        .OrderBy(s => s.StoryTypeId)
+                        .OrderBy(s => s.LanguageId)
                         .GroupBy(lst => lst.StoryType);
 
                 // TODO: Don't pass full localized story types with full descriptions for performance
 
                 model.TotalAvailableResults = q.Count();
-                model.StoryTypeViewModels = 
-                   q.Skip(model.Page * model.ResultsPerPage)
+                model.StoryTypeViewModels =
+                   q
+                    .OrderBy(s => s.Key.StoryTypeId)
+                    .Skip(model.Page * model.ResultsPerPage)
                     .Take(model.ResultsPerPage)
                     .ToList()
-                    .Select(g => new StoryTypeViewModel { 
+                    .Select(g => new StoryTypeViewModel
+                    {
                         StoryTypeId = g.Key.StoryTypeId,
                         DateCreated = g.Key.DateCreated,
-                        LocalizedStoryTypes = g.ToList(),
-                        Tags = g.Key.Tags.Select(t=> new JSONTagModel { 
-                            id = t.TagId, 
-                            type = t.TagType, 
+                        LocalizedStoryTypes = g..ToList(),
+                        Tags = g.Key.Tags.Select(t => new JSONTagModel
+                        {
+                            id = t.TagId,
+                            type = t.TagType,
                             text = t.TranslatedTags
-                                    .Where(tt=>tt.LanguageId == tagLangId)
-                                    .Select(tt=>tt.Text)
+                                    .Where(tt => tt.LanguageId == tagLangId)
+                                    .Select(tt => tt.Text)
                                     .FirstOrDefault()
-                        })
+                        }).ToList()
                     }).ToList();
+            }
+        }
 
-                //foreach (var group in results)
-                //{ 
-                //    model.StoryTypeViewModels
+        public static string CreateStoryType(StoryTypeCreationModel model)
+        {
+            using (var context = new StoryModel())
+            {
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var storyType = new StoryType();
+                        context.StoryTypes.Add(storyType);
+                        storyType.Tags = context.Tags.Where(t2 => model.SelectedTags.Contains(t2.TagId)).ToList();
+                        //context.SaveChanges();
 
-                //    var storyType 
-                //    group.Key
-                
-                //}
+                        var localizedStoryType = new LocalizedStoryType
+                        {
+                            Title = model.Title,
+                            Description = model.Description,
+                            // TODO: Add real localization
+                            LanguageId = Language.DefaultLanguageId, // model.LanguageId;
+                            StoryType = storyType,
+                        };
+                        context.LocalizedStoryTypes.Add(localizedStoryType);
 
-
-
-            //    model.StoryTypeModels = context.LocalizedStoryTypes
-            //           .OrderByDescending(s => s.StoryType.DateCreated)
-            //           .Where(s =>
-            //               (
-            //                    model.LanguageId == null 
-            //                    || (s.LanguageId == model.LanguageId 
-            //                    && s.Language.IsActive ))
-            //               && (
-            //                    model.SearchTerm == null 
-            //                    || s.Title.Contains(model.SearchTerm)
-            //                    || s.Description.Contains(model.SearchTerm)
-            //                    || s.StoryType.Tags.SelectMany(t=>t.TranslatedTags).Any(t=>
-            //                            t.LanguageId == model.LanguageId 
-            //                            && t.Text.Contains(model.SearchTerm))
-            //               )
-            //            )
-            //           .Select(s => new StoryTypeViewModel { 
-            //               StoryTypeId = s.StoryTypeId,
-            //               TranslatedStoryTypeId = s.LocalizedStoryTypeId,
-            //               Title = s.Title,
-            //               Description = s.Description, 
-            //               Tags = s.StoryType.Tags.Select(t=> 
-            //                   new JSONTagModel { 
-            //                       id = t.TagId, 
-            //                       type = t.TagType, 
-            //                       text = t.TranslatedTags
-            //                               .Where(tt=>tt.LanguageId == model.LanguageId)
-            //                               .Select(tt=>tt.Text).FirstOrDefault() }).ToList()
-            //           }).ToList();
+                        model.Questions.RemoveAll(q => string.IsNullOrWhiteSpace(q));
+                        foreach (var question in model.Questions)
+                        {
+                            localizedStoryType.Questions.Add(new Question { Prompt = question });
+                        }
+                        context.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        return "Error";
+                    }
+                }
+                return null;
             }
         }
 

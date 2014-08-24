@@ -15,7 +15,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
 
         public ActionResult Index(StoryTypesViewModel model)
         {
-            TagSystem.PopulateAvailableStoryTypes(model);
+            TagSystem.PopulateStoryTypesViewModel(model);
             return View(model);
         }
 
@@ -35,66 +35,28 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         {
             if (ModelState.IsValid)
             {
-                using (var context = new StoryModel())
-                {
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            var storyType = new StoryType();
-                            context.StoryTypes.Add(storyType);
-                            storyType.Tags = context.Tags.Where(t2=> 
-                                model.SelectedTags.Contains(t2.TagId)).ToList();
-                            //context.SaveChanges();
-
-                            var localizedStoryType = new LocalizedStoryType
-                            {
-                                Description = model.Description,
-                                // TODO: Add real localization
-                                LanguageId = Language.DefaultLanguageId, // model.LanguageId;
-                                StoryType = storyType, 
-                                //StoryTypeId = storyType.StoryTypeId,
-                            };
-                            context.LocalizedStoryTypes.Add(localizedStoryType);
-
-                            model.Questions.RemoveAll(q => string.IsNullOrWhiteSpace(q));
-                            foreach (var question in model.Questions)
-                            {
-                                localizedStoryType.Questions.Add(new Question { Prompt = question });
-                            }
-                            context.SaveChanges();
-                            transaction.Commit();
-                        }
-                        catch (Exception)
-                        {
-                            transaction.Rollback();
-                        }
-                    }
-                }
-                HelperFunctions.AddGlobalMessage(TempData, "Story Type Created");
+                var response = TagSystem.CreateStoryType(model);
+                var message = response ?? "Story type created";
+                HelperFunctions.AddGlobalMessage(TempData, message);
                 return RedirectToAction("Index");
             }
-            HelperFunctions.AddGlobalMessage(TempData, "Error");
+            HelperFunctions.AddGlobalMessage(TempData, "Invalid input");
             return RedirectToAction("Index");
         }
 
-        //public ActionResult Create([Bind(Include = "Description,QuestionText")] StoryType storyType)
-        //{
-        //    if (this.ModelState.IsValid)
-        //    {
-        //        using (var context = new StoryModel())
-        //        {
-        //            context.StoryTypeModels.Add(storyType);
-        //            context.SaveChanges();
-        //        }
-        //    }
-
-        //    return View();
-        //}
         public ActionResult Details(int id)
         {
-            var model = sb.StoryTypes.Find(id);
-            return View(model);
+            var model = new LocalizedStoryTypeViewModel() { LocalizedStoryTypeId = id };
+            TagSystem.PopulateLocalizedStoryTypeModel(model);
+            if (model.LocalizedStoryType != null)
+            {
+                return View(model);
+            }
+            else
+            {
+                HelperFunctions.AddGlobalMessage(TempData, "An Invalid story type was supplied.");
+                return RedirectToAction("Index");
+            }
         }
         public ActionResult View(string search, int id = 0)
         {
