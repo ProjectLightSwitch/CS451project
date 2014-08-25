@@ -278,7 +278,8 @@ namespace ProjectLightSwitch.Models
                     {
                         StoryTypeId = g.Key.StoryTypeId,
                         DateCreated = g.Key.DateCreated,
-                        LocalizedStoryTypes = g..ToList(),
+                        LocalizedStoryTypes = g.ToList(),
+                        Tags2 = g.Key,
                         Tags = g.Key.Tags.Select(t => new JSONTagModel
                         {
                             id = t.TagId,

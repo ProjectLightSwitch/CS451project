@@ -134,6 +134,9 @@ namespace ProjectLightSwitch.Models
         public IEnumerable<LocalizedStoryType> LocalizedStoryTypes { get; set; }
         public IEnumerable<JSONTagModel> Tags { get; set; }
 
+        public object Tags2 { get; set; }
+
+
         public StoryTypeViewModel()
         {
             Tags = Enumerable.Empty<JSONTagModel>();
