@@ -1,32 +1,30 @@
 ﻿@model ProjectLightSwitch.Models.StoryResponseViewModel
-<section>
-    <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part1Header</h3>
-
-    <table class="input-form">
-        <tr>
-            <td>@Html.LabelFor(t => t.Age):</td>
-            <td>
-                <input id="age" name="age" data-rules-required="true" data-rule-range="13,150">
-                @Html.ValidationMessageFor(t => t.Age)
-            </td>
-        </tr>
-        <tr>
-            <td>@Html.LabelFor(t => t.Gender):</td>
-            <td>
-                <div id="gender">
-                    <input type="radio" id="radioM" name="gender" value="Male" data-rules-required="true"><label for="radioM">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Male</label>
-                    <input type="radio" id="radioF" name="gender" value="Female" data-rules-required="true"><label for="radioF">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Female</label>
-                    <input type="radio" id="radioI" name="gender" value="Intersex" data-rules-required="true"><label for="radioI">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Intersex</label>
-                    @Html.ValidationMessageFor(t => t.Gender)
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>@Html.LabelFor(t => t.Country):</td>
-            <td>
-                @Html.DropDownListFor(t => t.Country, Model.CountryListItems)
-                @Html.ValidationMessageFor(t => t.Country)
-            </td>
-        </tr>
-    </table>
-</section>
+<h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part1Header</h3>
+<table class="input-form">
+    <tr>
+        <td>Age:</td>
+        <td>
+            <input type="text" id="age" name="age" data-rule-required="true" data-rule-min="13" data-rule-max="150" />
+        </td>
+    </tr>
+    <tr>
+        <td>Gender:</td>
+        <td>
+            <div id="gender">
+                <input type="radio" id="radioM" name="gender" value="Male" data-rule-required="true"><label for="radioM">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Male</label>
+                <input type="radio" id="radioF" name="gender" value="Female"><label for="radioF">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Female</label>
+                <input type="radio" id="radioI" name="gender" value="Intersex"><label for="radioI">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Intersex</label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>Country:</td>
+        <td>
+            <select data-rule-min="1">
+            @foreach (var lang in Model.CountryListItems)
+            { 
+                <option value="@lang.Value">@lang.Text</option>
+            }
+            </select>
+    </tr>
+</table>

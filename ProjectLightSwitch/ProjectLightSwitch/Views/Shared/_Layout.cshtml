@@ -40,11 +40,13 @@
                 <div>
                     <nav>
                         <ul>
-                            <li>@Html.ActionLink("StoryPortal", "Home", "StoryPortal")</li>
-                            <li>@Html.ActionLink("Media", "Index", "Home")</li>
-                            <li>@Html.ActionLink("Happiness Ninjas", "Index", "Home")</li>
-                            <li>@Html.ActionLink("Store", "Index", "Home")</li>
-                            <li>@Html.ActionLink("About Us", "About", "Home")</li>
+
+                            <!-- Reversed order because float right -->
+                            <li>@Html.ActionLink("About Us", "About", "Home", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Store", "Index", "Home", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Happiness Ninjas", "Index", "Home", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Media", "Index", "Home", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("StoryPortal", "Index", "StoryPortal", new { area="" }, null)</li>
                         </ul>
                     </nav>
                 </div>

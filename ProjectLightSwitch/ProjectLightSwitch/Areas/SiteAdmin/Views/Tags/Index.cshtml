@@ -13,7 +13,7 @@
 {
     <script type="text/javascript" language="javascript">
 
-    var tagnav = new TagNavigator('tagnav', {
+    var tagnav = new TagNavigator('#tagnav', {
             enabled:true,
             editUrlFormat: '@Url.Action("Edit", "Tags", new { area = "SiteAdmin", id = "(tagid)" }).Replace("(tagid)", "{0}")',
             selectedTagSubmissionName: "SelectedTags[(0)]",

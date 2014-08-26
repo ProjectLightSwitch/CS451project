@@ -1,24 +1,22 @@
 ﻿@model ProjectLightSwitch.Models.StoryResponseViewModel
+@{ var minStoryLength = "30"; }
+<h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part2Header</h3>
 
-@{
-    var minStoryLength = "30";
-    
-}
-
-<section>
-    <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part2Header</h3>
-    @Html.LabelFor(t => t.StoryTitle)
-    @Html.TextBoxFor(t=>t.StoryTitle, new Dictionary<string,object> { { "class", "full-width" }, {"data-rules-required", "true"}})
-    @Html.ValidationMessageFor(t=>t.StoryTitle)
-
-    @Html.LabelFor(t => t.StoryResponse)
-    @Html.TextAreaFor(t => t.StoryResponse, new Dictionary<string,object> { { "class", "full-width" }, {"data-rules-required", "true"}, {"data-rule-minlength", minStoryLength}, {"rows","8"}, {"cols","50"}})
-    @Html.ValidationMessageFor(t => t.StoryResponse)
-
-    <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.TagPrompt</h3>
-    <div id="tagnav"></div>
-    <br class="clear" />
-    <b>@ProjectLightSwitch.Views.StoryPortal.StoryResources.SelectedTagsLabel</b>
-    <div id="selectedTags"></div>
-    <br class="clear" />
-</section>
+<table>
+    <tr>
+        <td>Story Title:</td>
+        <td><input type="text" name="StoryTitle" style="max-width:100%" data-rule-required="true" /></td>
+    </tr>
+    <tr>
+        <td>Story:</td>
+        <td><textarea rows="8" cols="50" style="max-width:100%" data-rule-minlength="@minStoryLength"></textarea></td>
+    </tr>
+    <tr>
+        <td>Tags:</td>
+        <td><div id="tagnav"></div><br class="clear" /></td>
+    </tr>
+    <tr>
+        <td>Selected Tags:</td>
+        <td><div id="selectedTags"></div><br class="clear" /></td>
+    </tr>
+</table>

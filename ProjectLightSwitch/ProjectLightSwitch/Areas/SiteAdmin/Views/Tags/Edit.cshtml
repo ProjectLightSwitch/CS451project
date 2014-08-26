@@ -15,7 +15,7 @@
 @section scripts{
     <script type="text/javascript" language="javascript">
         $(document).ready(function () {
-            var tagnav = new TagNavigator('tagnav', {
+            var tagnav = new TagNavigator('#tagnav', {
                 enabled: false,
                 editUrlFormat: '@Url.Action("Edit", "Tags", new { area = "SiteAdmin", id = "(tagid)" }).Replace("(tagid)", "{0}")',
             });
@@ -53,7 +53,7 @@
                         var attrs = lang.LanguageId == ProjectLightSwitch.Models.Language.DefaultLanguageId
                             ? new Dictionary<string, object>()
                                 {
-                                    { "class", "b" }, { "data-rules-required", "true" }
+                                    { "class", "b" }, { "data-rule-required", "true" }
                                 }
                     : null;
 

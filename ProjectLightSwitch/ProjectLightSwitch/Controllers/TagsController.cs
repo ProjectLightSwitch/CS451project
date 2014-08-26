@@ -40,21 +40,21 @@ namespace ProjectLightSwitch.Controllers
         }
 
         //[AjaxOnly]
-        //public ActionResult AddChildTag(int tagId, string text, byte type, int languageId = Language.DefaultLanguageId)
+        //public ActionResult AddChildTag(int tagId, string text, byte storyType, int languageId = Language.DefaultLanguageId)
         //{
-        //    if(!Enum.IsDefined(typeof(TagType), type) || type == TagTree.InvisibleRootId)
+        //    if(!Enum.IsDefined(typeof(TagType), storyType) || storyType == TagTree.InvisibleRootId)
         //    {
         //        return Content("{'error':'Invalid Type.'}", "application/json");
         //    }
 
         //    using (var context = new StoryModel())
         //    {
-        //        var tagType = (TagType)type;
+        //        var tagType = (TagType)storyType;
 
-        //        TagSystem.AddTag(new Ancestor() { TagType = type }, tagId);
-        //        TagSystem.AddTag(type, tagId, 
+        //        TagSystem.AddTag(new Ancestor() { TagType = storyType }, tagId);
+        //        TagSystem.AddTag(storyType, tagId, 
 
-        //        var item = context.Tags.Where(t => t.TagId == type && t.TagId != TagTree.InvisibleRootId).FirstOrDefault();
+        //        var item = context.Tags.Where(t => t.TagId == storyType && t.TagId != TagTree.InvisibleRootId).FirstOrDefault();
         //        if (item != null)
         //        {
         //            context.Tags.Remove(item);
@@ -68,7 +68,7 @@ namespace ProjectLightSwitch.Controllers
     //    public ActionResult RemoveTag(int TagId)
     //    {
     //        var parent = TagSystem.GetParent(TagId);
-    //        string message = TagSystem.RemoveTag(TagId) ? "Tag and all child tags removed." : "There was an error removing the tag";
+    //        string message = TagSystem.RemoveTag(TagId) ? "Ancestor and all child tags removed." : "There was an error removing the tag";
     //        HelperFunctions.AddGlobalMessage(TempData, message);
     //        return RedirectToAction("Index", (parent != null) ? new { id = parent.TagId } : null);
     //    }

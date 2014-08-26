@@ -1,40 +1,63 @@
-﻿@model ProjectLightSwitch.Models.StoryTypeResultsModel
+﻿@model ProjectLightSwitch.Models.StoryTypesViewModel
 @{
     ViewBag.Title = "Browse available story types";
 }
 
 <h2>Browse Available Story Types</h2>
-<div class="storyTypes">
 
+<section class="accent-block padding-large">
     <h3>Search</h3>
-    <p></p>
-    @using (Html.BeginForm("Browse", "StoryPortal", FormMethod.Get, null))
+    @using (Html.BeginForm("Browse", "StoryPortal", null, FormMethod.Get))
     {
-        @Html.LabelFor(t=>t.SearchTerm)
+        @Html.LabelFor(t => t.SearchTerm)
         <span>: </span>
-        @Html.EditorFor(t=>t.SearchTerm)
+        @Html.EditorFor(t => t.SearchTerm)
         <input type="submit" value="Search" />
     }
+</section>
 
+<section class="padding-large">
     <h3>Results</h3>
-    @foreach (var result in Model.StoryTypeModels)
-    {
-        <div>
-            @Html.ActionLink("Create this story", "Create", new { id = result.TranslatedStoryTypeId }, null)
-            <h3>@result.Title</h3>
-            
-            <p><b>Description: </b>@result.Description</p>
-            <div>
-                <h4 class="nopadding nomargin">Associated Tags: </h4>
-                <ul class="tagBreadcrumbs">
-                    @foreach (var tag in result.Tags)
-                    {
-                        <li>@tag.text</li>
-                    }
-                </ul>
-                <br class="clear" />
-            </div>
-            
-        </div>
+    @if (!Model.StoryTypeViewModels.Any())
+    { 
+        if(!string.IsNullOrWhiteSpace(@Model.SearchTerm))
+        {
+            <p class="i">No story types containing &quot;@Model.SearchTerm&quot; were found.</p>
+        }
+        else
+        {
+            <p class="i">No story types have been created yet.</p>
+        }
     }
-</div>
+
+    @for (int i = 0; i < Model.StoryTypeViewModels.Count(); i++)
+    {
+        var storyType = Model.StoryTypeViewModels.ElementAt(i);
+
+        for (int j = 0; j < storyType.LocalizedStoryTypes.Count(); j++)
+        {
+            var localizedStoryType = storyType.LocalizedStoryTypes.ElementAt(i);
+            <div class="story-type">
+                <h4>
+                    @Html.ActionLink(localizedStoryType.Title, "Create", new { id = localizedStoryType.LocalizedStoryTypeId })
+                </h4>
+                <h5>
+                    @Html.LabelFor(m => m.StoryTypeViewModels.ElementAt(i).LocalizedStoryTypes.ElementAt(j).Description)
+                </h5>
+                <p>
+                    @Html.DisplayFor(m => m.StoryTypeViewModels.ElementAt(i).LocalizedStoryTypes.ElementAt(j).Description)
+                </p>
+                <div>
+                    <h4 class="nopadding nomargin">Associated Tags: </h4>
+                    <ul class="tagBreadcrumbs">
+                        @foreach (var tag in Model.StoryTypeViewModels.ElementAt(i).Tags)
+                        {
+                            <li>@tag.text</li>
+                        }
+                    </ul>
+                    <br class="clear" />
+                </div>
+            </div>
+        }
+    }
+</section>

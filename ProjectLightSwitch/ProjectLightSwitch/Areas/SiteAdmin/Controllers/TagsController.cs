@@ -37,7 +37,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
                 && ModelState.IsValid)
             {
                 TagSystem.EditTag(model.Tag.TagId, model.TranslationsWithIntKeys);
-                HelperFunctions.AddGlobalMessage(TempData, "Tag updated.");
+                HelperFunctions.AddGlobalMessage(TempData, "Ancestor updated.");
             }
             else
             {
@@ -59,7 +59,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
 
             if (parent == null)
             {
-                HelperFunctions.AddGlobalMessage(TempData, "Tag doesn't exist");
+                HelperFunctions.AddGlobalMessage(TempData, "Ancestor doesn't exist");
                 return RedirectToAction("Index");
             }
 

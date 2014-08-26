@@ -24,7 +24,7 @@
 
         $(document).ready(function () {
             (function () {
-                var tagnav = new TagNavigator('tagnav');
+                var tagnav = new TagNavigator('#tagnav', { });
                 var breadcrumbs = new SelectedTagBreadCrumbs($('#selectedTags'), tagnav, { cssPrefix: '', separator: ' > ', closable: true });
 
                 var numInitialQuestions = 3;
@@ -52,6 +52,9 @@
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
 
+    @Html.HiddenFor(m=>m.StoryTypeId)
+    @Html.HiddenFor(m=>m.LanguageId)
+    
     <fieldset>
         <legend>StoryType</legend>
         <div class="editor-label">
@@ -71,11 +74,15 @@
         </div>
 
         <table id="questions"></table>
-        <input type="button" value="Add Row" onclick="AddQuestionRow('questions');" />
-        <h3></h3>
-        <div id="tagnav"></div>
-        <h4>Current Tags:</h4>
-        <div id="selectedTags"></div>
+        <input type="button" value="Add another question" onclick="AddQuestionRow('questions');" />
+
+        @if(Model.StoryTypeId == 0)
+        {
+            <h3>Associated tags</h3>
+            <div id="tagnav"></div>
+            <h4>Current Tags:</h4>
+            <div id="selectedTags"></div>
+        }
     </fieldset>
 
     <p>

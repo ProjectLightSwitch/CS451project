@@ -14,33 +14,40 @@ namespace ProjectLightSwitch.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            return RedirectToAction("Browse");
         }
 
         [HttpGet]
         public ActionResult Browse([Bind(Include="SearchTerm,LanguageId")] StoryTypesViewModel searchModel)
         {
-            TagSystem.PopulateStoryTypesViewModel(searchModel);
+            StorySystem.PopulateStoryTypesViewModel(searchModel);
             return View(searchModel);
         }
 
         public ActionResult Search(StorySearchInputModel searchModel, int page = 0)
         {
             var model = new StorySearchResultsModel();
-            model.StorySearchResults = TagSystem.GetStorySearchResults(searchModel, page, model.ResultsPerPage, model.RecentDays);
+            model.StorySearchResults = StorySystem.GetStorySearchResults(searchModel, page, model.ResultsPerPage, model.RecentDays);
             return View(model);
         }
 
+        
         /// <summary>
         /// 
         /// </summary>
         /// <param name="storyType">Actually the <see cref="LocalizedStoryType.LocalizedStoryTypeId" /> to search for</param>
         /// <returns></returns>
-        public ActionResult Create(int id = -1)
+        public ActionResult Create(int id)
         {
             var model = new StoryResponseViewModel();
-            model.StoryType.TranslatedStoryTypeId = id;
-            TagSystem.PopulateStoryResponseModelOutput(ref model);
+            StorySystem.PopulateStoryResponseModelOutput(id, ref model);
+
+            if (model.StoryTypeResultModel == null)
+            { 
+                HelperFunctions.AddGlobalMessage(TempData, "An invalid story type was specified.");
+                return RedirectToAction("Index");
+            }
+
             return View(model);
         }
 
@@ -49,7 +56,7 @@ namespace ProjectLightSwitch.Controllers
         {
             if (ModelState.IsValid)
             {
-                var error = TagSystem.SaveStoryResponse(model);
+                var error = StorySystem.SaveStoryResponse(model);
                 HelperFunctions.AddGlobalMessage(
                     TempData,
                     error ?? "Your story has been successfully saved.");
@@ -57,11 +64,11 @@ namespace ProjectLightSwitch.Controllers
             }
             else
             {
-                if (model == null || model.StoryType == null || model.StoryType.TranslatedStoryTypeId <= 0)
+                if (model == null || model.StoryTypeResultModel == null || model.StoryTypeResultModel.TranslatedStoryTypeId <= 0)
                 {
                     return RedirectToAction("Index");
                 }
-                TagSystem.PopulateStoryResponseModelOutput(ref model);
+                StorySystem.PopulateStoryResponseModelOutput(model.StoryTypeResultModel.TranslatedStoryTypeId, ref model);
                 return View(model);
             }
         }

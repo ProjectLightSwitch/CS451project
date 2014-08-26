@@ -21,6 +21,7 @@ div.tagnav .tags {
     white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
+    min-height: 300px;
 }
 
 /* Lower tags */
@@ -126,6 +127,8 @@ div.tagnav .decorator {
 /********/
 
 ul.tagBreadcrumbs {
+    border:1px solid black;
+    background:#dddddd;
     float:left;
     padding: 0;
     margin: 10px;

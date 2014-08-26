@@ -15,28 +15,26 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
 
         public ActionResult Index(StoryTypesViewModel model)
         {
-            TagSystem.PopulateStoryTypesViewModel(model);
+            StorySystem.PopulateStoryTypesViewModel(model);
             return View(model);
         }
 
-        public ActionResult Create()
+        public ActionResult Create(int Language = Language.DefaultLanguageId, int StoryTypeId = 0)
         {
             var model = new StoryTypeCreationModel();
-            using (var context = new StoryModel())
-            {
-                model.LanguageId = Language.DefaultLanguageId;
-            }
-
+            model.LanguageId = Language;
+            model.StoryTypeId = StoryTypeId;
             return View(model);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult Create(StoryTypeCreationModel model)
         {
             if (ModelState.IsValid)
             {
-                var response = TagSystem.CreateStoryType(model);
-                var message = response ?? "Story type created";
+                var response = StorySystem.CreateStoryType(model);
+                var message = response ?? "Story storyType created";
                 HelperFunctions.AddGlobalMessage(TempData, message);
                 return RedirectToAction("Index");
             }
@@ -46,15 +44,15 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
 
         public ActionResult Details(int id)
         {
-            var model = new LocalizedStoryTypeViewModel() { LocalizedStoryTypeId = id };
-            TagSystem.PopulateLocalizedStoryTypeModel(model);
+            var model = new LocalizedStoryTypeViewModel();
+            StorySystem.PopulateLocalizedStoryTypeModel(id, model);
             if (model.LocalizedStoryType != null)
             {
                 return View(model);
             }
             else
             {
-                HelperFunctions.AddGlobalMessage(TempData, "An Invalid story type was supplied.");
+                HelperFunctions.AddGlobalMessage(TempData, "An Invalid story storyType was supplied.");
                 return RedirectToAction("Index");
             }
         }
@@ -78,13 +76,27 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
         //    return RedirectToAction("View", new { id = category });
         //}
 
-
-
-        public ActionResult RemoveTag(int category, int id)
+        [HttpPost]
+        public ActionResult DeleteStoryType(int id)
         {
-            bool result = TagSystem.RemoveTag(id);
-            ViewBag.Message = result ? "Descendants was deleted" : "Descendants could not be deleted";
-            return RedirectToAction("View", new { id = category });
+            bool result = StorySystem.DeleteStoryType (id);
+            ViewBag.Message = result ? "The story type was deleted" : "The selected story type was not found.";
+            return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public ActionResult DeleteLocalizedStoryType(int id)
+        {
+            bool result = StorySystem.DeleteLocalizedStoryType(id);
+            ViewBag.Message = result ? "The story type translation was deleted" : "The selected story type translation was not found.";
+            return RedirectToAction("Index");
+        }
+
+        //public ActionResult RemoveTag(int category, int id)
+        //{
+        //    bool result = TagSystem.RemoveTag(id);
+        //    ViewBag.Message = result ? "Descendants was deleted" : "Descendants could not be deleted";
+        //    return RedirectToAction("View", new { id = category });
+        //}
     }
 }

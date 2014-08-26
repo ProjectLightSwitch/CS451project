@@ -17,7 +17,7 @@ namespace ProjectLightSwitch.Models
             StoryResponses = new HashSet<StoryResponse>();
             StoryTypes = new HashSet<StoryType>();
         }
-
+        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
         public int TagId { get; set; }
 
         public byte TagType { get; set; }

@@ -60,6 +60,19 @@ namespace ProjectLightSwitch.Models
                 .WithMany(e => e.StoryTypes)
                 .Map(m => m.ToTable("StoryTypeTags", "pls").MapLeftKey("StoryTypeId").MapRightKey("TagId"));
 
+            //modelBuilder.Entity<StoryTypeTag>()
+            //.HasKey(c => new { c.StoryTypeId, c.TagId});
+
+            //modelBuilder.Entity<StoryType>()
+            //    .HasMany(c => c.Tags)
+            //    .WithRequired()
+            //    .HasForeignKey(c => c.TagId);
+
+            //modelBuilder.Entity<Tag>()
+            //    .HasMany(c => c.StoryTypes)
+            //    .WithRequired()
+            //    .HasForeignKey(c => c.StoryTypeId);  
+
             modelBuilder.Entity<Tag>()
                 .HasMany(e => e.Descendants)
                 .WithRequired(e => e.Ancestor)

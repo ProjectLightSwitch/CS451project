@@ -1,4 +1,4 @@
-﻿function TagNavigator(containerId, options) {
+﻿function TagNavigator(containerSelector, options) {
     this.tagAdapter = new TagAdapter();
     this.tagSelector = new TagSelector();
 
@@ -13,9 +13,7 @@
         }
     }
 
-    
-
-    this._container = containerId ? '#' + containerId : '.tagnav';
+    this._containerSelector = containerSelector;
     this._tagDepthContainer = null;
     this._childBrowsers = [];
     
@@ -38,7 +36,12 @@
 
 TagNavigator.prototype.init = function ()
 {
-    this._container = $(this._container);
+    this._container = $(this._containerSelector);
+
+    // Container wasn't found
+    if (!this._container.length) {
+        return;
+    }
 
     // The overall container
     this._container.children().remove();

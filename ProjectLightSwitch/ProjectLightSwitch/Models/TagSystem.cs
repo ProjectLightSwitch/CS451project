@@ -152,294 +152,64 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        #endregion
 
-
-        #region Story Responses
-
-        public static List<StorySearchResultModel> GetStorySearchResults(StorySearchInputModel searchModel, int page, int resultsPerPage, int recentDays)
+        public static string GetPaths_Json(int rootId, string searchTerm, bool returnAllDescendants, int languageId)
         {
+            //int resultLimit = 25;
             using (var context = new StoryModel())
             {
-                var minimumRecentDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(recentDays));
-                //searchModel.
-                return context.StoryResponses.Include("Tags").Where(r =>
-                    r.LocalizedStoryType.Language.IsActive
-                    && (searchModel.TranslatedStoryTypeId == 0 || r.LocalizedStoryTypeId == searchModel.TranslatedStoryTypeId)
-                    && (searchModel.Gender.Length == 0 || r.Gender == searchModel.Gender)
-                    && ((searchModel.MinAge == 0 || searchModel.MinAge <= r.Age) && (searchModel.MaxAge == 0 || searchModel.MaxAge >= r.Age))
-                    && (
-                        searchModel.SelectedTags.Count == 0
-                        || !searchModel.SelectedTags
-                                       .Any(t => r.LocalizedStoryType.StoryType.Tags
-                                                  .Select(stt => stt.TagId)
-                                                  .Union(searchModel.SelectedTags)
-                                                  .Contains(t)
-                                        )
-                    )
-                ).Select(sr => new StorySearchResultModel { 
-                    StoryResponse = sr, 
-                    OverallRating = context.StoryResponseRatings.Where(r=> r.StoryResponseId == sr.StoryResponseId).Sum(r=>r.Rating),
-                    RecentRating = context.StoryResponseRatings.Where(r => r.StoryResponseId == sr.StoryResponseId && r.DateLeft >= minimumRecentDate).Sum(r=>r.Rating),
-                    TranslatedStoryTypeId = sr.LocalizedStoryTypeId,
-                }).OrderByDescending(sr=>sr.RecentRating).OrderByDescending(sr => sr.StoryResponse.CreationDate)
-                  .Skip(resultsPerPage*page).Take(resultsPerPage).ToList();
-            }
-        }
+                // TODO: simplify query if possible
+                // TODO: limit results?
 
-        public static bool AddRating(int storyResponseId)
-        {
-            using (var context = new StoryModel())
-            {
-                var newRating = new StoryResponseRating();
-                newRating.StoryResponseId = storyResponseId;
-                newRating.Rating = 1;
-                context.StoryResponseRatings.Add(newRating);
-                return context.SaveChanges() > 0;
-            }
-        }
-        
-        #endregion
-
-        #region Story Types
-
-        public static void PopulateLocalizedStoryTypeModel(LocalizedStoryTypeViewModel model)
-        {
-            using (var context = new StoryModel())
-            {
-                var q = context.LocalizedStoryTypes.Include("Questions").FirstOrDefault(s => s.LocalizedStoryTypeId == model.LocalizedStoryTypeId);
-
-                if (q == null)
-                {
-                    return;
-                }
-                model.LocalizedStoryType = q;
-                model.Tags = q.StoryType.Tags.Select(t=>
-                    new JSONTagModel { 
-                            id = t.TagId, 
-                            type = t.TagType, 
-                            text = t.TranslatedTags
-                                    .Where(tt=>tt.LanguageId == q.LanguageId)
-                                    .Select(tt=>tt.Text)
-                                    .FirstOrDefault()
-                    }).ToList();
-            }
-        }
-
-        public static void PopulateStoryTypesViewModel(StoryTypesViewModel model)
-        {
-            model.Page = Math.Max(0, model.Page);
-            if(model.LanguageId == 0)
-            {
-                model.LanguageId = Language.DefaultLanguageId;
-            }
-
-            if(String.IsNullOrWhiteSpace(model.SearchTerm))
-            {
-                model.SearchTerm = null;
-            }
-            
-            int tagLangId = model.LanguageId ?? Language.DefaultLanguageId;
-
-            using (var context = new StoryModel())
-            {
-                context.Configuration.LazyLoadingEnabled = false;
-
-                var q = context.LocalizedStoryTypes.Include("Language")
-                       .Where(s =>
-                           (
-                                model.LanguageId == null
-                                || (s.LanguageId == model.LanguageId
-                                && s.Language.IsActive))
-                           && (
-                                model.SearchTerm == null
-                                || s.Title.Contains(model.SearchTerm)
-                                || s.Description.Contains(model.SearchTerm)
-                                || s.StoryType.Tags.SelectMany(t => t.TranslatedTags).Any(t =>
-                                        t.LanguageId == model.LanguageId
-                                        && t.Text.Contains(model.SearchTerm))
-                           )
+                var q = context.TagTree
+                    .Where(tt =>
+                        (
+                            searchTerm == null
+                            || (
+                                 context.TranslatedTags
+                                        .Where(trans =>
+                                            trans.LanguageId == languageId
+                                            && trans.Text == searchTerm
+                                            && trans.TagId == tt.DescendantId)
+                                        .Any()
+                            )
                         )
-
-                        .OrderBy(s => s.StoryTypeId)
-                        .OrderBy(s => s.LanguageId)
-                        .GroupBy(lst => lst.StoryType);
-
-                // TODO: Don't pass full localized story types with full descriptions for performance
-
-                model.TotalAvailableResults = q.Count();
-                model.StoryTypeViewModels =
-                   q
-                    .OrderBy(s => s.Key.StoryTypeId)
-                    .Skip(model.Page * model.ResultsPerPage)
-                    .Take(model.ResultsPerPage)
-                    .ToList()
-                    .Select(g => new StoryTypeViewModel
+                        && (rootId == TagTree.InvisibleRootId || context.TagTree.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
+                        && (returnAllDescendants || tt.PathLength == 1)
+                        && tt.DescendantId != TagTree.InvisibleRootId
+                     )
+                    .GroupBy(group => group.DescendantId)
+                    //.Select(group => new { TagId = group.Key, Nodes = group.OrderByDescending(t => t.PathLength).Select(t => t.Descendants) })
+                    //.ToList()
+                    .Select(group => new
                     {
-                        StoryTypeId = g.Key.StoryTypeId,
-                        DateCreated = g.Key.DateCreated,
-                        LocalizedStoryTypes = g.ToList(),
-                        Tags2 = g.Key,
-                        Tags = g.Key.Tags.Select(t => new JSONTagModel
-                        {
-                            id = t.TagId,
-                            type = t.TagType,
-                            text = t.TranslatedTags
-                                    .Where(tt => tt.LanguageId == tagLangId)
-                                    .Select(tt => tt.Text)
-                                    .FirstOrDefault()
-                        }).ToList()
-                    }).ToList();
-            }
-        }
+                        value = group.Key,
+                        //Nodes = t.Nodes.Select(n => new { n.TagId, n.TagType }),
+                        path = group.OrderByDescending(t => t.PathLength).Select(
+                            tt =>
+                                new
+                                {
+                                    text = tt.Ancestor.TranslatedTags
+                                             .Where(trans => trans.LanguageId == languageId)
+                                             .Select(trans => trans.Text)
+                                             .FirstOrDefault(),
+                                    id = tt.AncestorId,
+                                    type = tt.Ancestor.TagType
 
-        public static string CreateStoryType(StoryTypeCreationModel model)
-        {
-            using (var context = new StoryModel())
-            {
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        var storyType = new StoryType();
-                        context.StoryTypes.Add(storyType);
-                        storyType.Tags = context.Tags.Where(t2 => model.SelectedTags.Contains(t2.TagId)).ToList();
-                        //context.SaveChanges();
+                                }).ToList()
+                    })
+                    // NOTE: limiting results before sorting on client side will cause unpredictable results
+                    //.Take(resultLimit)
+                    //.OrderBy(t => t.label)
+                    .ToList();
 
-                        var localizedStoryType = new LocalizedStoryType
-                        {
-                            Title = model.Title,
-                            Description = model.Description,
-                            // TODO: Add real localization
-                            LanguageId = Language.DefaultLanguageId, // model.LanguageId;
-                            StoryType = storyType,
-                        };
-                        context.LocalizedStoryTypes.Add(localizedStoryType);
-
-                        model.Questions.RemoveAll(q => string.IsNullOrWhiteSpace(q));
-                        foreach (var question in model.Questions)
-                        {
-                            localizedStoryType.Questions.Add(new Question { Prompt = question });
-                        }
-                        context.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                        return "Error";
-                    }
-                }
-                return null;
-            }
-        }
-
-        public static string SaveStoryResponse(StoryResponseViewModel model)
-        {
-            string error = null;
-            using (var context = new StoryModel())
-            {
-                using (var transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        var st = context.LocalizedStoryTypes.FirstOrDefault(s => s.LocalizedStoryTypeId == model.StoryType.TranslatedStoryTypeId);
-                        if (st == null)
-                        {
-                            error = "Story type not found.";
-                            throw new Exception(error);
-                        }
-                                                
-                        //Get fresh set of questions
-                        var questions = st.Questions.Select(q=>q.QuestionId).ToList();
-                        if (questions.Count() != model.StoryAnswers.Values.Count)
-                        {
-                            error = "Not all questions were answered.";
-                            throw new Exception(error);
-                        }
-                        var answers = new List<Answer>();
-                        foreach (int questionId in questions)
-                        { 
-                            answers.Add(new Answer 
-                            { 
-                                QuestionId = questionId,
-                                AnswerText = model.StoryAnswers[questionId],
-                            });
-                        }
-
-                        var response = new StoryResponse() 
-                        {
-                            LocalizedStoryType = st,
-                            Age = (byte)model.Age,
-                            Gender = model.Gender,
-                            CountryId = model.Country,
-                            Title = model.StoryTitle,
-                            Story = model.StoryResponse,
-                            Tags = context.Tags.Where(t=>model.SelectedTags.Contains(t.TagId)).ToList(),
-                            Answers = answers,
-                        };
-                        context.StoryResponses.Add(response);
-                        if (context.SaveChanges() == 0)
-                        {
-                            error = "There was an error saving your story.";
-                            throw new Exception(error);
-                        }
-                        transaction.Commit();
-                        return null;
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        return error;
-                    }
-                }
-            }
-        }
-
-        public static void PopulateStoryResponseModelOutput(ref StoryResponseViewModel model)
-        {
-            using (var context = new StoryModel())
-            {
-                int translatedStoryTypeId = model.StoryType.TranslatedStoryTypeId;
-
-                var q = context.LocalizedStoryTypes.Where(s=>s.LocalizedStoryTypeId == translatedStoryTypeId).FirstOrDefault();
-                if(q == null)
-                {
-                    model = null;
-                    return;
-                }
-
-                model.LanguageId = q.LanguageId;
-                model.StoryType = new StoryTypeResultModel_OLD
-                {
-                    Description = q.Description,
-                    StoryTypeId = q.StoryTypeId,
-                    Tags = q.StoryType.Tags.Select(t =>
-                        new JSONTagModel
-                        {
-                            id = t.TagId,
-                            type = t.TagType,
-                            text = t.TranslatedTags
-                                    .Where(tt => tt.LanguageId == q.LanguageId)
-                                    .Select(tt=>tt.Text)
-                                    .FirstOrDefault()
-                        }),
-                    Title = q.Title,
-                    TranslatedStoryTypeId = q.LocalizedStoryTypeId,
-                };
-
-                model.Countries = context.Countries.Select(c =>
-                    new CountryListData
-                    {
-                        CountryId = c.CountryId,
-                        CountryName = c.Country1
-                    }).ToList();
-
-                model.StoryQuestions = q.Questions.ToList();
+                var result = new { defLangId = Language.DefaultLanguageId, reqLangId = languageId != -1 ? languageId : Language.DefaultLanguageId, results = q };
+                return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(q);
             }
         }
 
         #endregion
+
 
         public static IEnumerable<Language> GetLanguages()
         {
@@ -486,44 +256,6 @@ namespace ProjectLightSwitch.Models
                 UpdateLanguageStatuses(context);
             }
         }
-        
-        //public static bool ChangeTagTranslation(int tagId, int languageId, string text)
-        //{
-        //    // TODO: Improve performance (sql merge?) if time
-        //    using (var context = new StoryModel())
-        //    {
-        //        if( !context.Tags.Any(t=>t.TagId == tagId) || !context.Languages.Any(l=>l.LanguageId == languageId))
-        //        {
-        //            return false;
-        //        }
-
-        //        var tagTranslation = context.TranslatedTags.Where(tt => tt.TagId == tagId && tt.LanguageId == languageId).FirstOrDefault();
-        //        if (tagTranslation != null)
-        //        {
-        //            // Update existing tag
-        //            tagTranslation.Text = text;
-        //        }
-        //        else
-        //        {
-        //            // Create a new tag
-        //            context.TranslatedTags.Add(new TranslatedTag() { TagId = tagId, Text = text, LanguageId = languageId });
-        //        }
-        //        context.SaveChanges();
-        //        return true;
-        //    }
-        //}
-
-        //public static IList<String> GetPathById(int id, int languageId)
-        //{
-        //    using (var context = new StoryModel())
-        //    {
-        //        var q = from t in context.TagTree
-        //                where t.DescendantId == id
-        //                orderby t.PathLength descending
-        //                select t.Ancestor.TranslatedTags.Where(tt=>tt.LanguageId == languageId).Select(tt=>tt.Text).FirstOrDefault();
-        //        return q.ToList();
-        //    }
-        //}
 
         public static bool RemoveTag(int id)
         {
@@ -578,7 +310,7 @@ namespace ProjectLightSwitch.Models
                 var tagsToAdd = tags
                     .Where(t=>
                         (
-                        // Valid tag type
+                        // Valid tag storyType
                             t.Tag.TagType == (byte)Enums.TagType.Category 
                             || t.Tag.TagType == (byte)Enums.TagType.NavigationalTag 
                             || t.Tag.TagType == (byte)Enums.TagType.SelectableTag
@@ -697,77 +429,6 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        //private class TagNameComparer : IEqualityComparer<Ancestor>
-        //{
-        //    bool IEqualityComparer<Ancestor>.Equals(Ancestor x, Ancestor y)
-        //    {
-        //        return  x != null 
-        //                && y != null 
-        //                && x.EnglishText.Equals(y.EnglishText, StringComparison.CurrentCultureIgnoreCase);
-        //    }
-
-        //    int IEqualityComparer<Ancestor>.GetHashCode(Ancestor obj)
-        //    {
-        //        return obj.EnglishText.GetHashCode();
-        //    }
-        //}
-
-        //public static bool AddTags(IEnumerable<Ancestor> children, Ancestor parent)
-        //{
-        //    using (var context = new StoryModel())
-        //    {
-        //        // Double check the parent exists and is capable of containing children
-        //        var actualParent = context.Tags.Where(t => t.TagId == parent.TagId).FirstOrDefault();
-        //        if (
-        //            actualParent == null 
-        //            || actualParent.TagType == (byte)TagType.PendingSelectableTag 
-        //            || actualParent.TagType == (byte)TagType.SelectableTag)
-        //        {
-        //            return false;
-        //        }
-
-        //        // TODO: Filter out duplicate names already stored in database
-
-        //        // Add the tags themselves first
-        //        context.Tags.AddRange(children);
-        //        var result = context.SaveChanges() > 0;
-
-        //        // Add structure after tags have been saved
-        //        foreach (var tag in children)
-        //        {
-        //            if (actualParent.TagId < 0)
-        //            {
-        //                break;
-        //            }
-
-        //            var q = (from t in context.TagTree
-        //                     where actualParent.TagId >= TagTree.InvisibleRootId && t.DescendantId == actualParent.TagId
-        //                     select new
-        //                     {
-        //                         anc = t.AncestorId,
-        //                         pathlen = (byte)(t.PathLength + 1)
-        //                     }).ToList();
-
-        //            var list = q.Select(tt =>
-        //                new TagTree
-        //                {
-        //                    AncestorId = tt.anc,
-        //                    DescendantId = tag.TagId,
-        //                    PathLength = tt.pathlen
-        //                }).AsEnumerable();
-
-        //            if (tag.TagId != TagTree.InvisibleRootId)
-        //            {
-        //                context.TagTree.Add(new TagTree { PathLength = 0, AncestorId = tag.TagId, DescendantId = tag.TagId });
-        //            }
-        //            context.TagTree.AddRange(list);
-        //        }
-        //        result &= (context.SaveChanges() > 0);
-
-        //        return result;
-        //    }
-        //}
-
         public class TagNavigatorColumnResults
         {
             public Tag ParentTag { get; set; }
@@ -815,39 +476,6 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-//        public static void AddTagsSql(IEnumerable<Tuple<Ancestor, int>> tags)
-//        {
-//            using (var context = new StoryModel())
-//            {
-//                // Add the tags themselves first
-//                var list = tags.ToList();
-//                var list2 = tags.Where(t => t.Item1.TagId == 1).ToList();
-//                context.Tags.AddRange(list.Select(t => t.Item1));
-//                context.SaveChanges();
-
-//                // TODO check for duplicates by name
-
-//                foreach (var tag in list)
-//                {
-//                    string query = @"
-//                        INSERT INTO TagTree (AncestorId, DescendantId, PathLength) VALUES ({0}, {0}, 0);";
-
-//                    if (tag.Item2 != -1)
-//                    {
-//                        query += @"
-//                        INSERT INTO TagTree
-//                        SELECT AncestorId, DescendantId = {0}, PathLength = PathLength + 1
-//                        FROM TagTree
-//                        WHERE DescendantId = {1}";
-//                    }
-
-//                    context.Database.ExecuteSqlCommand(query, tag.Item1.TagId, tag.Item2);
-
-//                }
-//                context.SaveChanges();
-//            }
-//        }
-
         public class TagPathInfo
         {
             public int TagId { get; set; }
@@ -881,77 +509,6 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public static string GetPaths_Json(int rootId, string searchTerm, bool returnAllDescendants, int languageId)
-        {
-            //int resultLimit = 25;
-            using (var context = new StoryModel())
-            {
-                // TODO: simplify query if possible
-                // TODO: limit results?
-
-                var q = context.TagTree
-                    .Where(tt =>
-                        (
-                            searchTerm == null 
-                            || (
-                                 context.TranslatedTags
-                                        .Where(trans => 
-                                            trans.LanguageId == languageId 
-                                            && trans.Text == searchTerm 
-                                            && trans.TagId == tt.DescendantId)
-                                        .Any()
-                            )
-                        )
-                        && (rootId == TagTree.InvisibleRootId || context.TagTree.Any(t => t.AncestorId == rootId && t.DescendantId == tt.DescendantId))
-                        && (returnAllDescendants || tt.PathLength == 1)
-                        && tt.DescendantId != TagTree.InvisibleRootId
-                     )
-                    .GroupBy(group => group.DescendantId)
-                    //.Select(group => new { TagId = group.Key, Nodes = group.OrderByDescending(t => t.PathLength).Select(t => t.Descendants) })
-                    //.ToList()
-                    .Select(group => new
-                    {
-                        value = group.Key,
-                        //Nodes = t.Nodes.Select(n => new { n.TagId, n.TagType }),
-                        path = group.OrderByDescending(t => t.PathLength).Select(
-                            tt => 
-                                new {
-                                    text = tt.Ancestor.TranslatedTags
-                                             .Where(trans => trans.LanguageId == languageId)
-                                             .Select(trans => trans.Text)
-                                             .FirstOrDefault(),
-                                    id = tt.AncestorId,
-                                    type = tt.Ancestor.TagType
-                                
-                                }).ToList()
-                    })
-                    // NOTE: limiting results before sorting on client side will cause unpredictable results
-                    //.Take(resultLimit)
-                    //.OrderBy(t => t.label)
-                    .ToList();
-
-                var result = new { defLangId = Language.DefaultLanguageId, reqLangId = languageId != -1 ? languageId : Language.DefaultLanguageId, results = q };
-                return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(q);    
-            }
-        }
-
-        //public static List<Ancestor> GetTagsByType(
-        //    bool showCategories = false,
-        //    bool showTopLevelTags = false,
-        //    bool showTags = false,
-        //    bool ShowPending = false)
-        //{
-        //    // TODO Will pending top level tags and categories be possible?
-        //    using (var context = new StoryModel())
-        //    {
-        //        return context.Tags.Where(t =>
-        //                (ShowPending && t.TagType == (byte)TagType.PendingSelectableTag)
-        //            || (showCategories && t.TagType == (byte)TagType.Category)
-        //            || (showTopLevelTags && t.TagType == (byte)TagType.NavigationalTag)
-        //            || (showTags && t.TagType == (byte)TagType.SelectableTag)
-        //        ).OrderBy(t => t.EnglishText).ToList();
-        //    }
-        //}
 
         public static Tag GetTag(int id)
         {
@@ -961,61 +518,5 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        //public IEnumerable<tag> GetDescendantBreadcrumbs(int rootId, string filter, bool onlyReturnChildren)
-        //{
-        //    using (var context = new TagModel())
-        //    {
-
-        //        var t = from t in 
-
-
-        //        return (from t in context.TagTree
-        //                where t.AncestorId == rootId && (!onlyReturnChildren || t.PathLength == 1)
-        //                orderby t.PathLength, t.Ancestors.TagType, t.Ancestors.EnglishText
-        //                select t.Ancestors).ToList();
-        //    }
-        //}
-
-        //public int AddTag(TagModel context, string english, string spanish = null, int tagId = 0, TagType type = TagType.tag)
-        //{
-        //    int result = 0;
-        //    // For testing, not really needed
-        //    //using (var transaction = context.Database.BeginTransaction())
-        //    //{
-        //        try
-        //        {
-        //            // Add tag
-        //            var tag = new tag();
-        //            tag.TagType = (byte)type;
-        //            tag.EnglishText = english;
-        //            if (spanish != null)
-        //            {
-        //                tag.TranslatedTags.Add(new TagsTranslated { LanguageCode = "es-mx", Text = spanish });
-        //            }
-        //            context.SaveChanges();
-
-        //            // Add tree structure
-        //            var q = (from t in context.TagTree
-        //                        where tagId > 0 && t.DescendantId == tagId
-        //                        select new { 
-        //                            anc = t.AncestorId, 
-        //                            des = tag.TagId, 
-        //                            pathlen = (byte)(t.PathLength + 1) })
-        //                    .AsEnumerable().Select(x => new TagTree { AncestorId = x.anc, DescendantId = x.des, PathLength = x.pathlen });
-
-        //            context.TagTree.Add(new TagTree() { Descendants = tag, Ancestors = tag, PathLength = 0 });
-        //            context.TagTree.AddRange(q);
-        //            context.SaveChanges();
-        //            //transaction.Commit();
-
-        //            result = tag.TagId;
-        //        //}
-        //        //catch (Exception ex)
-        //        //{
-        //        //    transaction.Rollback();
-        //        //}
-        //    }
-        //    return result;
-        //}
     }
 }

@@ -205,7 +205,7 @@ namespace ProjectLightSwitch.Views.StoryPortal {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tag Your Story.
+        ///   Looks up a localized string similar to Ancestor Your Story.
         /// </summary>
         public static string TagPrompt {
             get {

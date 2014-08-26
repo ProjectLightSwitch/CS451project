@@ -16,7 +16,6 @@ namespace ProjectLightSwitch.Models
         }
 
         public int StoryTypeId { get; set; }
-
         [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
         [Column(TypeName = "datetime2")]
         public DateTime DateCreated { get; set; }

@@ -75,21 +75,21 @@ namespace ProjectLightSwitch.Models
         }
     }
 
-    public class StoryTypeResultsModel_OLD
+    public class StoryTypeResultsModel
     {
-        public IEnumerable<StoryTypeResultModel_OLD> StoryTypeModels {get;set;}
+        public IEnumerable<StoryTypeResultModel> StoryTypeModels {get;set;}
 
         public int LanguageId { get; set; }
 
         [Display(Name = "Search by title, description, and tag")]
         public string SearchTerm { get; set; }
 
-        public StoryTypeResultsModel_OLD()
+        public StoryTypeResultsModel()
         {
-            StoryTypeModels = Enumerable.Empty<StoryTypeResultModel_OLD>();
+            StoryTypeModels = Enumerable.Empty<StoryTypeResultModel>();
         }
     }
-    public class StoryTypeResultModel_OLD
+    public class StoryTypeResultModel
     {
         public int TranslatedStoryTypeId { get; set; }
         public int StoryTypeId { get; set; }
@@ -102,7 +102,7 @@ namespace ProjectLightSwitch.Models
         [Display(Name = "Associated Tags")]
         public IEnumerable<JSONTagModel> Tags { get; set; }
 
-        public StoryTypeResultModel_OLD()
+        public StoryTypeResultModel()
         {
             Tags = Enumerable.Empty<JSONTagModel>();
         }
@@ -133,10 +133,6 @@ namespace ProjectLightSwitch.Models
         public DateTime DateCreated { get; set; }
         public IEnumerable<LocalizedStoryType> LocalizedStoryTypes { get; set; }
         public IEnumerable<JSONTagModel> Tags { get; set; }
-
-        public object Tags2 { get; set; }
-
-
         public StoryTypeViewModel()
         {
             Tags = Enumerable.Empty<JSONTagModel>();
@@ -146,31 +142,38 @@ namespace ProjectLightSwitch.Models
     }
     public class LocalizedStoryTypeViewModel
     {
-        public int LocalizedStoryTypeId { get; set; }
         public List<JSONTagModel> Tags { get; set; }
         public LocalizedStoryType LocalizedStoryType { get; set; }
     }
 
     public class StoryTypeCreationModel
     {
-        [Display(Name="Story Type Tags: ")]
+        [Display(Name="Story Type Tags")]
         public List<int> SelectedTags { get; set; }
 
+        /// <summary>
+        /// If editing an existing translation
+        /// </summary>
+        public int LocalizedStoryTypeId { get; set; }
+        /// <summary>
+        /// Provide StoryTypeId and LanguageId to create a new or edit an existing translation
+        /// </summary>
+        public int StoryTypeId { get; set; }
         [Required]
         public int LanguageId {get; set; }
 
 
         [MaxLength(1024)]
-        [Display(Name = "Story Type Title: ")]
+        [Display(Name = "Story Type Title")]
         [Required]
         public string Title { get; set; }
 
         [MaxLength(4000)]
-        [Display(Name = "Story Type Description: ")]
+        [Display(Name = "Story Type Description")]
         [Required]
         public string Description { get; set; }
 
-        [Display(Name = "Enter the Story Type Questions: ")]
+        [Display(Name = "Questions")]
         public List<string> Questions { get; set; }
         public StoryTypeCreationModel()
         {
@@ -188,7 +191,7 @@ namespace ProjectLightSwitch.Models
     public class StoryResponseViewModel
     {
         // STORY TYPE
-        public StoryTypeResultModel_OLD StoryType { get; set; }
+        public StoryTypeResultModel StoryTypeResultModel { get; set; }
         public IEnumerable<Question> StoryQuestions { get; set; }
 
         public int LanguageId { get; set; }
@@ -260,7 +263,7 @@ namespace ProjectLightSwitch.Models
         public IEnumerable<JSONTagModel> children { get; set; }
     }
 
-    #region Tag Management
+    #region Ancestor Management
 
     public class TagViewModel
     {

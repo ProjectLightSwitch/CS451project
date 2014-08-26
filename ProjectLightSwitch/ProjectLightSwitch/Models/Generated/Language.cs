@@ -22,6 +22,7 @@ namespace ProjectLightSwitch.Models
         [StringLength(8)]
         public string Code { get; set; }
 
+        [Display(Name = "Language")]
         [Required]
         [StringLength(256)]
         public string Description { get; set; }

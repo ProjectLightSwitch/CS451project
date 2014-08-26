@@ -15,7 +15,6 @@ namespace ProjectLightSwitch.Models
         public byte Rating { get; set; }
 
         public int StoryResponseId { get; set; }
-
         [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
         [Column(TypeName = "datetime2")]
         public DateTime? DateLeft { get; set; }

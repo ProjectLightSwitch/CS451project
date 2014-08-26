@@ -8,7 +8,7 @@
         }
         @if (User.IsInRole("Administrator"))
         { 
-            <span> | </span>@Html.ActionLink("Administration", "Index", "SiteAdmin");
+            <span> | </span>@Html.ActionLink("Administration", "Index", "Home",  new { area="SiteAdmin" }, null);
         }
 
     </text>
