@@ -12,13 +12,13 @@ namespace ProjectLightSwitch.Models
         [Key]
         public int RatingId { get; set; }
 
-        public byte Rating { get; set; }
+        public int Rating { get; set; }
 
         public int StoryResponseId { get; set; }
         [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
         [Column(TypeName = "datetime2")]
         public DateTime? DateLeft { get; set; }
 
-        public virtual StoryResponse StoryRespons { get; set; }
+        public virtual StoryResponse StoryResponse { get; set; }
     }
 }

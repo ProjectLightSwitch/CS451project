@@ -47,10 +47,6 @@ namespace ProjectLightSwitch.Models
                 .WillCascadeOnDelete();
 
             modelBuilder.Entity<StoryResponse>()
-                .Property(e => e.Gender)
-                .IsFixedLength();
-
-            modelBuilder.Entity<StoryResponse>()
                 .HasMany(e => e.Tags)
                 .WithMany(e => e.StoryResponses)
                 .Map(m => m.ToTable("StoryResponseTags", "pls").MapLeftKey("StoryResponseId").MapRightKey("TagId"));

@@ -22,4 +22,5 @@ namespace ProjectLightSwitch.Models
     {
         public const int DefaultStoryTypeId = 38;
     }
+
 }

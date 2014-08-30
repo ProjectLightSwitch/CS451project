@@ -79,6 +79,13 @@
             @:tagSearcher.selectTagByPath(@(Html.Raw(tagInfo.Serialize())).path);
         }
     });
+
+    function switchPage(page)
+    {
+        $('form#search').append($('<input>').attr('name','Page').val(page))
+                        .trigger('submit');
+    }
+
 </script>
 
 <style type="text/css">
@@ -130,7 +137,8 @@
     margin:0 10px 0 0;
 }
 
-#selected-tags, #selected-tags .tagBreadcrumbs{
+.story-response-result .tagBreadcrumbs,
+#selected-tags, #selected-tags .tagBreadcrumbs {
     display: inline-block;
     border: none;
     background:none;
@@ -147,10 +155,21 @@
     font-style: italic;
 }
 
+.story-response-result {
+    border-bottom: 1px solid #a9a9a9;
+    padding: 5px;
+}
+
+.story-response-result h3 {
+    font-weight: bold;
+    text-decoration: underline;
+
+}
+
 </style>
 }
 
-@using(Html.BeginForm("Search", "StoryPortal", FormMethod.Get))
+@using (Html.BeginForm("Search", "StoryPortal", FormMethod.Get, new { id="search" }))
 {
     <div id="search-bar">
         <div class="search-field-block">
@@ -180,11 +199,11 @@
             <select name="Country">
                 <option selected="selected" value="0">Any</option>
                 @{
-                    var countries = ProjectLightSwitch.Models.StorySystem.GetCountries();
-                    foreach (var country in countries)
-                    {
+    var countries = ProjectLightSwitch.Models.StorySystem.GetCountries();
+    foreach (var country in countries)
+    {
                         <option value="@country.CountryId">@country.CountryName</option>
-                    }
+    }
                 }
             </select>
         </div>
@@ -224,8 +243,8 @@
 
                         foreach (var result in Model.Results)
                         {
-                            <div class="story-respose-result">
-                                <h4 class="u b">@result.StoryResponse.Title</h4>
+                            <div class="story-response-result">
+                                @Html.ActionLink(result.StoryResponse.Title, "View", new { id = result.StoryResponse.StoryResponseId }, new { @class="b i" }))
                                 <p class="i" style="color:gray">@result.RecentRating people recently found this useful.</p>
                                 <p>@result.StoryResponse.Story</p>
                                 @if (result.Tags.Any())
@@ -248,4 +267,26 @@
             </div>
         </div>
     </div>
+    
+    if(Model.Results.Any())
+    {
+    <div id="paging">
+        Page: 
+        @{
+            int numPages = (int)(Math.Ceiling((decimal)Model.TotalResultCount / (decimal)Model.SearchParameters.ResultsPerPage));
+        }
+        
+        @for (int i = 0; i < numPages; i++)
+        {
+            if (i == Model.SearchParameters.Page)
+            {
+                <b>@(i + 1)</b>
+            }
+            else
+            {
+                <a href="#" onclick="switchPage(@i;return false;">@(i + 1)</a> 
+            }
+        }
+    </div>
+    }
 }

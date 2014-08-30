@@ -127,9 +127,7 @@ div.tagnav .decorator {
 /********/
 
 ul.tagBreadcrumbs {
-    border:1px solid black;
-    background:#dddddd;
-    float:left;
+    display:inline-block;
     padding: 0;
     margin: 10px;
     overflow: auto;    
@@ -138,7 +136,7 @@ ul.tagBreadcrumbs {
 ul.tagBreadcrumbs li {
     list-style: none;
     list-style-image: none;
-    float:left;
+    display:inline-block;
     background: #656565;
     color: white;
     font-weight: bold;

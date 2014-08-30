@@ -28,6 +28,5 @@ namespace ProjectLightSwitch
             }
             return messages;
         }
-
     }
 }

@@ -1,0 +1,67 @@
+﻿@model ProjectLightSwitch.Models.StoryResponseDetailsModel
+
+@{
+    ViewBag.Title = "View";
+}
+
+@section head { 
+<style type="text/css">
+    #story-container {
+        padding: 10px;
+    }
+    #story-container > #story-content {
+        float:left;
+        width: 70%;
+    }
+    #story-container > #related-content {
+        float:right;
+        width:30%;
+    }
+</style>
+}
+
+<div id="story-container">
+    <div id="story-content">
+        <h1>@Model.Response.Title</h1>
+
+        <h3 class="inline">Story Tags: </h3>
+        <div>
+            @if (Model.Tags.Any())
+            {
+                <ul class="tagBreadcrumbs">
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <li title="@tag.FullPathLabel">@tag.AbbreviatedPathLabel</li>
+                    }
+                </ul>
+            }
+        </div>
+        <span class="personal-description">
+            I am a @Model.Response.Age year old
+            @(ProjectLightSwitch.Models.Enums.EnumExtensions.ParseGender(Model.Response.Gender))
+            from @Model.Response.Country.Country1
+        </span>
+        <h3>My Story:</h3>
+        <p>@Model.Response.Story</p>
+    </div>
+    <div id="related-content">
+        <div class="right">
+            @Html.ActionLink("Back To Search", "Search")
+        </div>
+
+        <h3>Similar Stories</h3>
+        @foreach (var relatedResponse in Model.RelatedResponses)
+        {
+            <div>
+                <h3>@relatedResponse.Title</h3>
+                <span class="personal-description">
+                    I am a @relatedResponse.Age year old
+                    @(ProjectLightSwitch.Models.Enums.EnumExtensions.ParseGender(relatedResponse.Gender))
+                    from @relatedResponse.Country.Country1
+                </span>
+                <p>@relatedResponse.Story</p>
+            </div>
+        }
+    </div>
+    <br class="clear" />
+</div>

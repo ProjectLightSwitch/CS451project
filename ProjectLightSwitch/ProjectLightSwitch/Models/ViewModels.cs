@@ -66,6 +66,23 @@ namespace ProjectLightSwitch.Models
         }
     }
 
+    public class StoryResponseDetailsModel
+    {
+
+        /// <summary>
+        /// Includes story type
+        /// </summary>
+        public StoryResponse Response { get; set; }
+        public List<JSONTagPathModel> Tags { get; set; }
+        public List<StoryResponse> RelatedResponses { get; set; }
+
+        public StoryResponseDetailsModel()
+        {
+            Tags = new List<JSONTagPathModel>();
+            RelatedResponses = new List<StoryResponse>();
+        }
+    }
+
     public class StoryResponseSearchOutputModel
     {
         
@@ -74,10 +91,10 @@ namespace ProjectLightSwitch.Models
         public StoryResponse StoryResponse { get; set; }
 
         [Display(Name = "Recent Rating")]
-        public int RecentRating { get; set; }
+        public int? RecentRating { get; set; }
 
         [Display(Name = "Overall Rating")]
-        public int OverallRating { get; set; }
+        public int? OverallRating { get; set; }
 
         public LocalizedStoryType LocalizedStoryType { get; set; }
 
@@ -259,10 +276,12 @@ namespace ProjectLightSwitch.Models
         [Display(Name = "Country", ResourceType = typeof(Views.StoryPortal.StoryResources))]
         public int Country { get; set; }
 
+        [StringLength(500)]
         [Required]
         [Display(Name = "TitlePrompt", ResourceType = typeof(Views.StoryPortal.StoryResources))]
         public string StoryTitle { get; set; }
 
+        [StringLength(4000)]
         [Required]
         [Display(Name = "ResponsePrompt", ResourceType = typeof(Views.StoryPortal.StoryResources))]
         public string StoryResponse { get; set; }

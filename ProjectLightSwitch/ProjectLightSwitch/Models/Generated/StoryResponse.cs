@@ -25,11 +25,11 @@ namespace ProjectLightSwitch.Models
 
         public byte? Age { get; set; }
 
-        [StringLength(10)]
+        [StringLength(50)]
         public string Gender { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(4000)]
         public string Story { get; set; }
 
         [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Computed)]
@@ -40,10 +40,9 @@ namespace ProjectLightSwitch.Models
         [StringLength(1024)]
         public string Title { get; set; }
 
+        public virtual Country Country { get; set; }
         public virtual ICollection<Answer> Answers { get; set; }
-
         public virtual LocalizedStoryType LocalizedStoryType { get; set; }
-
         public virtual ICollection<StoryResponseRating> StoryResponseRatings { get; set; }
 
         public virtual ICollection<Tag> Tags { get; set; }

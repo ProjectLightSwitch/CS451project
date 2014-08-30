@@ -270,7 +270,7 @@ namespace ProjectLightSwitch.Models
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        return error;
+                        return error ?? "There was an error saving your story.";
                     }
                 }
             }
@@ -324,16 +324,18 @@ namespace ProjectLightSwitch.Models
             // TODO: Profile this for performance
             using (var context = new StoryModel())
             {
+                context.Configuration.LazyLoadingEnabled = false;
+
                 var minimumRecentDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(inputModel.RecentDays));
 
                 // TODO: Combine count and results to one query
-                int totalResultCount = context.StoryResponses
+                var q = context.StoryResponses
                 .Where(r =>
                     r.LocalizedStoryType.Language.IsActive
                         // Search for results to a specific story type
                     && (inputModel.TranslatedStoryTypeId == 0 || r.LocalizedStoryTypeId == inputModel.TranslatedStoryTypeId)
                         // Search for results by gender
-                    && (inputModel.Gender.Length == 0 || r.Gender == inputModel.Gender)
+                    && (inputModel.Gender == null || inputModel.Gender.Length == 0 || r.Gender == inputModel.Gender)
                         // Search by age
                     && (inputModel.MinAge <= r.Age && (inputModel.MaxAge == 0 || inputModel.MaxAge >= r.Age))
                         // Search union of tags from story responses and localized story type
@@ -345,38 +347,19 @@ namespace ProjectLightSwitch.Models
                                          .Union(r.Tags.Select(rt => rt.TagId))
                                          .Contains(t))
                     )
-                ).Count();
+                );
 
+                int totalResultCount = q.Count();
 
-
-                var results = context.StoryResponses.Include("Tags")
-                .Where(r =>
-                    r.LocalizedStoryType.Language.IsActive
-                        // Search for results to a specific story type
-                    && (inputModel.TranslatedStoryTypeId == 0 || r.LocalizedStoryTypeId == inputModel.TranslatedStoryTypeId)
-                        // Search for results by gender
-                    && (inputModel.Gender.Length == 0 || r.Gender == inputModel.Gender)
-                        // Search by age
-                    && (inputModel.MinAge <= r.Age && (inputModel.MaxAge == 0 || inputModel.MaxAge >= r.Age))
-                        // Search union of tags from story responses and localized story type
-
-                    // All selected tags were found in the story type or response tags
-                    && (inputModel.SelectedTags
-                             .All(t => r.LocalizedStoryType.StoryType.Tags
-                                         .Select(stt => stt.TagId)
-                                         .Union(r.Tags.Select(rt => rt.TagId))
-                                         .Contains(t))
-                    )
-                )
-                .Select(sr => new
+                var results = q.Select(sr => new
                 {
                     Response = sr,
                     //LocalizedStoryType = sr.LocalizedStoryType,
                     //Tags = sr.Tags.Select(t => t.GetJsonPathModel()).ToList(),
                     //StoryResponse = sr,
                     // NOTE: rating system is rating=1 per thumb up
-                    OverallRating = context.StoryResponseRatings.Where(r => r.StoryResponseId == sr.StoryResponseId).Sum(r => r.Rating),
-                    RecentRating = context.StoryResponseRatings.Where(r => r.StoryResponseId == sr.StoryResponseId && r.DateLeft >= minimumRecentDate).Sum(r => r.Rating),
+                    OverallRating = sr.StoryResponseRatings.Select(r => r.Rating).DefaultIfEmpty(0).Sum(),
+                    RecentRating = sr.StoryResponseRatings.Where(r => r.DateLeft >= minimumRecentDate).Select(r => r.Rating).DefaultIfEmpty(0).Sum(),
                     //LocalizedStoryTypeId = sr.LocalizedStoryTypeId,
                 })
                 .OrderByDescending(sr => sr.RecentRating)
@@ -444,6 +427,51 @@ namespace ProjectLightSwitch.Models
                 newRating.Rating = 1;
                 context.StoryResponseRatings.Add(newRating);
                 return context.SaveChanges() > 0;
+            }
+        }
+
+        public static StoryResponseDetailsModel GetStoryResponseDetails(int storyResponseId)
+        {
+            using (var context = new StoryModel())
+            { 
+                var response = context.StoryResponses
+                                      .Include("LocalizedStoryType")
+                                      .Include("Country")
+                                      .Where(r=> r.StoryResponseId == storyResponseId)
+                                      .FirstOrDefault();
+                if(response == null)
+                {
+                    return null;
+                }
+
+                // Related responses are responses with any common tags sorted by number in common
+                return new StoryResponseDetailsModel() {
+                    Response = response,
+                    Tags = response.Tags.Select(t=> new JSONTagPathModel
+                    {
+                        path = t.Ancestors
+                                .Where(a => a.Ancestor.TagId != TagTree.InvisibleRootId)
+                                .OrderByDescending(a => a.PathLength)
+                                .Select(jt => new JSONTagModel
+                                {
+                                    id = jt.Ancestor.TagId,
+                                    text = jt.Ancestor.TranslatedTags.Where(tt => tt.LanguageId == Language.DefaultLanguageId).Select(tt => tt.Text).FirstOrDefault(),
+                                    type = jt.Ancestor.TagType,
+                                }).ToList()
+                    }).ToList(),
+                    RelatedResponses = 
+                        context.Tags
+                               .Where(t => response.Tags.Contains(t))
+                               .SelectMany(r => r.StoryResponses)
+                               .GroupBy(g => g.StoryResponseId)
+                               .Select(g => new { ResponseId = g.Key, Similarity = g.Count() })
+                               .OrderBy(o => o.Similarity)
+                               .Select(id => 
+                                    context.StoryResponses
+                                           .Include("Country")
+                                           .FirstOrDefault(r => r.StoryResponseId == id.ResponseId))
+                               .ToList(),
+                };
             }
         }
         
