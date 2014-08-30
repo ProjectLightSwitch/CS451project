@@ -438,18 +438,19 @@ namespace ProjectLightSwitch.Models
                 context.Configuration.LazyLoadingEnabled = true;
 
                 var response = context.StoryResponses
+                                      .Include("Answers")
+                                      .Include("Answers.Question")
                                       .Include("LocalizedStoryType")
                                       .Include("Country")
                                       .Include("Tags")
                                       .Include("Tags.Ancestors")
                                       .Include("Tags.TranslatedTags")
-                                      .Where(r=> r.StoryResponseId == storyResponseId)
-                                      .FirstOrDefault();
+                                      .FirstOrDefault(r => r.StoryResponseId == storyResponseId);
                 if(response == null)
                 {
                     return null;
                 }
-
+                response.LocalizedStoryType.Questions = response.LocalizedStoryType.Questions.ToList();
                 // Related responses are responses with any common tags sorted by number in common
                 return new StoryResponseDetailsModel() {
                     Response = response,

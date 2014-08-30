@@ -43,6 +43,13 @@
         </span>
         <h3>My Story:</h3>
         <p>@Model.Response.Story</p>
+
+        <h3>Questions and Answers:</h3>
+        @foreach (var ans in Model.Response.Answers)
+        { 
+            <b>@ans.Question.Prompt</b>
+            <p>@ans.AnswerText</p>
+        }
     </div>
     <div id="related-content">
         <div class="right">
