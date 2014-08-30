@@ -69,6 +69,9 @@ namespace ProjectLightSwitch.Controllers
             }
             else
             {
+
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+
                 if (model == null || model.StoryTypeResultModel == null || model.StoryTypeResultModel.TranslatedStoryTypeId <= 0)
                 {
                     return RedirectToAction("Index");

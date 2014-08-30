@@ -78,18 +78,18 @@ TagNavigator.prototype.findTagId = function ()
 {
     var tagId = getUrlHash();
     if (tagId == null) {
-        tagId = getUrlVars()['id'];
+        tagId = getUrlVars()['tagid'];
         if (tagId == null) {
             tagId = InvisibleRootId;
 
-            var list = getUrlPath();
-            if (list.length > 1)
-            {
-                var num = parseInt(list[list.length - 1]);
-                if (!isNaN(num) && num >= InvisibleRootId) {
-                    tagId = num;
-                }
-            }
+            //var list = getUrlPath();
+            //if (list.length > 1)
+            //{
+            //    var num = parseInt(list[list.length - 1]);
+            //    if (!isNaN(num) && num >= InvisibleRootId) {
+            //        tagId = num;
+            //    }
+            //}
         }
     }
     return tagId;

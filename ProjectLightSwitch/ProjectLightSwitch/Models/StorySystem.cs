@@ -243,7 +243,7 @@ namespace ProjectLightSwitch.Models
                             answers.Add(new Answer 
                             { 
                                 QuestionId = questionId,
-                                AnswerText = model.StoryAnswers[questionId],
+                                AnswerText = model.StoryAnswers[questionId.ToString()],
                             });
                         }
 

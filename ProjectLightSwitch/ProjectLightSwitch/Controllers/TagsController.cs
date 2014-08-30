@@ -41,7 +41,7 @@ namespace ProjectLightSwitch.Controllers
         }
 
         //[AjaxOnly]
-        //public ActionResult AddChildTag(int tagId, string text, byte storyType, int languageId = Language.DefaultLanguageId)
+        //public ActionResult AddChildTag(int tagid, string text, byte storyType, int languageId = Language.DefaultLanguageId)
         //{
         //    if(!Enum.IsDefined(typeof(TagType), storyType) || storyType == TagTree.InvisibleRootId)
         //    {
@@ -52,8 +52,8 @@ namespace ProjectLightSwitch.Controllers
         //    {
         //        var tagType = (TagType)storyType;
 
-        //        TagSystem.AddTag(new Ancestor() { TagType = storyType }, tagId);
-        //        TagSystem.AddTag(storyType, tagId, 
+        //        TagSystem.AddTag(new Ancestor() { TagType = storyType }, tagid);
+        //        TagSystem.AddTag(storyType, tagid, 
 
         //        var item = context.Tags.Where(t => t.TagId == storyType && t.TagId != TagTree.InvisibleRootId).FirstOrDefault();
         //        if (item != null)

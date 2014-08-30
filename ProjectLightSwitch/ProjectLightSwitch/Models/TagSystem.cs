@@ -92,7 +92,7 @@ namespace ProjectLightSwitch.Models
         /// <summary>
         /// Gets the path to the selected tag
         /// </summary>
-        /// <param name="tagId"></param>
+        /// <param name="tagid"></param>
         /// <param name="childrenOnly"></param>
         /// <param name="languageId"></param>
         /// <returns></returns>
@@ -128,7 +128,7 @@ namespace ProjectLightSwitch.Models
                             },
                             children = grouped
                                 .Where(tt => tt.PathLength != 0)
-                                //.Where(g => g.DescendantId != tagId && g.DescendantId != TagTree.InvisibleRootId)
+                                //.Where(g => g.DescendantId != tagid && g.DescendantId != TagTree.InvisibleRootId)
                                 //.OrderBy(g => g.Descendant.TranslatedTags
                                 //                          .Where(jt=>jt.LanguageId == languageId)
                                 //                          .Select(jt=>jt.Text)
@@ -419,13 +419,13 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        //public static IEnumerable<TagNavigatorColumnResults> GetChildrenFromPathEnd(int tagId)
+        //public static IEnumerable<TagNavigatorColumnResults> GetChildrenFromPathEnd(int tagid)
         //{
         //    using (var context = new StoryModel())
         //    {
         //        return context.TagTree
         //                .Where(jt => context.TagTree
-        //                        .Where(tt2 => tt2.DescendantId == tagId)
+        //                        .Where(tt2 => tt2.DescendantId == tagid)
         //                        .Select(tt2 => tt2.AncestorId)
         //                        .Contains(jt.AncestorId)
         //                        && jt.PathLength == 1

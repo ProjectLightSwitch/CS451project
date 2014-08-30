@@ -11,16 +11,16 @@
         <td>Gender:</td>
         <td>
             <div id="gender">
-                <input type="radio" id="radioM" name="gender" value="Male" data-rule-required="true"><label for="radioM">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Male</label>
-                <input type="radio" id="radioF" name="gender" value="Female"><label for="radioF">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Female</label>
-                <input type="radio" id="radioI" name="gender" value="Intersex"><label for="radioI">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Intersex</label>
+                <input type="radio" id="radioM" name="gender" value="M" data-rule-required="true"><label for="radioM">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Male</label>
+                <input type="radio" id="radioF" name="gender" value="F"><label for="radioF">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Female</label>
+                <input type="radio" id="radioI" name="gender" value="I"><label for="radioI">@ProjectLightSwitch.Views.StoryPortal.StoryResources.Intersex</label>
             </div>
         </td>
     </tr>
     <tr>
         <td>Country:</td>
         <td>
-            <select data-rule-min="1">
+            <select name="country" data-rule-min="1">
             @foreach (var lang in Model.CountryListItems)
             { 
                 <option value="@lang.Value">@lang.Text</option>

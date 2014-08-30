@@ -85,7 +85,7 @@ StoryWizard.prototype._validateCurrentSection = function ()
 {
     //var result =  this._form.children('section:visible').find('input').valid();
 
-    var inputs = this._form.children('section:visible').find('input');
+    var inputs = this._form.children('section:visible').find('input,textarea,select');
     var len = inputs.length;
 
     var result = true;

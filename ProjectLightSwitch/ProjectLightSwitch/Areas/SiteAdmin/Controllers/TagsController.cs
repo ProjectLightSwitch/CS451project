@@ -18,13 +18,13 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             return View();
         }
 
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int tagid)
         {
-            if (id == TagTree.InvisibleRootId || TagSystem.GetTag(id) == null)
+            if (tagid == TagTree.InvisibleRootId || TagSystem.GetTag(tagid) == null)
             {
                 return RedirectToAction("Index");
             }
-            return View(TagSystem.GetTagOutputViewModel(id));
+            return View(TagSystem.GetTagOutputViewModel(tagid));
         }
 
         [HttpPost]
@@ -43,19 +43,19 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             {
                 HelperFunctions.AddGlobalMessage(TempData, "Error updating tag.");
             }
-            return RedirectToAction("Edit", new { id = model.Tag != null ? model.Tag.TagId : 0 });
+            return RedirectToAction("Edit", new { tagid = model.Tag != null ? model.Tag.TagId : 0 });
         }
 
         [HttpPost]
-        public ActionResult Remove(int tagId)
+        public ActionResult Remove(int tagid)
         {
-            if (tagId == TagTree.InvisibleRootId)
+            if (tagid == TagTree.InvisibleRootId)
             {
                 return RedirectToAction("Index");
             }
 
             // Where to return after deletion
-            var parent = TagSystem.GetParent(tagId);
+            var parent = TagSystem.GetParent(tagid);
 
             if (parent == null)
             {
@@ -63,12 +63,12 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
                 return RedirectToAction("Index");
             }
 
-            bool success = TagSystem.RemoveTag(tagId);
+            bool success = TagSystem.RemoveTag(tagid);
             string message = success 
                 ? "The tag and its descendants were all removed." 
                 : "An error occurred while attempting to delete this tag.";
             HelperFunctions.AddGlobalMessage(TempData, message);
-            return RedirectToAction("Index", new { id = parent.TagId });
+            return RedirectToAction("Index", new { tagid = parent.TagId });
         }
 
         [HttpPost]
@@ -78,7 +78,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             int numAdded = (model.Count > 0) ? TagSystem.AddTags(model) : 0;
             string message = string.Format("{0} of {1} tags were added.", numAdded, model.Count);
             HelperFunctions.AddGlobalMessage(TempData, message);
-            return RedirectToAction("Index", model.Count > 0 && model[0].Tag != null ? new { id = model[0].Tag.TagId } : null);
+            return RedirectToAction("Index", model.Count > 0 && model[0].Tag != null ? new { tagid = model[0].Tag.TagId } : null);
         }
     }
 
