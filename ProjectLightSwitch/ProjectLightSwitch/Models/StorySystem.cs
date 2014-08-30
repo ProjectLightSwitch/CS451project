@@ -433,10 +433,16 @@ namespace ProjectLightSwitch.Models
         public static StoryResponseDetailsModel GetStoryResponseDetails(int storyResponseId)
         {
             using (var context = new StoryModel())
-            { 
+            {
+
+                context.Configuration.LazyLoadingEnabled = true;
+
                 var response = context.StoryResponses
                                       .Include("LocalizedStoryType")
                                       .Include("Country")
+                                      .Include("Tags")
+                                      .Include("Tags.Ancestors")
+                                      .Include("Tags.TranslatedTags")
                                       .Where(r=> r.StoryResponseId == storyResponseId)
                                       .FirstOrDefault();
                 if(response == null)
@@ -460,9 +466,9 @@ namespace ProjectLightSwitch.Models
                                 }).ToList()
                     }).ToList(),
                     RelatedResponses = 
-                        context.Tags
-                               .Where(t => response.Tags.Contains(t))
+                            response.Tags
                                .SelectMany(r => r.StoryResponses)
+                               .Where(r=>r.StoryResponseId != response.StoryResponseId)
                                .GroupBy(g => g.StoryResponseId)
                                .Select(g => new { ResponseId = g.Key, Similarity = g.Count() })
                                .OrderBy(o => o.Similarity)

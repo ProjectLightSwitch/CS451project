@@ -244,7 +244,7 @@
                         foreach (var result in Model.Results)
                         {
                             <div class="story-response-result">
-                                @Html.ActionLink(result.StoryResponse.Title, "View", new { id = result.StoryResponse.StoryResponseId }, new { @class="b i" }))
+                                @Html.ActionLink(result.StoryResponse.Title, "View", new { id = result.StoryResponse.StoryResponseId }, new { @class="b i" })
                                 <p class="i" style="color:gray">@result.RecentRating people recently found this useful.</p>
                                 <p>@result.StoryResponse.Story</p>
                                 @if (result.Tags.Any())

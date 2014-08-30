@@ -50,17 +50,26 @@
         </div>
 
         <h3>Similar Stories</h3>
-        @foreach (var relatedResponse in Model.RelatedResponses)
+        @if(Model.RelatedResponses.Any())
         {
-            <div>
-                <h3>@relatedResponse.Title</h3>
-                <span class="personal-description">
-                    I am a @relatedResponse.Age year old
-                    @(ProjectLightSwitch.Models.Enums.EnumExtensions.ParseGender(relatedResponse.Gender))
-                    from @relatedResponse.Country.Country1
-                </span>
-                <p>@relatedResponse.Story</p>
-            </div>
+            foreach (var relatedResponse in Model.RelatedResponses)
+            {
+                <div>
+                    <h3>@relatedResponse.Title</h3>
+                    <span class="personal-description">
+                        I am a @relatedResponse.Age year old
+                        @(ProjectLightSwitch.Models.Enums.EnumExtensions.ParseGender(relatedResponse.Gender))
+                        from @relatedResponse.Country.Country1
+                    </span>
+                    <p>
+                        @(relatedResponse.Story.Substring(0, Math.Min(relatedResponse.Story.Length, 150)) + "...")
+                    </p>
+                </div>
+            }
+        } 
+        else
+        {
+            <i>No similar stories were found.</i>
         }
     </div>
     <br class="clear" />

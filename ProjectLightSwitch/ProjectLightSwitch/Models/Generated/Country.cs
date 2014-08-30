@@ -9,10 +9,17 @@ namespace ProjectLightSwitch.Models
     [Table("pls.Countries")]
     public partial class Country
     {
+        public Country()
+        {
+            StoryResponses = new HashSet<StoryResponse>();        
+        }
+
         public int CountryId { get; set; }
 
         [Column("Country")]
         [StringLength(512)]
         public string Country1 { get; set; }
+
+        public virtual ICollection<StoryResponse> StoryResponses { get; set; }
     }
 }

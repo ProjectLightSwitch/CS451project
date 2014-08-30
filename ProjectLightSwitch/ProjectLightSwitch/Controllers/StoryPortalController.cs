@@ -31,6 +31,21 @@ namespace ProjectLightSwitch.Controllers
             return View(model);
         }
 
+        public ActionResult View(int? id)
+        {
+            if (!id.HasValue)
+            {
+                return RedirectToAction("Search");
+            }
+            var model = StorySystem.GetStoryResponseDetails(id.Value);
+            if (model == null)
+            {
+                HelperFunctions.AddGlobalMessage(TempData, "That story could not be found.");
+                return RedirectToAction("Search");
+            }
+            return View(model);
+        }
+
 
         /// <summary>
         /// 

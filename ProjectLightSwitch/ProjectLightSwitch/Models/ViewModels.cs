@@ -336,7 +336,7 @@ namespace ProjectLightSwitch.Models
                 return string.Format("{0}{1}{2}",
                     path.Select(p => p.text).FirstOrDefault(),
                     PathSeparator,
-                    string.Join(PathSeparator, path.Select(p => p.text).Skip(path.Count - 2).Take(2).ToList()));
+                    string.Join(PathSeparator, path.Select(p => p.text).Skip(Math.Max(1, path.Count - 2)).Take(2).ToList()));
             }
         }
 

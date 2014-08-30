@@ -25,11 +25,8 @@ namespace ProjectLightSwitch.Models.Enums
         { 
             public static Gender ParseGender(string gender)
             {
-                if(gender == null || gender.Length != 1 || !Enum.IsDefined(typeof(Gender),gender[0]))
-                {
-                    return Gender.Unknown;
-                }
-                return ((Gender)gender[0]);
+                try { return (Gender)gender[0]; }
+                catch { return Gender.Unknown; }
             }
         }
 }
