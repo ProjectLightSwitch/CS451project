@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ProjectLightSwitch.Attributes;
 
 namespace ProjectLightSwitch.Controllers
 {
@@ -24,23 +25,27 @@ namespace ProjectLightSwitch.Controllers
             return View(searchModel);
         }
 
-        public ActionResult Search(StorySearchInputModel searchModel, int page = 0)
+        public ActionResult Search(StoryResponseSearchInputModel searchModel)
         {
-            var model = new StorySearchResultsModel();
-            model.StorySearchResults = StorySystem.GetStorySearchResults(searchModel, page, model.ResultsPerPage, model.RecentDays);
+            var model = StorySystem.SearchStoryResponses(searchModel);
             return View(model);
         }
 
-        
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="storyType">Actually the <see cref="LocalizedStoryType.LocalizedStoryTypeId" /> to search for</param>
         /// <returns></returns>
-        public ActionResult Create(int id)
+        public ActionResult Create(int? id)
         {
-            var model = new StoryResponseViewModel();
-            StorySystem.PopulateStoryResponseModelOutput(id, ref model);
+            if (!id.HasValue || id.Value <= 0)
+            {
+                return RedirectToAction("Browse");
+            }
+
+            var model = new StoryResponseCreationViewModel();
+            StorySystem.PopulateStoryResponseModelOutput(id.Value, ref model);
 
             if (model.StoryTypeResultModel == null)
             { 
@@ -52,7 +57,7 @@ namespace ProjectLightSwitch.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(StoryResponseViewModel model)
+        public ActionResult Create(StoryResponseCreationViewModel model)
         {
             if (ModelState.IsValid)
             {

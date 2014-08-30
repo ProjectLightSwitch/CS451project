@@ -51,7 +51,7 @@ TagSearcher.prototype.init = function () {
         for(var i = 0; i < len; i++)
         {
             var catHeader = $('<h3>').text(children[i].text).appendTo(this._container);
-            $('<div>').addClass(this._tagDepthContainerClassName).attr('id', 'searchCat_' + children[i].id).appendTo(this._container);
+            $('<div>').addClass(this._tagDepthContainerClassName).attr('id', 'searchCat_' + children[i].id).hide().appendTo(this._container);
 
             this.tagAdapter.getDescendantTags(children[i].id, true, function (categoryResponse)
             {
@@ -108,13 +108,7 @@ TagSearcher.prototype.findTagId = function () {
     return tagId;
 }
 
-/* path: [{id, type, text},{id, type, text},...] */
-TagSearcher.prototype.selectTag = function (path) {
-    if (!(path instanceof Array) || path.length == 0) {
-        return;
-    }
-    this.tagSelector.onTagSelected(path);
-}
+
 
 /* path: [{id, label},{id, label},...] */
 TagSearcher.prototype.deselectTag = function (tagId) {
@@ -151,8 +145,12 @@ TagSearcher.prototype.selectTag = function (parentId, tagInfo)
     this.tagSelector.onTagSelected(tempPath);
 }
 
-TagSearcher.prototype.deselectTag = function (tagId) {
-    this.tagSelector.onTagDeselected(tagId);
+/* path: [{id, type, text},{id, type, text},...] */
+TagSearcher.prototype.selectTagByPath = function (path) {
+    if (!(path instanceof Array) || path.length == 0) {
+        return;
+    }
+    this.tagSelector.onTagSelected(path);
 }
 
 TagSearcher.prototype.isTagSelected = function (tagId) {
@@ -166,16 +164,22 @@ TagSearcher.prototype.navigateToParent = function (id)
         var path = this._categoryBrowsers[key].path;
         if (path.length - 2 >= 0 && path[path.length - 1].id == id)
         {
-            this.navigateToTag(path[path.length - 2].id);
+            this.navigateToTag(path[path.length - 2].id, true);
         }
     }
 }
 
-TagSearcher.prototype.navigateToTag = function (id)
+TagSearcher.prototype.navigateToTag = function (id, showContainer)
 {
     this.tagAdapter.getDescendantTags(id, false, function (response)
     {
         var results = response.results;
+
+        // Remove the last level if the user can't navigate farther
+        if (results[results.length - 1].parent.type == TagType.SelectableTag || results[results.length - 1].parent.type == TagType.PendingSelectableTag)
+        {
+            results.splice(results.length - 1, 1);
+        }
 
         var path = [];
         for (var i = 0; i < results.length; i++)
@@ -193,7 +197,13 @@ TagSearcher.prototype.navigateToTag = function (id)
 
         // Recycle the container
         var browser = new TagChildrenNavigator(container, this, leaves, catId, { isSelfNavigating: true, cssPrefix: 'search', enabled: true })
-        this._categoryBrowsers[catId] = { 'path':path, 'browser': browser };
+        this._categoryBrowsers[catId] = { 'path': path, 'browser': browser };
+
+        if (showContainer) {
+            var index = $(".depth_container").index(this._categoryBrowsers[catId].browser.container);
+            this._container.accordion("option", "active", index);
+            $('[data-id="' + id + '"]').addClass('b');
+        }
     }.bind(this));
 }
 

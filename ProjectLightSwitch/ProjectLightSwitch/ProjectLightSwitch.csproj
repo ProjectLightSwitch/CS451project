@@ -411,6 +411,7 @@
     <Content Include="Views\StoryPortal\Browse.cshtml" />
     <Content Include="Views\StoryPortal\Index.cshtml" />
     <Content Include="Views\StoryPortal\_StorySteps.cshtml" />
+    <Content Include="Views\StoryPortal\Search.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

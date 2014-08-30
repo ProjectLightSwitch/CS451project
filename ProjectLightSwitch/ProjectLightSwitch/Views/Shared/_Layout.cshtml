@@ -8,14 +8,14 @@
         <title>Project Light Switch - @ViewBag.Title</title>
         <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <meta name="viewport" content="width=device-width" />
-        @Styles.Render("~/Content/css")
+        
         @Styles.Render("~/Content/themes/base/css")
         
         @Scripts.Render("~/bundles/modernizr")
 
         @* Add these to the correct pages*@
         @Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/jqueryui")
+
 
         @{ Html.RenderPartial("~/Views/Shared/_DynamicJavascript.cshtml"); }
         
@@ -26,6 +26,8 @@
             @Styles.Render("~/Content/tagnav")
             @Scripts.Render("~/bundles/tags")    
         }
+        
+        @Styles.Render("~/Content/css")
         @RenderSection("head", required: false)
     </head>
     <body>

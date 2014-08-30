@@ -1,4 +1,4 @@
-﻿@model ProjectLightSwitch.Models.StoryResponseViewModel
+﻿@model ProjectLightSwitch.Models.StoryResponseCreationViewModel
 @{ var minStoryLength = "30"; }
 <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part2Header</h3>
 
@@ -9,7 +9,7 @@
     </tr>
     <tr>
         <td>Story:</td>
-        <td><textarea rows="8" cols="50" style="max-width:100%" data-rule-minlength="@minStoryLength"></textarea></td>
+        <td><textarea rows="8" cols="50" style="max-width:100%" data-rule-required="true" data-rule-minlength="@minStoryLength"></textarea></td>
     </tr>
     <tr>
         <td>Tags:</td>

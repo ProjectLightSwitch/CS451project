@@ -90,8 +90,10 @@ TagSelector.prototype.onTagSelected = function (path)
 
     this._selectedPaths.push(path);
 
-    for (var i = 0; i < this._selectionListeners['all'].length; i++) {
-        this._selectionListeners['all'][i].tagSelected(path);
+    if (typeof (this._selectionListeners['all']) != 'undefined') {
+        for (var i = 0; i < this._selectionListeners['all'].length; i++) {
+            this._selectionListeners['all'][i].tagSelected(path);
+        }
     }
 
     if (typeof (this._selectionListeners[path[0].id]) != 'undefined') {
@@ -115,8 +117,10 @@ TagSelector.prototype.onTagDeselected = function (tagId)
         }
     }
 
-    for (var i = 0; i < this._selectionListeners["all"].length; i++) {
-        this._selectionListeners["all"][i].tagDeselected(tagId);
+    if (typeof (this._selectionListeners['all']) != 'undefined') {
+        for (var i = 0; i < this._selectionListeners["all"].length; i++) {
+            this._selectionListeners["all"][i].tagDeselected(tagId);
+        }
     }
 
     if (typeof (this._selectionListeners[catId]) != 'undefined') {
@@ -244,7 +248,11 @@ TagChildrenNavigator.prototype._loadTags = function (childrenInfo)
         this.container.hide();
         return;
     }
-    this.container.show();
+
+    // UNDOCHANGE
+    //this.container.show();
+
+
     var ul = $('<ul>').appendTo(this.container);
     // Update label in path
     if (this._isSelfNavigating) {

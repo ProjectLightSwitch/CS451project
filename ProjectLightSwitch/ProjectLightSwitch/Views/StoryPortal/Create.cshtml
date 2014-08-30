@@ -1,8 +1,12 @@
-﻿@model ProjectLightSwitch.Models.StoryResponseViewModel
+﻿@model ProjectLightSwitch.Models.StoryResponseCreationViewModel
 @{
     ViewBag.Title = "Write a Story";
 }
 <h2>Create</h2>
+
+@section head {
+    @Scripts.Render("~/bundles/jqueryui")
+}
 
 @section scripts
 {
@@ -10,15 +14,12 @@
 
     <script type="text/javascript" language="javascript">
         $(document).ready(function () {
-            (function () {
                 $('#gender').buttonset();
                 //$('#age').spinner();
 
                 var tagnav = new TagNavigator('#tagnav');
                 var breadcrumbs = new SelectedTagBreadCrumbs($('#selectedTags'), tagnav, { cssPrefix: '', separator: ' > ', closable: true });
-
                 //NavigateToStep(0);
-            })();
         });
 
         

@@ -69,7 +69,7 @@ TagNavigator.prototype.init = function ()
         this._container.closest('form').submit(this._injectHiddenFields.bind(this));
     }.bind(this));
 
-    this.navigateToTag(this.findTagId());
+    this.navigateToTag(this.findTagId(), true);
 };
 
 // Searches URL anchor, id querystring value and navigates to child

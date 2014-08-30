@@ -20,7 +20,6 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-
         /// <summary>
         /// Deletes the specified LocalizedStoryType.
         /// If it was the last remaining translation of a StoryType, then it deletes the StoryTypeResultModel as well.
@@ -77,7 +76,8 @@ namespace ProjectLightSwitch.Models
                     Tags = lst.StoryType.Tags.Select(t => new JSONTagModel
                     {
                         id = t.TagId,
-                        text = t.TranslatedTags.Where(tt => tt.LanguageId == lst.LanguageId).Select(tt => tt.Text).FirstOrDefault()
+                        text = t.TranslatedTags.Where(tt => tt.LanguageId == Language.DefaultLanguageId).Select(tt => tt.Text).FirstOrDefault(),
+                        type = t.TagType,
                     }).ToList()
                 };
             }
@@ -190,7 +190,7 @@ namespace ProjectLightSwitch.Models
                             Title = model.Title,
                             Description = model.Description,
                             // TODO: Add real localization
-                            LanguageId = Language.DefaultLanguageId, // model.LanguageId;
+                            LanguageId = Language.DefaultLanguageId, // inputModel.LanguageId;
                             StoryType = storyType,
                         };
                         context.LocalizedStoryTypes.Add(localizedStoryType);
@@ -214,7 +214,7 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public static string SaveStoryResponse(StoryResponseViewModel model)
+        public static string SaveStoryResponse(StoryResponseCreationViewModel model)
         {
             string error = null;
             using (var context = new StoryModel())
@@ -276,7 +276,7 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-        public static void PopulateStoryResponseModelOutput(int id, ref StoryResponseViewModel model)
+        public static void PopulateStoryResponseModelOutput(int id, ref StoryResponseCreationViewModel model)
         {
             using (var context = new StoryModel())
             {
@@ -316,38 +316,122 @@ namespace ProjectLightSwitch.Models
                 model.StoryQuestions = q.Questions.ToList();
             }
         }
-
         #endregion
 
-                #region Story Responses
-
-        public static List<StorySearchResultModel> GetStorySearchResults(StorySearchInputModel searchModel, int page, int resultsPerPage, int recentDays)
+        #region Story Responses
+        public static StoryResponseSearchViewModel SearchStoryResponses(StoryResponseSearchInputModel inputModel)
         {
+            // TODO: Profile this for performance
             using (var context = new StoryModel())
             {
-                var minimumRecentDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(recentDays));
-                //searchModel.
-                return context.StoryResponses.Include("Tags").Where(r =>
+                var minimumRecentDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(inputModel.RecentDays));
+
+                // TODO: Combine count and results to one query
+                int totalResultCount = context.StoryResponses
+                .Where(r =>
                     r.LocalizedStoryType.Language.IsActive
-                    && (searchModel.TranslatedStoryTypeId == 0 || r.LocalizedStoryTypeId == searchModel.TranslatedStoryTypeId)
-                    && (searchModel.Gender.Length == 0 || r.Gender == searchModel.Gender)
-                    && ((searchModel.MinAge == 0 || searchModel.MinAge <= r.Age) && (searchModel.MaxAge == 0 || searchModel.MaxAge >= r.Age))
-                    && (
-                        searchModel.SelectedTags.Count == 0
-                        || !searchModel.SelectedTags
-                                       .Any(t => r.LocalizedStoryType.StoryType.Tags
-                                                  .Select(stt => stt.TagId)
-                                                  .Union(searchModel.SelectedTags)
-                                                  .Contains(t)
-                                        )
+                        // Search for results to a specific story type
+                    && (inputModel.TranslatedStoryTypeId == 0 || r.LocalizedStoryTypeId == inputModel.TranslatedStoryTypeId)
+                        // Search for results by gender
+                    && (inputModel.Gender.Length == 0 || r.Gender == inputModel.Gender)
+                        // Search by age
+                    && (inputModel.MinAge <= r.Age && (inputModel.MaxAge == 0 || inputModel.MaxAge >= r.Age))
+                        // Search union of tags from story responses and localized story type
+
+                    // All selected tags were found in the story type or response tags
+                    && (inputModel.SelectedTags
+                             .All(t => r.LocalizedStoryType.StoryType.Tags
+                                         .Select(stt => stt.TagId)
+                                         .Union(r.Tags.Select(rt => rt.TagId))
+                                         .Contains(t))
                     )
-                ).Select(sr => new StorySearchResultModel { 
-                    StoryResponse = sr, 
-                    OverallRating = context.StoryResponseRatings.Where(r=> r.StoryResponseId == sr.StoryResponseId).Sum(r=>r.Rating),
-                    RecentRating = context.StoryResponseRatings.Where(r => r.StoryResponseId == sr.StoryResponseId && r.DateLeft >= minimumRecentDate).Sum(r=>r.Rating),
-                    TranslatedStoryTypeId = sr.LocalizedStoryTypeId,
-                }).OrderByDescending(sr=>sr.RecentRating).OrderByDescending(sr => sr.StoryResponse.CreationDate)
-                  .Skip(resultsPerPage*page).Take(resultsPerPage).ToList();
+                ).Count();
+
+
+
+                var results = context.StoryResponses.Include("Tags")
+                .Where(r =>
+                    r.LocalizedStoryType.Language.IsActive
+                        // Search for results to a specific story type
+                    && (inputModel.TranslatedStoryTypeId == 0 || r.LocalizedStoryTypeId == inputModel.TranslatedStoryTypeId)
+                        // Search for results by gender
+                    && (inputModel.Gender.Length == 0 || r.Gender == inputModel.Gender)
+                        // Search by age
+                    && (inputModel.MinAge <= r.Age && (inputModel.MaxAge == 0 || inputModel.MaxAge >= r.Age))
+                        // Search union of tags from story responses and localized story type
+
+                    // All selected tags were found in the story type or response tags
+                    && (inputModel.SelectedTags
+                             .All(t => r.LocalizedStoryType.StoryType.Tags
+                                         .Select(stt => stt.TagId)
+                                         .Union(r.Tags.Select(rt => rt.TagId))
+                                         .Contains(t))
+                    )
+                )
+                .Select(sr => new
+                {
+                    Response = sr,
+                    //LocalizedStoryType = sr.LocalizedStoryType,
+                    //Tags = sr.Tags.Select(t => t.GetJsonPathModel()).ToList(),
+                    //StoryResponse = sr,
+                    // NOTE: rating system is rating=1 per thumb up
+                    OverallRating = context.StoryResponseRatings.Where(r => r.StoryResponseId == sr.StoryResponseId).Sum(r => r.Rating),
+                    RecentRating = context.StoryResponseRatings.Where(r => r.StoryResponseId == sr.StoryResponseId && r.DateLeft >= minimumRecentDate).Sum(r => r.Rating),
+                    //LocalizedStoryTypeId = sr.LocalizedStoryTypeId,
+                })
+                .OrderByDescending(sr => sr.RecentRating)
+                .ThenByDescending(sr => sr.Response.CreationDate)
+                .Skip(inputModel.ResultsPerPage * inputModel.Page)
+                .Take(inputModel.ResultsPerPage)
+                .ToList()
+                .Select(sr => new StoryResponseSearchOutputModel
+                {
+                    LocalizedStoryType = sr.Response.LocalizedStoryType,
+                    Tags = sr.Response.Tags.Select(t =>
+                               new JSONTagPathModel
+                               {
+                                   path = t.Ancestors
+                                           .Where(a => a.Ancestor.TagId != TagTree.InvisibleRootId)
+                                           .OrderByDescending(a => a.PathLength)
+                                           .Select(jt => new JSONTagModel
+                                           {
+                                               id = jt.Ancestor.TagId,
+                                               text = jt.Ancestor.TranslatedTags.Where(tt => tt.LanguageId == Language.DefaultLanguageId).Select(tt => tt.Text).FirstOrDefault(),
+                                               type = jt.Ancestor.TagType,
+                                           }).ToList()
+                               }
+                            ),
+                    StoryResponse = sr.Response,
+                    // NOTE: rating system is rating=1 per thumb up
+                    OverallRating = sr.OverallRating,
+                    RecentRating = sr.RecentRating,
+                    LocalizedStoryTypeId = sr.Response.LocalizedStoryTypeId,
+                }).ToList();
+
+                var result = new StoryResponseSearchViewModel();
+                result.SearchParameters = inputModel;
+
+                result.SearchParameters.SelectedTagPaths =
+                    context.Tags
+                           .Where(t => inputModel.SelectedTags.Contains(t.TagId))
+                           .Select(t =>
+                               new JSONTagPathModel
+                               {
+                                   path = t.Ancestors
+                                           .Where(a => a.Ancestor.TagId != TagTree.InvisibleRootId)
+                                           .OrderByDescending(a => a.PathLength)
+                                           .Select(jt => new JSONTagModel
+                                           {
+                                               id = jt.Ancestor.TagId,
+                                               text = jt.Ancestor.TranslatedTags.Where(tt => tt.LanguageId == Language.DefaultLanguageId).Select(tt => tt.Text).FirstOrDefault(),
+                                               type = jt.Ancestor.TagType,
+                                           }).ToList()
+                               }
+                            )
+                           .ToList();
+                result.TotalResultCount = totalResultCount;
+                result.Results = results;
+                return result;
             }
         }
 
@@ -365,6 +449,17 @@ namespace ProjectLightSwitch.Models
         
         #endregion
 
-
+        public static IEnumerable<CountryListData> GetCountries()
+        {
+            using (var context = new StoryModel())
+            {
+                return context.Countries.Select(c =>
+                    new CountryListData
+                    {
+                        CountryId = c.CountryId,
+                        CountryName = c.Country1
+                    }).ToList();
+            }
+        }
     }
 }

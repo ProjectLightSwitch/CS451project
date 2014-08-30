@@ -9,72 +9,106 @@ using System.Web.Mvc;
 
 namespace ProjectLightSwitch.Models
 {
-    public class StorySearchInputModel
-    {
-        public int TranslatedStoryTypeId { get; set; }
-        public List<int> SelectedTags { get; set; }
-        public int MinAge {get;set;}
-        public int MaxAge {get;set;}
 
+
+    #region Searching for user story responses
+
+    public class StoryResponseSearchInputModel
+    {
+        /// <summary>
+        /// The number of days used to calculate recent rating
+        /// </summary>
+        public int RecentDays { get { return SiteSettings.DefaultRecentDays; } }
+
+        // Paging information
+        public int Page { get; set; }
+        public int ResultsPerPage { get; set; }
+
+        /// <summary>
+        /// Search for responses to this localized story type
+        /// </summary>
+        public int TranslatedStoryTypeId { get; set; }
+
+        // Tag (story response and story type) search
+        public List<int> SelectedTags { get; set; }
+        public List<JSONTagPathModel> SelectedTagPaths { get; set; }
+
+        // Personal information
+        public int MinAge { get; set; }
+        public int MaxAge { get; set; }
         public int Country { get; set; }
 
         private string _gender;
         [RegularExpression("^[MFI]?$")]
-        public string Gender {
-            get { return _gender;  }
-            set 
+        public string Gender
+        {
+            get { return _gender; }
+            set
             {
-                string genderFlag = "";
-                if (!string.IsNullOrEmpty(value)
-                    && Enum.IsDefined(typeof(ProjectLightSwitch.Models.Enums.Gender), value[0]))
+                if (value != null && value.Length == 1 && "MFI".IndexOf(value) >= 0)
                 {
-                    genderFlag = value[0].ToString();
+                    _gender = value;
                 }
             }
         }
-        
-        public StorySearchInputModel()
+
+        public StoryResponseSearchInputModel()
         {
+
+
+
+            MinAge = 13;
+            MaxAge = 100;
+
+
             SelectedTags = new List<int>();
-        }
-    }
-
-    public class StorySearchResultsModel
-    {
-        public int Page { get; set; }
-
-        public int ResultsPerPage { get; set; }
-
-        public int RecentDays { get; set; }
-
-        public List<StorySearchResultModel> StorySearchResults { get; set; }
-
-        public StorySearchResultsModel()
-        {
-            StorySearchResults = new List<StorySearchResultModel>();
             ResultsPerPage = SiteSettings.DefaultResultsPerPage;
-            RecentDays = SiteSettings.DefaultRecentDays;
         }
     }
-    public class StorySearchResultModel
-    {
-        public int TranslatedStoryTypeId { get; set; }
 
-        public StoryResponse StoryResponse {get; set; }
+    public class StoryResponseSearchOutputModel
+    {
+        
+        public int LocalizedStoryTypeId { get; set; }
+
+        public StoryResponse StoryResponse { get; set; }
 
         [Display(Name = "Recent Rating")]
         public int RecentRating { get; set; }
 
-        [Display(Name="Overall Rating")]
+        [Display(Name = "Overall Rating")]
         public int OverallRating { get; set; }
 
+        public LocalizedStoryType LocalizedStoryType { get; set; }
 
-        public StorySearchResultModel()
-        { 
-        
+
+        [Display(Name = "Associated Tags")]
+        public IEnumerable<JSONTagPathModel> Tags { get; set; }
+
+        public StoryResponseSearchOutputModel()
+        {
+            Tags = Enumerable.Empty<JSONTagPathModel>();
+            StoryResponse = new StoryResponse();
+
+        }
+    }
+    
+    public class StoryResponseSearchViewModel
+    {
+        public StoryResponseSearchInputModel SearchParameters { get; set; }
+        public List<StoryResponseSearchOutputModel> Results { get; set; }
+        public int TotalResultCount { get; set; }
+
+        public StoryResponseSearchViewModel()
+        {
+            SearchParameters = new StoryResponseSearchInputModel();
+            Results = new List<StoryResponseSearchOutputModel>();
         }
     }
 
+    #endregion
+
+    #region Search/browse story type available to complete
     public class StoryTypeResultsModel
     {
         public IEnumerable<StoryTypeResultModel> StoryTypeModels {get;set;}
@@ -146,6 +180,8 @@ namespace ProjectLightSwitch.Models
         public LocalizedStoryType LocalizedStoryType { get; set; }
     }
 
+    #endregion
+
     public class StoryTypeCreationModel
     {
         [Display(Name="Story Type Tags")]
@@ -188,7 +224,10 @@ namespace ProjectLightSwitch.Models
         public string CountryName { get; set; }
     }
 
-    public class StoryResponseViewModel
+
+    #region User story response entry
+
+    public class StoryResponseCreationViewModel
     {
         // STORY TYPE
         public StoryTypeResultModel StoryTypeResultModel { get; set; }
@@ -232,7 +271,7 @@ namespace ProjectLightSwitch.Models
 
         public Dictionary<int, string> StoryAnswers { get; set; }
 
-        public StoryResponseViewModel()
+        public StoryResponseCreationViewModel()
         {
             StoryQuestions = Enumerable.Empty<Question>();
             StoryAnswers = new Dictionary<int, string>();
@@ -247,7 +286,51 @@ namespace ProjectLightSwitch.Models
         public int CurrentStep { get; set; }
     }
 
+    #endregion
 
+
+    #region Tag Representations
+    public class JSONTagPathModel
+    {
+        private string PathSeparator { get; set; }
+
+        public List<JSONTagModel> path { get; set; }
+        public byte type { get { return path.Select(p => p.type).LastOrDefault(); } }
+        public string text { get { return path.Select(p => p.text).LastOrDefault(); } }
+        public int id { get { return path.Select(p => p.id).LastOrDefault(); } }
+
+        public string FullPathLabel {
+            get 
+            {
+                return string.Join(PathSeparator, path.Select(p => p.text).ToList());
+            }
+        }
+
+
+        /// <summary>
+        /// Returns the first not followed by 
+        /// </summary>
+        public string AbbreviatedPathLabel
+        {
+            get
+            {
+                return string.Format("{0}{1}{2}",
+                    path.Select(p => p.text).FirstOrDefault(),
+                    PathSeparator,
+                    string.Join(PathSeparator, path.Select(p => p.text).Skip(path.Count - 2).Take(2).ToList()));
+            }
+        }
+
+        public JSONTagPathModel()
+        {
+            PathSeparator = " > ";
+        }
+
+        public string Serialize()
+        {
+            return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(this);
+        }
+    }
 
 
     public class JSONTagModel
@@ -255,6 +338,11 @@ namespace ProjectLightSwitch.Models
         public byte type { get; set; }
         public string text { get; set; }
         public int id { get; set; }
+
+        public string Serialize()
+        {
+            return new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(this);
+        }
     }
 
     public class JSONChildrenModel
@@ -263,7 +351,10 @@ namespace ProjectLightSwitch.Models
         public IEnumerable<JSONTagModel> children { get; set; }
     }
 
-    #region Ancestor Management
+    #endregion
+
+
+    #region Tag Ancestor Management
 
     public class TagViewModel
     {

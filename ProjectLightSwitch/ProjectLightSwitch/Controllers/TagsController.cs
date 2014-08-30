@@ -32,11 +32,12 @@ namespace ProjectLightSwitch.Controllers
             return Content(TagSystem.GetFullTagNavigationPath_Json(id, childrenOnly, language), "application/json");
         }
 
-        [AjaxOnly]
+        //[AjaxOnly]
         [HttpGet]
         public ActionResult Search(string term)
         {
-            return Content(TagSystem.GetPaths_Json(TagTree.InvisibleRootId, term, true, Language.DefaultLanguageId), "application/json");
+            var result = TagSystem.GetPaths_Json(TagTree.InvisibleRootId, term, true, Language.DefaultLanguageId);
+            return Content(result, "application/json");
         }
 
         //[AjaxOnly]
@@ -73,15 +74,15 @@ namespace ProjectLightSwitch.Controllers
     //        return RedirectToAction("Index", (parent != null) ? new { id = parent.TagId } : null);
     //    }
 
-    //    public ActionResult AddChildTags(List<TagViewModel> model)
+    //    public ActionResult AddChildTags(List<TagViewModel> inputModel)
     //    {
-    //        var childrenToAdd = new List<TagViewModel>(model);
+    //        var childrenToAdd = new List<TagViewModel>(inputModel);
 
-    //        model.RemoveAll(m => string.IsNullOrWhiteSpace(m.EnglishText));
+    //        inputModel.RemoveAll(m => string.IsNullOrWhiteSpace(m.EnglishText));
 
-    //        if (model.Count > 0 && ModelState.IsValid)
+    //        if (inputModel.Count > 0 && ModelState.IsValid)
     //        {
-    //            foreach(var child in model)
+    //            foreach(var child in inputModel)
     //            {
     //                //don't add tags with no english tag
     //                if (String.IsNullOrWhiteSpace(child.Translations[Language.DefaultLanguageId]))
@@ -92,7 +93,7 @@ namespace ProjectLightSwitch.Controllers
     //                }
     //            }
 
-    //            return RedirectToAction("Index", new { id = model.First().ParentId });
+    //            return RedirectToAction("Index", new { id = inputModel.First().ParentId });
     //        }
 
     //        return RedirectToAction("Index");

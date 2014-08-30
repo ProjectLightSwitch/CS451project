@@ -1,0 +1,251 @@
+﻿@model ProjectLightSwitch.Models.StoryResponseSearchViewModel
+@{
+    ViewBag.Title = "Search";
+}
+
+@section head {
+@Scripts.Render("~/bundles/jqueryui")
+
+<script type="text/javascript">
+
+    var tagSearcher = null;
+
+    var autocompleteTagPaths = {};
+    $(document).ready(function () {
+        tagSearcher = new TagSearcher($('#tag-searcher'));
+        var breadcrumbs = new SelectedTagBreadCrumbs($('#selected-tags'), tagSearcher, { cssPrefix: '', separator: ' > ', closable: true });
+
+
+        var acomplete = jQuery("#tag-autocomplete").autocomplete({
+            source: function (request, response) {
+                tagSearcher.tagAdapter.searchTags(request.term, function (data) {
+                    var autocompleteTagPaths = {};
+                    var label = [];
+                    for (var i = 0; i < data.length; i++)
+                    {
+                        var path = data[i].path;
+                        for (var j= 0; j < path.length; j++)
+                        {
+                            label.push(path[j].text);
+                        }
+                        data[i].fullLabel = label.join(' > ');
+
+                        label.splice(1, label.length - 3);
+                        data[i].label = label.join('>');
+                    }
+                    response(data);
+                });
+            },
+            minLength: 3,
+            select: function (event, ui) {
+                tagSearcher.navigateToTag(ui.item.value, true);
+            },
+            focus: function (event, ui) {
+                $("#tag-autocomplete").val(ui.item.label);
+                return false;
+            }
+        });
+
+        // Init values
+
+        // AGE 
+        var minAge = '@Model.SearchParameters.MinAge' || 13;
+        var maxAge = '@Model.SearchParameters.MaxAge' || 100;
+        $("#age-range-results").text(minAge + " to " + maxAge  + " yrs");
+        $("#age-range").slider({
+            range: true,
+            min: 13,
+            max: 100,
+            values: [minAge, maxAge],
+            slide: function (event, ui) {
+                $('#MinAge').val(ui.values[0]);
+                $('#MaxAge').val(ui.values[1]);
+                $("#age-range-results").text(ui.values[0] + " to " + ui.values[1] + " yrs");
+            }
+        });
+
+        // COUNTRY
+        $('[name="Country"]').val('@Model.SearchParameters.Country');
+
+        // GENDER
+        @if(!string.IsNullOrWhiteSpace(Model.SearchParameters.Gender))
+        {
+            @:$('[name="Gender"]').val('@Model.SearchParameters.Gender');
+        }
+            
+        // TAGS
+        @foreach(var tagInfo in Model.SearchParameters.SelectedTagPaths)
+        {
+            @:tagSearcher.selectTagByPath(@(Html.Raw(tagInfo.Serialize())).path);
+        }
+    });
+</script>
+
+<style type="text/css">
+
+#age-range {
+    width: 75%;
+    margin: 10px auto;
+}
+
+#age-range-results {
+    color: blue;
+}
+
+#tag-browsing-pane {
+    width:200px;
+    min-height:200px;
+    float:left;
+        
+}
+#main-pane{
+    min-height:200px;
+    overflow:hidden;
+}
+
+.search-field-block {
+    height: 50px;
+    margin-left: 15px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#sel-tag-bar > * {
+    margin-top:0;
+    margin-bottom:0;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.search-field-block h3 {
+    padding: 0;
+    margin: 0;
+}
+
+#selected-tags, #selected-tags .tagBreadcrumbs  {
+    display: inline-block;
+    border: none;
+    background:none;
+    padding:0;
+    margin:0 10px 0 0;
+}
+
+#selected-tags, #selected-tags .tagBreadcrumbs{
+    display: inline-block;
+    border: none;
+    background:none;
+}
+
+#sel-tag-bar h3 {
+    line-height:100%;
+    vertical-align: middle;
+}
+
+.rating {
+    color: gray;
+    font-size: .8em;
+    font-style: italic;
+}
+
+</style>
+}
+
+@using(Html.BeginForm("Search", "StoryPortal", FormMethod.Get))
+{
+    <div id="search-bar">
+        <div class="search-field-block">
+            <h1>Story Search:</h1>
+        </div>
+
+        <div class="search-field-block">
+            <h3>Age Range: <span id="age-range-results"></span></h3>
+            
+            <input type="hidden" id="MinAge" name="MinAge" />
+            <input type="hidden" id="MaxAge" name="MaxAge" />
+            <div id="age-range"></div>
+        </div>
+
+        <div class="search-field-block">
+            <h3>Gender:</h3>
+            <select name="Gender">
+                <option selected="selected" value="">Any</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="I">Intersex</option>
+            </select>
+        </div>
+
+        <div class="search-field-block">
+            <h3>Country:</h3>
+            <select name="Country">
+                <option selected="selected" value="0">Any</option>
+                @{
+                    var countries = ProjectLightSwitch.Models.StorySystem.GetCountries();
+                    foreach (var country in countries)
+                    {
+                        <option value="@country.CountryId">@country.CountryName</option>
+                    }
+                }
+            </select>
+        </div>
+
+
+        <div class="search-field-block">
+            <h3>Tag Search:</h3>
+            <input id="tag-autocomplete" class="full-width" type="search" />
+        </div>
+
+        <div class="search-field-block">
+            <input type="submit" value="Search" />
+        </div>
+    </div>
+
+    <div id="sel-tag-bar">
+        <h3 class="inline">My Tags:</h3>
+        <div id="selected-tags"></div><br class="clear" />
+    </div>
+
+    <!-- Search Content and tag selection bar -->
+    <div>
+        <div id="tag-browsing-pane">
+            <h3>Browse for a Tag</h3>
+            <div id="tag-searcher"></div>
+        </div>
+        <div id="response-tag-search">
+            <div id="main-pane">
+                <h3>Results</h3>
+                <div id="response-results">
+                    @if (!Model.Results.Any())
+                    { 
+                        <span class="i b">No results were found.</span>
+                    }
+                    else
+                    {
+
+                        foreach (var result in Model.Results)
+                        {
+                            <div class="story-respose-result">
+                                <h4 class="u b">@result.StoryResponse.Title</h4>
+                                <p class="i" style="color:gray">@result.RecentRating people recently found this useful.</p>
+                                <p>@result.StoryResponse.Story</p>
+                                @if (result.Tags.Any())
+                                {
+                                    <ul class="tagBreadcrumbs">
+                                        @foreach (var tag in result.Tags)
+                                        {
+                                            <li>
+                                                <span title="@tag.FullPathLabel">
+                                                    @tag.AbbreviatedPathLabel
+                                                </span>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

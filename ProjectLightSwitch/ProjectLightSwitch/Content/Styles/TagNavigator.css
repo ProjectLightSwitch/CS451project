@@ -148,7 +148,7 @@ ul.tagBreadcrumbs li {
     border: 1px solid black;
 }
 
-ul.tagBreadcrumbs a, ul.tagBreadcrumbs a:visited, ul.tagBreadcrumbs a:hover  {
+ul.tagBreadcrumbs span, ul.tagBreadcrumbs a, ul.tagBreadcrumbs a:visited, ul.tagBreadcrumbs a:hover  {
     color: white;
     text-decoration: none;
 }
@@ -164,4 +164,10 @@ ul.tagBreadcrumbs a, ul.tagBreadcrumbs a:visited, ul.tagBreadcrumbs a:hover  {
     margin: 10px 0 ;
     padding: 10px;
     border: 1px black solid;
+}
+
+
+/* Override JQueryUI styles */
+.ui-accordion .ui-accordion-content {
+    padding: 0;
 }
