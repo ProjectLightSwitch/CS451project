@@ -12,6 +12,23 @@ namespace ProjectLightSwitch.Models
 
         #region Site Initialization
 
+        public static void ResetData()
+        {
+            using (var context = new StoryModel())
+            {
+                context.Database.ExecuteSqlCommand("DELETE FROM Tags");
+                context.Database.ExecuteSqlCommand("DELETE FROM TagTree");
+                context.Database.ExecuteSqlCommand("DBCC CHECKIDENT (Tags, reseed, 0)");
+
+                context.Tags.Add(new Tag() { 
+                    TagType = (byte)TagType.InvisibleRoot, 
+                    TagId = TagTree.InvisibleRootId });
+                context.TagTree.Add(new TagTree { AncestorId = TagTree.InvisibleRootId, DescendantId = TagTree.InvisibleRootId, PathLength = 0 });
+                context.SaveChanges();
+            }
+        }
+
+
         public static void SeedData()
         {
             using (var context = new StoryModel())

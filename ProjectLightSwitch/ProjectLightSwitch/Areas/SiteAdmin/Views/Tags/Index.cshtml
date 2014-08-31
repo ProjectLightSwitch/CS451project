@@ -12,32 +12,38 @@
 @section scripts
 {
     <script type="text/javascript" language="javascript">
-
+    @{ 
+        string editUrl = Url.Action("Edit", "Tags", new { area = "SiteAdmin", tagid = "(tagid)" }).Replace("(tagid)", "{0}");
+    }
     var tagnav = new TagNavigator('#tagnav', {
             enabled:true,
-            editUrlFormat: '@Url.Action("Edit", "Tags", new { area = "SiteAdmin", id = "(tagid)" }).Replace("(tagid)", "{0}")',
+            editUrlFormat: '@editUrl',
             selectedTagSubmissionName: "SelectedTags[(0)]",
             ajax_navigateToTagUrl: '@Url.Action("Navigate", "Tags", new { area = "" })'
         });
     </script>
 }
+<section>
+    <h2>Tag Management</h2>
+    @using (Html.BeginForm("AddChildren", "Tags", new { area = "SiteAdmin" }, FormMethod.Post))
+    {
+        <h3>Add Category</h3>
+        @Html.Hidden("model[0].Tag.TagId", ProjectLightSwitch.Models.TagTree.InvisibleRootId)
+        @Html.Hidden("model[0].Tag.TagType", (byte)ProjectLightSwitch.Models.Enums.TagType.Category)
+        <label>Category Name: <input name="model[0].EnglishText" /></label>
+        <input type="submit" value="Add Category" />
+    }
 
-<h2>Tag Management</h2>
-@using(Html.BeginForm("AddChildren", "Tags", new {area="SiteAdmin"}, FormMethod.Post))
-{
-    <h3>Add Category</h3>
-    @Html.Hidden("model[0].Tag.TagId", ProjectLightSwitch.Models.TagTree.InvisibleRootId)
-    @Html.Hidden("model[0].Tag.TagType", (byte)ProjectLightSwitch.Models.Enums.TagType.Category)
-    <label>Category Name: <input name="model[0].EnglishText" /></label>
-    <input type="submit" value="Add Category" />
-}
+    @if(false)
+    {
+        <h3>Pending Tags</h3>
+        <p>
+            @Html.ActionLink("Review Pending Tags", "ReviewPending", new { area = "SiteAdmin" })
+        </p>
+    }
 
-<h3>Pending tags</h3>
-<p>
-    @Html.ActionLink("Review Pending Tags", "ReviewPending", new { area = "SiteAdmin" })
-</p>
-
-Tab Navigator:
-<form action="#" method="post">
-    <div id="tagnav"></div>
-</form>
+    <h3>Current Tags</h3>
+    <form action="#" method="post">
+        <div id="tagnav"></div>
+    </form>
+</section>

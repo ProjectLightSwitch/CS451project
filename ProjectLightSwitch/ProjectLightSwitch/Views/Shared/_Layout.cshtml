@@ -1,5 +1,7 @@
 ﻿@{
     string controller = Url.RequestContext.RouteData.Values["Controller"] as string;
+    bool isAdmin = User.IsInRole(ProjectLightSwitch.Models.SiteSettings.AdminRole);
+    bool loggedin = User.Identity.IsAuthenticated;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -8,17 +10,10 @@
         <title>Project Light Switch - @ViewBag.Title</title>
         <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <meta name="viewport" content="width=device-width" />
-        
         @Styles.Render("~/Content/themes/base/css")
-        
         @Scripts.Render("~/bundles/modernizr")
-
-        @* Add these to the correct pages*@
         @Scripts.Render("~/bundles/jquery")
-
-
         @{ Html.RenderPartial("~/Views/Shared/_DynamicJavascript.cshtml"); }
-        
         @if(
             "StoryPortal".Equals(controller, StringComparison.CurrentCultureIgnoreCase) 
             || "SiteAdmin".Equals(controller, StringComparison.CurrentCultureIgnoreCase))
@@ -32,57 +27,44 @@
     </head>
     <body>
         <div>
-            <header class="clear-fix">
-                <section id="loginSection" class="clear-fix">
-                    @Html.Partial("_LoginPartial")
-                </section>
-                <div class="float-left">
-                    <h1>PROJECT LIGHT SWITCH!</h1>
-                </div>
-                <div>
-                    <nav>
+            
+            <header>
+                <img src="~/Images/logo_small.png" alt="logo" class="float-left" />
+                <nav>
+                    <div id="loginSection" class="float-right">
+                        
                         <ul>
-
                             <!-- Reversed order because float right -->
-                            <li>@Html.ActionLink("About Us", "About", "Home", new { area = "" }, null)</li>
-                            <li>@Html.ActionLink("Store", "Index", "Home", new { area = "" }, null)</li>
-                            <li>@Html.ActionLink("Happiness Ninjas", "Index", "Home", new { area = "" }, null)</li>
-                            <li>@Html.ActionLink("Media", "Index", "Home", new { area = "" }, null)</li>
-                            <li>@Html.ActionLink("StoryPortal", "Index", "StoryPortal", new { area="" }, null)</li>
+                            <li>@Html.ActionLink("Mission", "Index", "Home", null, null, "mission", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("About", "Index", "Home", null, null, "about", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Projects", "Index", "Home", null, null, "projects", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Join Us", "Index", "Home", null, null, "join-us", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Future Plans", "Index", "Home", null, null, "future-plans", new { area = "" }, null)</li>
+                            <li>@Html.ActionLink("Contact", "Index", "Home", null, null, "contact", new { area = "" }, null)</li>
                         </ul>
-                    </nav>
-                </div>
-            </header>
-            <div id="global-messages">
-                @{
-                    IEnumerable<string> messages = ProjectLightSwitch.HelperFunctions.GetGlobalMessages(TempData);
-                    if (messages.Count() > 0)
-                    {
-                        <h2>Messages:</h2>
-                        <ul>
-                            @foreach (string message in messages)
-                            {
-                                <li>@message</li>
-                            }
-                        </ul>
-                    }
-                }
-            </div>
-            <div id="body">
-                @RenderSection("featured", required: false)
-                <section class="content-wrapper main-content clear-fix">
-                    @RenderBody()
-                </section>
-            </div>
-            <footer>
-                <div class="content-wrapper">
-                    <div class="float-left">
-                        <p>&copy; @DateTime.Now.Year - Project Light Switch</p>
                     </div>
-                </div>
-            </footer>
+                    <div class="clear"></div>
+                </nav>
+            </header>
 
-            @RenderSection("scripts", required: false)
+            @Html.Partial("_LoginPartial")
+
+            @{IEnumerable<string> messages = ProjectLightSwitch.HelperFunctions.GetGlobalMessages(TempData);}
+            @if(messages.Any())
+            {
+                <section id="global-messages">
+                    <h2>Messages:</h2>
+                    <ul>
+                        @foreach (string message in messages)
+                        {
+                            <li>@message</li>
+                        }
+                    </ul>
+                </section>
+            }
+            @RenderBody()
+            @{Html.RenderPartial("~/Views/Shared/_Footer.cshtml", null);}
         </div>
+        @RenderSection("scripts", required: false)
     </body>
 </html>

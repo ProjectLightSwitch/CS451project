@@ -5,20 +5,7 @@
     list-style-image: none;
 }
 
-header h1 {
-    padding:0;
-    margin:0;
-}
 
-header nav ul {
-    float:right;
-    font-weight: bold;
-}
-
-header nav li {
-    float: right;
-    margin:10px;
-}
 
 section#loginSection {
     text-align: right;
@@ -89,6 +76,7 @@ section#loginSection li {
     font-weight: bold;
 }
 
+/* Override jqueryui (must be called after) */
 .ui-menu-item {
     white-space: nowrap;
     overflow: hidden;
@@ -105,3 +93,137 @@ section#loginSection li {
 .ui-accordion-content li {
     border-top: 1px solid #a9a9a9;
 }
+
+
+/* END jquery */
+
+/* SITE */
+
+
+body > div {
+    width:1024px;
+}
+
+body > div > header, body > div > footer, body > div > div, body > div > section {
+    padding: 10px 40px;
+}
+
+header {
+    background:#0db89f;
+    padding: 10px 40px;
+}
+
+header h1 {
+    padding:0;
+    margin:0;
+}
+
+header nav ul {
+    float:right;
+    font-weight: bold;
+}
+
+header nav li {
+    display:inline-block;
+    margin:10px;
+}
+
+header nav a {
+    text-decoration: none;
+}
+
+header nav a, header nav a:visited, header nav a:active {
+    color: #054751;
+}
+
+header nav a:hover {
+    color: white;
+    
+}
+
+header nav a.sel, header nav a.sel:visited, header nav a.sel:active {
+    color:white;
+    border:1px solid white;
+}
+
+div#outer-content {
+    padding: 40px;
+}
+
+
+footer {
+    background: #414042;
+    color: white;
+}
+
+footer a, footer a:active, footer a:visited, footer a:hover {
+    color:#f7941e;
+}
+
+.button1, .button1:active, .button1:visited, .button1:hover {
+    text-decoration:none;
+    cursor:pointer;
+    background: #f89521 !important;
+    color: white !important;
+    font-weight: bold;
+    padding: 10px 15px;
+    text-align: center !important;
+    white-space: nowrap;
+    display:inline-block;
+      box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  -webkit-box-sizing:border-box
+}
+
+.button2, .button2:active, .button2:visited, .button2:hover {
+    text-decoration:none;
+    cursor:pointer;
+    background: #00b9a0 !important;
+    color: white !important;
+    font-weight: bold;
+    padding: 10px 15px;
+    text-align: center !important;
+    white-space: nowrap;
+    display:inline-block;
+      box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  -webkit-box-sizing:border-box
+}
+
+body > div > section {
+    margin: 0 auto;
+    max-width: 1024px;
+}
+
+
+body > div > section > h1, body > div > section > h2, body > div > section > h3, body > div > section > h4 {
+    color:#054751;
+    padding:0;
+    margin:0;
+}
+body > div > section > h2 {
+    font-size:1.5em;
+}
+body > div > section > h3 {
+    font-size:1em;
+    font-weight:bold;
+}
+
+body > div > section {
+
+}
+
+body > div > section.accent {
+    background: #e7e7e7;
+    border: 1px solid #6e6f72;}
+    
+body > div > section.highlight {
+    background:#054751;
+    color:white;
+}
+
+body > div > section.highlight a {
+    color:#f89521;
+}
+
+/* Index */

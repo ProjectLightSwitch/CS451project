@@ -1,6 +1,146 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
+<section id="mission" class="accent">
+    <table class="full-width" style="min-height:250px">
+        <tr>
+            <td style="width:33%">&nbsp;</td>
+            <td style="width:33%" class="middle center">
+                <p>
+                    Project Light Switch is a non-profit
+                    organization that focuses on
+                    providing unique resources and
+                    experiences in order to promote
+                    self-love and happiness in the
+                    global community.
+                </p>
+            </td>
+            <td style="width:33%;vertical-align:bottom;" class="right">
+                <div style="width:200px" class="float-right right">
+                    <div class="left">Help us turn on happiness around the world</div>
+                    <div>
+                        <a class="button1" style="width:200px;">Donate Now!</a>
+                    </div>
 
-<h2>Welcome to the Project Light Switch website.</h2>
-<p>Visit the @Html.ActionLink("StoryPortal", "Index", "StoryPortal") section to get started.</p>
+                </div>
+            </td>
+        </tr>
+    </table>
+</section>
+<section id="slogan" class="highlight">
+    <p class="b center" style="font-size:1.2em">
+        YOU DONT NEED PEOPLE TO TELL YOU HOW TO LIVE YOUR LIFE, OR GIVE YOU
+        A HARD-AND-FAST INSTRUCTION MANUAL ON THE “RIGHT” WAY TO LIVE.
+    </p>
+</section>
+<section id="about">
+    <h2>About</h2>
+    <h3>
+        Project Light Switch has been designed to support who you are in the journey to becoming who you want to be.
+    </h3>
+    <p>
+        No one's journey is easy, nor will they share the same experiences and goals.
+        Rather than see that as a challenge we have designed our programs to cater
+        to those differences. Project Light Switch aims to gather a free resource
+        library of human experiences and educational resources, and present it as an
+        open guidebook on each individual's journey towards personal growth and
+        self-improvement. It isn't just a road atlas, pointing you on your way, but a
+        living journal of other peoples' experiences, their hardships and their
+        successes, and everything they've learned along the way. Each step of the
+        path is ultimately chosen by you, so that your path truly stays your own.
+    </p>
+    <p>
+        No guilt, no pressure. Project Light Switch is your guide on the sometimes
+        rocky but always positive journey toward a better, healthier, happier you.
+    </p>
+</section>
+<section id="projects" class="accent">
+    <div style="width:50%;margin:auto;text-align:center;">
+        <a href="@Url.Action("Index", "StoryPortal", new  { area="" })">
+            <img style="display:inline-block" alt="StoryPortal" src="~/Images/storyIcon.png" /><br />
+            <h2>Story Portal</h2>
+        </a>
+        <p>
+            Users can submit tales of
+            triumph over personal adversity,
+            and read stories submitted by a
+            user-base of diverse life
+            experiences. Our emphasis is on
+            ensuring that users will always
+            have a safe place to turn for the
+            betterment their own lives
+        </p>
+    </div>
+</section>
+<section id="signup" class="highlight">
+    <form action="#" method="post">
+        <table>
+            <tr>
+                <td>
+                    <h2 class="nopadding nomargin">
+                        <label>Sign up for our Newsletter: <input type="text" placeholder="Your Email Address" /></label>
+                        <input type="submit" value="Submit" style="background:white;color:#054751" />
+                    </h2>
+                    <p class="nopadding nomargin">(We won't spam you, we promise)</p>
+                </td>
+            </tr>
+        </table>
+    </form>
+</section>
+<section id="join-us" class="accent">
+    <h2>Join Us</h2>
+    <h3 class="inline">
+        Want to help Project Light Switch? 
+    </h3>
+    <p>
+        Become a Happiness Ninja and help
+        us “turn on happiness” across the world! Happiness Ninjas will receive
+        posters and postcards to place around their local area. Take pictures of
+        your efforts and you will be entered to win a special, exclusive, Happiness
+        Ninja T-shirt.As we grow, our Ninjas will help by participating in fun events
+        and outreach programs. We hope to be able to host a broad range of
+        impromptu parties and happiness flash mobs.
+    </p>
+
+    <h3>Does all of that sound fun to you?</h3>
+    <p>
+        Sign up to become a Happiness Ninja
+        today and help us on our mission to
+        make the world a happier place!
+    </p>
+    <div>
+        <a class="button1" href="#">Sign Up</a>
+    </div>
+</section>
+<section id="future-plans" class="accent">
+    <h2>Future Plans</h2>
+    <p>
+        Once things are up and running we plan to host a
+        series of fundraisers and outreach events. We
+        strive to be as open and connected with our users
+        as possible, and this will always be reflected in
+        our fundraising programs. The focus of our charity
+        efforts will always be real people in the global
+        community, and you will always have the power
+        help nominate and choose the recipients.
+    </p>
+    <p>
+        You can also nominate people for our happiness
+        giveaways where we will work to create an
+        unexpected “best day ever” for someone who
+        could use a happiness boost!
+    </p>
+    <p>
+        Project Light switch will sponsor events on a
+        local, national and global scale to support our
+        mission
+    </p>
+    <p>
+        We strive to be an organization that works for the
+        individual, and are always looking for new ideas
+        and ways to improve. The pursuit of happiness is
+        a search that we're all on together, and Project
+        Light Switch aims to be the place where that
+        journey can start.
+    </p>
+</section>

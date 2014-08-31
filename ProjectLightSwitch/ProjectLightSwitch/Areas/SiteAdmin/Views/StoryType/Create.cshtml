@@ -6,12 +6,6 @@
     
 }
 
-<h2>Create</h2>
-
-@section featured {
-    <section class="featured"></section>
-}
-
 @section head {
     @Styles.Render("~/Content/tagnav")
     @Scripts.Render("~/bundles/tags")
@@ -47,45 +41,49 @@
         }
     </script>
 }
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary(true)
+<section>
+    <h2>Write Your Story</h2>
 
-    @Html.HiddenFor(m=>m.StoryTypeId)
-    @Html.HiddenFor(m=>m.LanguageId)
-    
-    <fieldset>
-        <legend>StoryType</legend>
-        <div class="editor-label">
-            @Html.LabelFor(model => model.Title)
-        </div>
-        <div class="editor-field">
-            @Html.TextBoxFor(model => model.Title, new { @class = "full-width" })
-            @Html.ValidationMessageFor(model => model.Title)
-        </div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
 
-        <div class="editor-label">
-            @Html.LabelFor(model => model.Description)
-        </div>
-        <div class="editor-field">
-            @Html.TextAreaFor(model => model.Description, new { @class = "full-width", cols="50", rows="8"})
-            @Html.ValidationMessageFor(model => model.Description)
-        </div>
+        @Html.HiddenFor(m => m.StoryTypeId)
+        @Html.HiddenFor(m => m.LanguageId)
 
-        <table id="questions"></table>
-        <input type="button" value="Add another question" onclick="AddQuestionRow('questions');" />
+        <fieldset>
+            <legend>StoryType</legend>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Title)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.Title, new { @class = "full-width" })
+                @Html.ValidationMessageFor(model => model.Title)
+            </div>
 
-        @if(Model.StoryTypeId == 0)
-        {
-            <h3>Associated tags</h3>
-            <div id="tagnav"></div>
-            <h4>Current Tags:</h4>
-            <div id="selectedTags"></div>
-        }
-    </fieldset>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Description)
+            </div>
+            <div class="editor-field">
+                @Html.TextAreaFor(model => model.Description, new { @class = "full-width", cols = "50", rows = "8" })
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
 
-    <p>
-        <input type="submit" value="Create" />
-    </p>
-}
+            <table id="questions"></table>
+            <input type="button" value="Add another question" onclick="AddQuestionRow('questions');" />
+
+            @if (Model.StoryTypeId == 0)
+            {
+                <h3>Associated tags</h3>
+                <div id="tagnav"></div>
+                <h4>Current Tags:</h4>
+                <div id="selectedTags"></div>
+            }
+        </fieldset>
+
+        <p>
+            <input type="submit" value="Create" />
+        </p>
+    }
+</section>

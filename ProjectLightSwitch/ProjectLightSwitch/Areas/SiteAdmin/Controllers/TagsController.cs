@@ -37,7 +37,7 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
                 && ModelState.IsValid)
             {
                 TagSystem.EditTag(model.Tag.TagId, model.TranslationsWithIntKeys);
-                HelperFunctions.AddGlobalMessage(TempData, "Ancestor updated.");
+                HelperFunctions.AddGlobalMessage(TempData, "Tag updated.");
             }
             else
             {

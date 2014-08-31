@@ -18,7 +18,12 @@ namespace ProjectLightSwitch.Areas.SiteAdmin.Controllers
             return Content("home");
         }
 
-        // TODO: Admin access only
+        public ActionResult ResetData()
+        {
+            TagSystem.ResetData();
+            return Content("Done");
+        }
+
         public ActionResult SeedData()
         {
             TagSystem.SeedData();

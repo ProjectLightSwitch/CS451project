@@ -2,13 +2,6 @@
     ViewBag.Title = "Tag Search Test";
 }
 
-@section featured {
-    <section class="featured">
-        <div class="content-wrapper">
-            <h1>Project Lightswitch</h1>
-        </div>
-    </section>
-}
 
 @section head {
     @Styles.Render("~/Content/tagnav")
@@ -62,18 +55,18 @@
                 padding: 0;
             }
 
-                ul.selectedTags li {
-                    list-style: none;
-                    list-style-image: none;
-                    display: inline-block;
-                    position: static;
-                    border-radius: 8px;
-                    margin: 5px;
-                    padding: 5px;
-                    background: #646564;
-                    color: white;
-                    font-weight: bold;
-                }
+            ul.selectedTags li {
+                list-style: none;
+                list-style-image: none;
+                display: inline-block;
+                position: static;
+                border-radius: 8px;
+                margin: 5px;
+                padding: 5px;
+                background: #646564;
+                color: white;
+                font-weight: bold;
+            }
     </style>
 }
 

@@ -15,7 +15,6 @@ namespace ProjectLightSwitch
                         "~/Scripts/TagNavigator.js"
             ));
             bundles.Add(new StyleBundle("~/Content/tagnav").Include("~/Content/Styles/TagNavigator.css"));
-
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
@@ -28,7 +27,9 @@ namespace ProjectLightSwitch
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
-            bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css", "~/Content/Styles/Site_Custom.css"));
+            bundles.Add(new StyleBundle("~/Content/css")
+                .IncludeDirectory("~/Content/Styles/grid960","*.css",false)
+                .Include("~/Content/site.css", "~/Content/Styles/Site_Custom.css"));
 
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
                         "~/Content/themes/base/jquery.ui.core.css",

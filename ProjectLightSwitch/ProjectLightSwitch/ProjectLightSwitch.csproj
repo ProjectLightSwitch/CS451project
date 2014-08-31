@@ -319,12 +319,17 @@
     <Content Include="Areas\SiteAdmin\Views\StoryType\Index.cshtml" />
     <Content Include="Areas\SiteAdmin\Views\StoryType\Details.cshtml" />
     <Content Include="Areas\SiteAdmin\Views\Tags\Index.cshtml" />
+    <Content Include="Images\blogIcon.png" />
+    <Content Include="Images\logo.png" />
+    <Content Include="Images\logo_small.png" />
+    <Content Include="Images\mediaIcon.png" />
     <Content Include="Images\orderedList1.png" />
     <Content Include="Images\orderedList1faded.png" />
     <Content Include="Images\orderedList2.png" />
     <Content Include="Images\orderedList2faded.png" />
     <Content Include="Images\orderedList3.png" />
     <Content Include="Images\orderedList3faded.png" />
+    <Content Include="Images\storyIcon.png" />
     <Content Include="Scripts\holder.js" />
     <Content Include="Scripts\jcarousel.ajax.js" />
     <Content Include="Areas\SiteAdmin\Views\User\Index.cshtml" />
@@ -413,11 +418,13 @@
     <Content Include="Views\StoryPortal\_StorySteps.cshtml" />
     <Content Include="Views\StoryPortal\Search.cshtml" />
     <Content Include="Views\StoryPortal\View.cshtml" />
+    <Content Include="Views\Shared\_Footer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\SiteAdmin\Models\" />
     <Folder Include="Areas\SiteAdmin\Views\Shared\" />
+    <Folder Include="Content\Styles\grid960\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
