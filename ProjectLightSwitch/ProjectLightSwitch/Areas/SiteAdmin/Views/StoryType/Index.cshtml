@@ -30,7 +30,7 @@
 
             }
             <div>
-                <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this story type, all translations, questions, and answers?');" />
+                <input type="submit" class="button1" value="Delete" onclick="return confirm('Are you sure you want to delete this story type, all translations, questions, and answers?');" />
             </div>
             <p class="i">Created on: @(storyType.DateCreated.ToShortDateString())</p>
             @* Add translations when there's time *@
@@ -64,7 +64,7 @@
                                 @using (@Html.BeginForm("DeleteLocalizedStoryType", "StoryType", FormMethod.Post, new { @class = "inline" }))
                                 {
                                     @Html.Hidden("id", localizedStory.LocalizedStoryTypeId);
-                                    <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this story type translation and its questions and all answers?');" />
+                                    <input type="submit" class="button1" value="Delete" onclick="return confirm('Are you sure you want to delete this story type translation and its questions and all answers?');" />
                                 }
                             </td>
                             <td>

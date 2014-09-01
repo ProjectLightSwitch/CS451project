@@ -2,9 +2,12 @@
 @{
     ViewBag.Title = "Browse available story types";
 }
-
-<section class="accent-block padding-large">
-    <h3>Search</h3>
+<section class="accent-block">
+    <h2>Search for Others' Stories</h2>
+    @Html.ActionLink("View Responses", "Search", null, new { @class = "button1" })
+</section>
+<section class="accent-block">
+    <h3>Share your own story</h3>
     @using (Html.BeginForm("Browse", "StoryPortal", null, FormMethod.Get))
     {
         @Html.LabelFor(t => t.SearchTerm)
@@ -13,7 +16,7 @@
         <input type="submit" value="Search" />
     }
 </section>
-<section class="padding-large">
+<section>
     <h2>Story Types to Create</h2>
     @if (!Model.StoryTypeViewModels.Any())
     { 
@@ -33,7 +36,7 @@
 
         for (int j = 0; j < storyType.LocalizedStoryTypes.Count(); j++)
         {
-            var localizedStoryType = storyType.LocalizedStoryTypes.ElementAt(i);
+            var localizedStoryType = storyType.LocalizedStoryTypes.ElementAt(j);
             <div class="story-type">
                 <div class="b center">
                     @Html.ActionLink(localizedStoryType.Title, "Create", new { id = localizedStoryType.LocalizedStoryTypeId })

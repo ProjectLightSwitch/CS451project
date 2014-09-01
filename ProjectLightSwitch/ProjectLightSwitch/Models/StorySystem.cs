@@ -331,13 +331,15 @@ namespace ProjectLightSwitch.Models
                 // TODO: Combine count and results to one query
                 var q = context.StoryResponses
                 .Where(r =>
-                    r.LocalizedStoryType.Language.IsActive
+                    /*r.LocalizedStoryType.Language.IsActive
                         // Search for results to a specific story type
-                    && (inputModel.TranslatedStoryTypeId == 0 || r.LocalizedStoryTypeId == inputModel.TranslatedStoryTypeId)
+                    &&*/ (inputModel.TranslatedStoryTypeId == 0 || r.LocalizedStoryTypeId == inputModel.TranslatedStoryTypeId)
                         // Search for results by gender
                     && (inputModel.Gender == null || inputModel.Gender.Length == 0 || r.Gender == inputModel.Gender)
                         // Search by age
                     && (inputModel.MinAge <= r.Age && (inputModel.MaxAge == 0 || inputModel.MaxAge >= r.Age))
+
+                    && (inputModel.Country <= 0 || r.CountryId == inputModel.Country)
                         // Search union of tags from story responses and localized story type
 
                     // All selected tags were found in the story type or response tags

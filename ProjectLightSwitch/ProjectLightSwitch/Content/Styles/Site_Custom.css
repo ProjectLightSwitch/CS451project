@@ -233,7 +233,8 @@ h3 { font-size: 1em; }
 
 body > div > section.accent {
     background: #e7e7e7;
-    border: 1px solid #6e6f72;}
+    border: 1px solid #6e6f72;
+}
     
 body > div > section.highlight, body > div > section.highlight label {
     background:#054751;

@@ -77,7 +77,11 @@ namespace ProjectLightSwitch.Models
             }
         }
 
-
+        // TODO: Update this to only show active when the 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         internal static void UpdateLanguageStatuses(StoryModel context = null)
         {
             bool existingContext = context != null;
@@ -87,11 +91,14 @@ namespace ProjectLightSwitch.Models
             {
                 context.Database.ExecuteSqlCommand(@"
                     UPDATE Languages
-                    SET IsActive = CASE
-	                    WHEN LanguageId IN (SELECT t.TagId FROM Tags t
-                    WHERE EXISTS(SELECT * FROM TranslatedTags jt WHERE t.TagId = jt.TagId AND jt.LanguageId = Languages.LanguageId)) THEN 1
-                    ELSE 0
-                    END");
+                    SET IsActive = 1");
+//                context.Database.ExecuteSqlCommand(@"
+//                    UPDATE Languages
+//                    SET IsActive = CASE
+//	                    WHEN LanguageId IN (SELECT t.TagId FROM Tags t
+//                    WHERE EXISTS(SELECT * FROM TranslatedTags jt WHERE t.TagId = jt.TagId AND jt.LanguageId = Languages.LanguageId)) THEN 1
+//                    ELSE 0
+//                    END");
             }
             finally 
             {

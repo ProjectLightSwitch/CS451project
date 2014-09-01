@@ -6,11 +6,11 @@
     <h2>Site Administration</h2>
     <p>
         <ul>
-            <li>@Html.ActionLink("RESET Data", "ResetData", "Data", null, new { onclick = "return confirm('ARE YOU SURE YOU WANT TO DELETE ALL TAGGING DATA?');" })</li>
-            <li>@Html.ActionLink("SEED Data", "SeedData", "Data", null, new { onclick="return confirm('ARE YOU SURE YOU WANT TO DELETE ALL TAGGING DATA?');" })</li>
-            <li>@Html.ActionLink("Users", "Index", "User")</li>
-            <li>@Html.ActionLink("Tag Management", "Index", "Tags")</li>
-            <li>@Html.ActionLink("Story Type Management", "Index", "StoryType")</li>
+            <li class="margin-large">@Html.ActionLink("Tag Management", "Index", "Tags", null, new { @class = "button2" })</li>
+            <li class="margin-large">@Html.ActionLink("Story Type Management", "Index", "StoryType", null, new { @class = "button2" })</li>
+            <li class="margin-large">@Html.ActionLink("Users", "Index", "User", null, new { @class = "button2" })</li>
+            <li class="margin-large">@Html.ActionLink("RESET Data", "ResetData", "Data", null, new { onclick = "return confirm('ARE YOU SURE YOU WANT TO DELETE ALL TAGGING DATA?');", @class = "button2" })</li>
+            <li class="margin-large">@Html.ActionLink("SEED Data", "SeedData", "Data", null, new { onclick = "return confirm('ARE YOU SURE YOU WANT TO DELETE ALL TAGGING DATA?');", @class = "button2" })</li>
         </ul>
     </p>
 </section>
