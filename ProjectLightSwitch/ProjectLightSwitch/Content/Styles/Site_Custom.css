@@ -92,12 +92,24 @@ section#loginSection li {
     font-weight:bold;
     margin:0 !important;
     border-radius:0;
+
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+    width:200px;
+}
+.ui-accordion-content {
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+    width:200px;
 }
 
 .ui-accordion-content li {
     border-top: 1px solid #a9a9a9;
     word-wrap: break-word;
     white-space:normal;
+    
 }
 
 
@@ -177,10 +189,9 @@ footer a, footer a:active, footer a:visited, footer a:hover {
     text-align: center !important;
     white-space: nowrap;
     display:inline-block;
-      box-sizing:border-box;
-  -moz-box-sizing:border-box;
-  -webkit-box-sizing:border-box
-}
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;}
 
 .button2, .button2:active, .button2:visited, .button2:hover {
     border:none;
@@ -193,9 +204,9 @@ footer a, footer a:active, footer a:visited, footer a:hover {
     text-align: center !important;
     white-space: nowrap;
     display:inline-block;
-      box-sizing:border-box;
-  -moz-box-sizing:border-box;
-  -webkit-box-sizing:border-box
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
 }
 
 body > div > section {

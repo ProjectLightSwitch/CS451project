@@ -14,9 +14,7 @@
     }
 </section>
 <section class="padding-large">
-    <h2>Browse Available Story Types</h2>
-
-    <h3>Results</h3>
+    <h2>Story Types to Create</h2>
     @if (!Model.StoryTypeViewModels.Any())
     { 
         if(!string.IsNullOrWhiteSpace(@Model.SearchTerm))
@@ -37,17 +35,17 @@
         {
             var localizedStoryType = storyType.LocalizedStoryTypes.ElementAt(i);
             <div class="story-type">
-                <h4>
+                <div class="b center">
                     @Html.ActionLink(localizedStoryType.Title, "Create", new { id = localizedStoryType.LocalizedStoryTypeId })
-                </h4>
-                <h5>
+                </div>
+                <h3>
                     @Html.LabelFor(m => m.StoryTypeViewModels.ElementAt(i).LocalizedStoryTypes.ElementAt(j).Description)
-                </h5>
+                </h3>
                 <p>
                     @Html.DisplayFor(m => m.StoryTypeViewModels.ElementAt(i).LocalizedStoryTypes.ElementAt(j).Description)
                 </p>
                 <div>
-                    <h4 class="nopadding nomargin">Associated Tags: </h4>
+                    <h3 class="nopadding nomargin">Story Tags</h3>
                     <ul class="tagBreadcrumbs">
                         @foreach (var tag in Model.StoryTypeViewModels.ElementAt(i).Tags)
                         {

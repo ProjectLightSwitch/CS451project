@@ -24,14 +24,18 @@
         var wizard = new StoryWizard('#storyWizard');
     </script>
 }
-
-<section class="accent">
+<section>
     <h2>Tell Your Story</h2>
+</section>
+<section class="accent">
     @using (Html.BeginForm("Create", "StoryPortal", FormMethod.Post, new { id = "storyWizard" }))
     {
         <input type="hidden" name="StoryTypeResultModel.TranslatedStoryTypeId" value="@Model.StoryTypeResultModel.TranslatedStoryTypeId" />
         <section>
             <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 1, NumSteps = 3 }, null); }</div>
+            <h2>@Model.StoryTypeResultModel.Title</h2>
+            <p>@Model.StoryTypeResultModel.Description</p>
+
             @{ Html.RenderPartial("~/Views/StoryPortal/_PersonalInfoEntry.cshtml", Model, null); }
             <div class="right">
                 <a href="#" class="next-section button2">Next</a>

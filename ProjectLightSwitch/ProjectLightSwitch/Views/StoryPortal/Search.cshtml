@@ -169,127 +169,128 @@
 </style>
 }
 
-@using (Html.BeginForm("Search", "StoryPortal", FormMethod.Get, new { id="search" }))
-{
-    <div id="search-bar">
-        <div class="search-field-block">
-            <h1>Story Search:</h1>
-        </div>
-
-        <div class="search-field-block">
-            <h3>Age Range: <span id="age-range-results"></span></h3>
-            
-            <input type="hidden" id="MinAge" name="MinAge" />
-            <input type="hidden" id="MaxAge" name="MaxAge" />
-            <div id="age-range"></div>
-        </div>
-
-        <div class="search-field-block">
-            <h3>Gender:</h3>
-            <select name="Gender">
-                <option selected="selected" value="">Any</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-                <option value="I">Intersex</option>
-            </select>
-        </div>
-
-        <div class="search-field-block">
-            <h3>Country:</h3>
-            <select name="Country">
-                <option selected="selected" value="0">Any</option>
-                @{
-    var countries = ProjectLightSwitch.Models.StorySystem.GetCountries();
-    foreach (var country in countries)
+<section>
+    <h2>Story Search:</h2>
+    @using (Html.BeginForm("Search", "StoryPortal", FormMethod.Get, new { id = "search" }))
     {
-                        <option value="@country.CountryId">@country.CountryName</option>
-    }
-                }
-            </select>
+        <div id="search-bar">
+            <div class="search-field-block">
+                <h3>Age Range: <span id="age-range-results"></span></h3>
+
+                <input type="hidden" id="MinAge" name="MinAge" />
+                <input type="hidden" id="MaxAge" name="MaxAge" />
+                <div id="age-range"></div>
+            </div>
+
+            <div class="search-field-block">
+                <h3>Gender:</h3>
+                <select name="Gender">
+                    <option selected="selected" value="">Any</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="I">Intersex</option>
+                </select>
+            </div>
+
+            <div class="search-field-block">
+                <h3>Country:</h3>
+                <select name="Country">
+                    <option selected="selected" value="0">Any</option>
+                    @{
+        var countries = ProjectLightSwitch.Models.StorySystem.GetCountries();
+        foreach (var country in countries)
+        {
+            <option value="@country.CountryId">@country.CountryName</option>
+        }
+                    }
+                </select>
+            </div>
+
+
+            <div class="search-field-block">
+                <h3>Tag Search:</h3>
+                <input id="tag-autocomplete" class="full-width" type="search" />
+            </div>
+
+            <div class="search-field-block">
+                <input type="submit" value="Search" class="button2" />
+            </div>
         </div>
 
-
-        <div class="search-field-block">
-            <h3>Tag Search:</h3>
-            <input id="tag-autocomplete" class="full-width" type="search" />
+        <div id="sel-tag-bar">
+            <h3 class="inline">My Tags:</h3>
+            <div id="selected-tags"></div><br class="clear" />
         </div>
-
-        <div class="search-field-block">
-            <input type="submit" value="Search" class="button2" />
-        </div>
-    </div>
-
-    <div id="sel-tag-bar">
-        <h3 class="inline">My Tags:</h3>
-        <div id="selected-tags"></div><br class="clear" />
-    </div>
 
     <!-- Search Content and tag selection bar -->
-    <table class="full-width">
-        <tr>
-            <td width="200px" class="padding-large" style="vertical-align:top">
-                <h3>Browse for a Tag</h3>
-                <div id="tag-searcher"></div>
-            </td>
-            <td class="padding-large" style="vertical-align:top">
-                <div id="main-pane">
-                    <h3>Results</h3>
-                    <div id="response-results">
-                        @if (!Model.Results.Any())
-                        {
-                            <span class="i b">No results were found.</span>
-                        }
-                        else
-                        {
-
-                            foreach (var result in Model.Results)
+        <table class="full-width">
+            <tr>
+                <td class="padding-large" style="vertical-align:top;width:200px;">
+                    <h3>Browse Tags</h3>
+                    <div id="tag-searcher"></div>
+                </td>
+                <td class="padding-large" style="vertical-align:top">
+                    <div id="main-pane">
+                        <h3>Results</h3>
+                        <div id="response-results">
+                            @if (!Model.Results.Any())
                             {
-                                <div class="story-response-result">
-                                    @Html.ActionLink(result.StoryResponse.Title, "View", new { id = result.StoryResponse.StoryResponseId }, new { @class = "b i" })
-                                    <p class="i" style="color:gray">@result.RecentRating people recently found this useful.</p>
-                                    <p>@result.StoryResponse.Story</p>
-                                    @if (result.Tags.Any())
-                                    {
-                                        <ul class="tagBreadcrumbs">
-                                            @foreach (var tag in result.Tags)
-                                            {
-                                                <li>
-                                                    <span title="@tag.FullPathLabel">
-                                                        @tag.AbbreviatedPathLabel
-                                                    </span>
-                                                </li>
-                                            }
-                                        </ul>
-                                    }
-                                </div>
+                                <span class="i b">No results were found.</span>
                             }
-                        }
+                            else
+                            {
+
+                                foreach (var result in Model.Results)
+                                {
+                                    <div class="story-response-result">
+                                        @Html.ActionLink(result.StoryResponse.Title, "View", new { id = result.StoryResponse.StoryResponseId }, new { @class = "b i" })
+                                        <p class="i" style="color:gray">@result.RecentRating @(result.RecentRating == 1 ? "person" : "people") recently found this useful.</p>
+                                        <p>@result.StoryResponse.Story</p>
+                                        @if (result.Tags.Any())
+                                        {
+                                            <ul class="tagBreadcrumbs">
+                                                @foreach (var tag in result.Tags)
+                                                {
+                                                    <li>
+                                                        <span title="@tag.FullPathLabel">
+                                                            @tag.AbbreviatedPathLabel
+                                                        </span>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                    </div>
+                                }
+
+                                if (Model.Results.Any())
+                                {
+                                    <div id="paging">
+                                        Page:
+                                        @{
+                                    int numPages = (int)(Math.Ceiling((decimal)Model.TotalResultCount / (decimal)Model.SearchParameters.ResultsPerPage));
+                                        }
+
+                                        @for (int i = 0; i < numPages; i++)
+                                        {
+                                            if (i == Model.SearchParameters.Page)
+                                            {
+                                                <b>@(i + 1)</b>
+                                            }
+                                            else
+                                            {
+                                                <a href="#" onclick="switchPage(@i;return false;">@(i + 1)</a>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
                     </div>
-                </div>
-            </td>
-        </tr>
-    </table>
-    
-    
-    if(Model.Results.Any())
-    {
-    <div id="paging">
-        Page: 
-        @{
-            int numPages = (int)(Math.Ceiling((decimal)Model.TotalResultCount / (decimal)Model.SearchParameters.ResultsPerPage));
-        }
-        
-        @for (int i = 0; i < numPages; i++)
-        {
-            if (i == Model.SearchParameters.Page)
-            {
-                <b>@(i + 1)</b>
-            }
-            else
-            {
-                <a href="#" onclick="switchPage(@i;return false;">@(i + 1)</a> 
-            }
-        }
-    </div>
+                </td>
+            </tr>
+        </table>
+
+
+       
     }
-}
+</section>
