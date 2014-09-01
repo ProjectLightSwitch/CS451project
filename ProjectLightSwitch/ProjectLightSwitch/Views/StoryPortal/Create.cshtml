@@ -2,12 +2,9 @@
 @{
     ViewBag.Title = "Write a Story";
 }
-<h2>Create</h2>
-
 @section head {
     @Scripts.Render("~/bundles/jqueryui")
 }
-
 @section scripts
 {
     @Scripts.Render("~/Scripts/StoryWizard.js", "~/bundles/jqueryval")
@@ -28,32 +25,35 @@
     </script>
 }
 
-@using (Html.BeginForm("Create", "StoryPortal", FormMethod.Post, new { id = "storyWizard" }))
-{
-    <input type="hidden" name="StoryTypeResultModel.TranslatedStoryTypeId" value="@Model.StoryTypeResultModel.TranslatedStoryTypeId" />
-    <section>
-        <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 1, NumSteps = 3 }, null); }</div>
-        @{ Html.RenderPartial("~/Views/StoryPortal/_PersonalInfoEntry.cshtml", Model, null); }
-        <div>
-            <a href="#" class="next-section">Next</a>
-        </div>
-    </section>
+<section class="accent">
+    <h2>Tell Your Story</h2>
+    @using (Html.BeginForm("Create", "StoryPortal", FormMethod.Post, new { id = "storyWizard" }))
+    {
+        <input type="hidden" name="StoryTypeResultModel.TranslatedStoryTypeId" value="@Model.StoryTypeResultModel.TranslatedStoryTypeId" />
+        <section>
+            <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 1, NumSteps = 3 }, null); }</div>
+            @{ Html.RenderPartial("~/Views/StoryPortal/_PersonalInfoEntry.cshtml", Model, null); }
+            <div class="right">
+                <a href="#" class="next-section button2">Next</a>
+            </div>
+        </section>
 
-    <section>
-        <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 2, NumSteps = 3 }, null); }</div> 
-        @{ Html.RenderPartial("~/Views/StoryPortal/_StoryEntry.cshtml", Model, null);  }
-        <div class="right">
-            <a href="#" class="prev-section">Previous</a> | 
-            <a href="#" class="next-section">Next</a>
-        </div>
-    </section>
+        <section>
+            <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 2, NumSteps = 3 }, null); }</div>
+            @{ Html.RenderPartial("~/Views/StoryPortal/_StoryEntry.cshtml", Model, null);  }
+            <div class="right">
+                <a href="#" class="prev-section button2">Previous</a> |
+                <a href="#" class="next-section button2">Next</a>
+            </div>
+        </section>
 
-    <section>
-        <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 3, NumSteps = 3 }, null); }</div>
-        @{ Html.RenderPartial("~/Views/StoryPortal/_AnswerEntry.cshtml", Model, null); }
-        <div class="right">
-            <a href="#" class="prev-section">Previous</a> |
-            <input class="next-section" type="submit" value="Submit Story" />
-        </div>
-    </section>
-}
+        <section>
+            <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 3, NumSteps = 3 }, null); }</div>
+            @{ Html.RenderPartial("~/Views/StoryPortal/_AnswerEntry.cshtml", Model, null); }
+            <div class="right">
+                <a href="#" class="prev-section button2">Previous</a> |
+                <input class="next-section button2" type="submit" value="Submit Story" />
+            </div>
+        </section>
+    }
+</section>

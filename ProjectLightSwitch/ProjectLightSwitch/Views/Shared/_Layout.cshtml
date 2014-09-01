@@ -54,12 +54,14 @@
             {
                 <section id="global-messages">
                     <h2>Messages:</h2>
-                    <ul>
-                        @foreach (string message in messages)
-                        {
-                            <li>@message</li>
-                        }
-                    </ul>
+                    <div>
+                        <ul>
+                            @foreach (string message in messages)
+                            {
+                                <li>@message</li>
+                            }
+                        </ul>
+                    </div>
                 </section>
             }
             @RenderBody()

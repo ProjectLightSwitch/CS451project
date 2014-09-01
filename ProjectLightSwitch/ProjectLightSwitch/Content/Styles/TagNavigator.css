@@ -18,9 +18,11 @@ div.tagnav {
 /* Category List */
 
 div.tagnav .tags {
-    white-space: nowrap;
+    /*white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
+        */
+
     min-height: 300px;
 }
 
@@ -29,56 +31,22 @@ div.tagnav .tags > .depth_container
 {
     display: inline-block;
     vertical-align: top;
-    border-color: black;
+    border-color: #414042;
     border-style: solid;
-    border-width: 0 2px 1px 2px;
+    border-width: 2px;
     width: 200px;
-    margin: 0 3px;
+    margin: 4px;
 }
 
 div.tagnav .tags > .depth_container li {
     padding: 5px 10px;
-    border-bottom: 1px solid #808080;
+
+    border-bottom: 1px solid #414042;
 }
 
 /* Category Tags */
 
-div.tagnav .tags > .depth_container:first-child 
-{
-    width: 100%;
-    height: 50px;
-    overflow:auto;
-    display:block;
-    padding: 0px;
-    border:none;
-    border-bottom: 2px solid black;
-    font-weight: bold;
-    margin: 0;
-    background-color: #dddddd;
-}
-/*
-div.tagnav .tags > .depth_container:first-child 
-{
-    background-color: #dddddd;
-    width: 100%;
-    padding: 0px;
-    border-bottom: 2px solid black;
-    overflow: auto;
-    float:none;
-}
-*/
-div.tagnav .tags > .depth_container:first-child li {
-    vertical-align: middle;
-    text-align: center;
-    display:inline-block;
-    height: 50px;
-    line-height: 50px;
-    border-bottom: none;
-    border-right: 2px solid black;
-    overflow: hidden;
-    padding: 0 20px;
-    margin: 0;
-}
+
 
 /* Common Tags*/
 
@@ -86,6 +54,7 @@ div.tagnav .tags > .depth_container:first-child li {
     background-color: #dddddd;
     padding: 5px;
     overflow:hidden;
+    color: #414042;
 }
 
 .depth_container li label {
@@ -116,6 +85,39 @@ div.tagnav .decorator {
     padding: 0 6px;
 }
 
+div.tagnav .tags > .depth_container:first-child 
+{
+    width: 100%;
+    overflow:auto;
+    display:block;
+    padding: 0;
+    border:none;
+    font-weight: bold;
+    margin: 0;
+    background-color: #a9a9a9;
+}
+/*
+div.tagnav .tags > .depth_container:first-child 
+{
+    background-color: #dddddd;
+    width: 100%;
+    padding: 0px;
+    border-bottom: 2px solid black;
+    overflow: auto;
+    float:none;
+}
+*/
+div.tagnav .tags > .depth_container:first-child li {
+    vertical-align: middle;
+    text-align: center;
+    display:inline-block;
+    border-bottom: 2px solid black;
+    border-right: 2px solid black;
+    /*overflow: hidden;*/
+    padding: 15px;
+    margin: 0;
+    float:none;
+}
 
 
 /********/

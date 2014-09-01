@@ -3,8 +3,6 @@
     ViewBag.Title = "Browse available story types";
 }
 
-<h2>Browse Available Story Types</h2>
-
 <section class="accent-block padding-large">
     <h3>Search</h3>
     @using (Html.BeginForm("Browse", "StoryPortal", null, FormMethod.Get))
@@ -15,8 +13,9 @@
         <input type="submit" value="Search" />
     }
 </section>
-
 <section class="padding-large">
+    <h2>Browse Available Story Types</h2>
+
     <h3>Results</h3>
     @if (!Model.StoryTypeViewModels.Any())
     { 
