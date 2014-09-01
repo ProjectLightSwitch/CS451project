@@ -85,7 +85,7 @@
         $('form#search').append($('<input>').attr('name','Page').val(page))
                         .trigger('submit');
     }
-
+    
 </script>
 
 <style type="text/css">
@@ -215,7 +215,7 @@
         </div>
 
         <div class="search-field-block">
-            <input type="submit" value="Search" />
+            <input type="submit" value="Search" class="button2" />
         </div>
     </div>
 
@@ -225,48 +225,51 @@
     </div>
 
     <!-- Search Content and tag selection bar -->
-    <div>
-        <div id="tag-browsing-pane">
-            <h3>Browse for a Tag</h3>
-            <div id="tag-searcher"></div>
-        </div>
-        <div id="response-tag-search">
-            <div id="main-pane">
-                <h3>Results</h3>
-                <div id="response-results">
-                    @if (!Model.Results.Any())
-                    { 
-                        <span class="i b">No results were found.</span>
-                    }
-                    else
-                    {
-
-                        foreach (var result in Model.Results)
+    <table class="full-width">
+        <tr>
+            <td width="200px" class="padding-large" style="vertical-align:top">
+                <h3>Browse for a Tag</h3>
+                <div id="tag-searcher"></div>
+            </td>
+            <td class="padding-large" style="vertical-align:top">
+                <div id="main-pane">
+                    <h3>Results</h3>
+                    <div id="response-results">
+                        @if (!Model.Results.Any())
                         {
-                            <div class="story-response-result">
-                                @Html.ActionLink(result.StoryResponse.Title, "View", new { id = result.StoryResponse.StoryResponseId }, new { @class="b i" })
-                                <p class="i" style="color:gray">@result.RecentRating people recently found this useful.</p>
-                                <p>@result.StoryResponse.Story</p>
-                                @if (result.Tags.Any())
-                                {
-                                    <ul class="tagBreadcrumbs">
-                                        @foreach (var tag in result.Tags)
-                                        {
-                                            <li>
-                                                <span title="@tag.FullPathLabel">
-                                                    @tag.AbbreviatedPathLabel
-                                                </span>
-                                            </li>
-                                        }
-                                    </ul>
-                                }
-                            </div>
+                            <span class="i b">No results were found.</span>
                         }
-                    }
+                        else
+                        {
+
+                            foreach (var result in Model.Results)
+                            {
+                                <div class="story-response-result">
+                                    @Html.ActionLink(result.StoryResponse.Title, "View", new { id = result.StoryResponse.StoryResponseId }, new { @class = "b i" })
+                                    <p class="i" style="color:gray">@result.RecentRating people recently found this useful.</p>
+                                    <p>@result.StoryResponse.Story</p>
+                                    @if (result.Tags.Any())
+                                    {
+                                        <ul class="tagBreadcrumbs">
+                                            @foreach (var tag in result.Tags)
+                                            {
+                                                <li>
+                                                    <span title="@tag.FullPathLabel">
+                                                        @tag.AbbreviatedPathLabel
+                                                    </span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
+            </td>
+        </tr>
+    </table>
+    
     
     if(Model.Results.Any())
     {

@@ -29,6 +29,7 @@ div.tagnav .tags {
 /* Lower tags */
 div.tagnav .tags > .depth_container 
 {
+    
     display: inline-block;
     vertical-align: top;
     border-color: #414042;
@@ -40,7 +41,7 @@ div.tagnav .tags > .depth_container
 
 div.tagnav .tags > .depth_container li {
     padding: 5px 10px;
-
+    overflow: hidden;
     border-bottom: 1px solid #414042;
 }
 
@@ -80,6 +81,10 @@ div.tagnav .decorator {
     float: right;
 }
 
+div.tagsearch a.back {
+    font-weight: bold;
+    color:#a9a9a9;
+}
 
 .tag-edit {
     padding: 0 6px;

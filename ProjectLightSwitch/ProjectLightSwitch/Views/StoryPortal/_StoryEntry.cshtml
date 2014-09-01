@@ -2,14 +2,14 @@
 @{ var minStoryLength = "30"; }
 <h3>@ProjectLightSwitch.Views.StoryPortal.StoryResources.Part2Header</h3>
 
-<table>
+<table class="full-width">
     <tr>
         <td>Story Title:</td>
-        <td><input type="text" name="StoryTitle" style="max-width:100%" data-rule-required="true" /></td>
+        <td><input type="text" name="StoryTitle" class="full-width"  data-rule-required="true" /></td>
     </tr>
     <tr>
         <td>Story:</td>
-        <td><textarea name="StoryResponse" rows="8" cols="50" style="max-width:100%" data-rule-required="true" data-rule-minlength="@minStoryLength"></textarea></td>
+        <td><textarea name="StoryResponse" rows="8" cols="50" class="full-width" data-rule-required="true" data-rule-minlength="@minStoryLength"></textarea></td>
     </tr>
     <tr>
         <td>Tags:</td>

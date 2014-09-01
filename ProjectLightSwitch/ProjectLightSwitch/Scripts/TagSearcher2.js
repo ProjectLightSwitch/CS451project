@@ -33,6 +33,7 @@ function TagSearcher(container) {
 
 TagSearcher.prototype.init = function () {
     // The overall container
+    this._container.after($('<div>').addClass('clear'));
     this._container.children().remove();
     this._container.addClass(this._containerClassName);
     

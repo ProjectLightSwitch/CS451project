@@ -78,11 +78,15 @@ section#loginSection li {
 
 /* Override jqueryui (must be called after) */
 .ui-menu-item {
+    /*
     white-space: nowrap;
     overflow: hidden;
+        */
 }
 
 .ui-accordion-header {
+    word-wrap: break-word;
+    white-space:normal;
     background: #a9a9a9;
     border:none;
     font-weight:bold;
@@ -92,6 +96,8 @@ section#loginSection li {
 
 .ui-accordion-content li {
     border-top: 1px solid #a9a9a9;
+    word-wrap: break-word;
+    white-space:normal;
 }
 
 
@@ -161,6 +167,7 @@ footer a, footer a:active, footer a:visited, footer a:hover {
 }
 
 .button1, .button1:active, .button1:visited, .button1:hover {
+    border:none;
     text-decoration:none;
     cursor:pointer;
     background: #f89521 !important;
@@ -176,6 +183,7 @@ footer a, footer a:active, footer a:visited, footer a:hover {
 }
 
 .button2, .button2:active, .button2:visited, .button2:hover {
+    border:none;
     text-decoration:none;
     cursor:pointer;
     background: #00b9a0 !important;
@@ -216,7 +224,7 @@ body > div > section.accent {
     background: #e7e7e7;
     border: 1px solid #6e6f72;}
     
-body > div > section.highlight {
+body > div > section.highlight, body > div > section.highlight label {
     background:#054751;
     color:white;
 }

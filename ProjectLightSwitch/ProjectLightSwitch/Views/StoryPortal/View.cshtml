@@ -19,65 +19,68 @@
     }
 </style>
 }
+<section>
+    <div id="story-container">
+        <div id="story-content">
+            <h1>@Model.Response.Title</h1>
 
-<div id="story-container">
-    <div id="story-content">
-        <h1>@Model.Response.Title</h1>
+            <h3 class="inline">Story Tags: </h3>
+            <div>
+                @if (Model.Tags.Any())
+                {
+                    <ul class="tagBreadcrumbs">
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <li title="@tag.FullPathLabel">@tag.AbbreviatedPathLabel</li>
+                        }
+                    </ul>
+                }
+            </div>
+            <h3>About Me:</h3>
+            <p class="personal-description">
+                I am a @Model.Response.Age year old
+                @(ProjectLightSwitch.Models.Enums.EnumExtensions.ParseGender(Model.Response.Gender))
+                from @Model.Response.Country.Country1
+            </p>
 
-        <h3 class="inline">Story Tags: </h3>
-        <div>
-            @if (Model.Tags.Any())
+            <h3>My Story:</h3>
+            <p>@Model.Response.Story</p>
+
+            <h3>Questions and Answers:</h3>
+            @foreach (var ans in Model.Response.Answers)
             {
-                <ul class="tagBreadcrumbs">
-                    @foreach (var tag in Model.Tags)
-                    {
-                        <li title="@tag.FullPathLabel">@tag.AbbreviatedPathLabel</li>
-                    }
-                </ul>
+                <p><b>@ans.Question.Prompt</b></p>
+                <p>@ans.AnswerText</p>
             }
         </div>
-        <span class="personal-description">
-            I am a @Model.Response.Age year old
-            @(ProjectLightSwitch.Models.Enums.EnumExtensions.ParseGender(Model.Response.Gender))
-            from @Model.Response.Country.Country1
-        </span>
-        <h3>My Story:</h3>
-        <p>@Model.Response.Story</p>
+        <div id="related-content">
+            <div class="right margin">
+                @Html.ActionLink("Back To Search", "Search", null, new { @class="button1" })
+            </div>
 
-        <h3>Questions and Answers:</h3>
-        @foreach (var ans in Model.Response.Answers)
-        { 
-            <b>@ans.Question.Prompt</b>
-            <p>@ans.AnswerText</p>
-        }
-    </div>
-    <div id="related-content">
-        <div class="right">
-            @Html.ActionLink("Back To Search", "Search")
-        </div>
-
-        <h3>Similar Stories</h3>
-        @if(Model.RelatedResponses.Any())
-        {
-            foreach (var relatedResponse in Model.RelatedResponses)
+            <h3 class="margin-medium">Similar Stories</h3>
+            @if (Model.RelatedResponses.Any())
             {
-                <div>
-                    <h3>@relatedResponse.Title</h3>
-                    <span class="personal-description">
-                        I am a @relatedResponse.Age year old
-                        @(ProjectLightSwitch.Models.Enums.EnumExtensions.ParseGender(relatedResponse.Gender))
-                        from @relatedResponse.Country.Country1
-                    </span>
-                    <p>
-                        @(relatedResponse.Story.Substring(0, Math.Min(relatedResponse.Story.Length, 150)) + "...")
-                    </p>
-                </div>
+                foreach (var relatedResponse in Model.RelatedResponses)
+                {
+                    <div>
+                        <h3>@relatedResponse.Title</h3>
+                        <span class="personal-description">
+                            I am a @relatedResponse.Age year old
+                            @(ProjectLightSwitch.Models.Enums.EnumExtensions.ParseGender(relatedResponse.Gender))
+                            from @relatedResponse.Country.Country1
+                        </span>
+                        <p>
+                            @(relatedResponse.Story.Substring(0, Math.Min(relatedResponse.Story.Length, 150)) + "...")
+                        </p>
+                    </div>
+                }
             }
-        } 
-        else
-        {
-            <i>No similar stories were found.</i>
-        }
+            else
+            {
+                <i>No similar stories were found.</i>
+            }
+        </div>
+        <br class="clear" />
     </div>
-    <br class="clear" />
-</div>
+</section>

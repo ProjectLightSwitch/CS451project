@@ -42,7 +42,7 @@
             <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 2, NumSteps = 3 }, null); }</div>
             @{ Html.RenderPartial("~/Views/StoryPortal/_StoryEntry.cshtml", Model, null);  }
             <div class="right">
-                <a href="#" class="prev-section button2">Previous</a> |
+                <a href="#" class="prev-section button2">Previous</a>
                 <a href="#" class="next-section button2">Next</a>
             </div>
         </section>
@@ -51,7 +51,7 @@
             <div class="right">@{ Html.RenderPartial("~/Views/StoryPortal/_StorySteps.cshtml", new ProjectLightSwitch.Models.StoryStepModel() { CurrentStep = 3, NumSteps = 3 }, null); }</div>
             @{ Html.RenderPartial("~/Views/StoryPortal/_AnswerEntry.cshtml", Model, null); }
             <div class="right">
-                <a href="#" class="prev-section button2">Previous</a> |
+                <a href="#" class="prev-section button2">Previous</a>
                 <input class="next-section button2" type="submit" value="Submit Story" />
             </div>
         </section>
