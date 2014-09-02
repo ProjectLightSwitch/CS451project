@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "Browse available story types";
 }
+
+
 <section>
     <h2>Search for Others' Stories</h2>
     @Html.ActionLink("View Responses", "Search", null, new { @class = "button1" })
@@ -50,12 +52,21 @@
                 </p>
                 <div>
                     <h3 class="nopadding nomargin">Story Tags</h3>
-                    <ul class="tagBreadcrumbs">
-                        @foreach (var tag in Model.StoryTypeViewModels.ElementAt(i).Tags)
-                        {
-                            <li>@tag.text</li>
-                        }
-                    </ul>
+                    @if(Model.StoryTypeViewModels.ElementAt(i).Tags.Any())
+                    {
+                        <ul class="tagBreadcrumbs">
+                            @foreach (var tag in Model.StoryTypeViewModels.ElementAt(i).Tags)
+                            {
+                                <li>@tag.text</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span class="i">There are no tags associated with this story type.</span>
+                    }
+
+                    @*Shouldn't be needed*@
                     <br class="clear" />
                 </div>
             </div>

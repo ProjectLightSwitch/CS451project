@@ -21,6 +21,25 @@ namespace ProjectLightSwitch.Models
         }
 
         /// <summary>
+        /// Provides a one rating that denotes a user found the response helpful
+        /// </summary>
+        /// <param name="storyResponseId"></param>
+        /// <returns></returns>
+        public static bool ThisHelped(int storyResponseId)
+        {
+            using (var context = new StoryModel())
+            {
+                var response = context.StoryResponses.FirstOrDefault(r => r.StoryResponseId == storyResponseId);
+                if (response == null)
+                {
+                    return false;
+                }
+                response.StoryResponseRatings.Add(new StoryResponseRating() { Rating = 1 });
+                return context.SaveChanges() > 0;
+            }
+        }
+
+        /// <summary>
         /// Deletes the specified LocalizedStoryType.
         /// If it was the last remaining translation of a StoryType, then it deletes the StoryTypeResultModel as well.
         /// </summary>
@@ -258,7 +277,7 @@ namespace ProjectLightSwitch.Models
                             CountryId = model.Country,
                             Title = model.StoryTitle,
                             Story = model.StoryResponse,
-                            Tags = context.Tags.Where(t=>model.SelectedTags.Contains(t.TagId)).ToList(),
+                            Tags = model.SelectedTags != null ? context.Tags.Where(t=>model.SelectedTags.Contains(t.TagId)).ToList() : null,
                             Answers = answers,
                         };
                         context.StoryResponses.Add(response);
@@ -477,11 +496,12 @@ namespace ProjectLightSwitch.Models
                                .Where(r=>r.StoryResponseId != response.StoryResponseId)
                                .GroupBy(g => g.StoryResponseId)
                                .Select(g => new { ResponseId = g.Key, Similarity = g.Count() })
-                               .OrderBy(o => o.Similarity)
+                               .OrderByDescending(o => o.Similarity)
                                .Select(id => 
                                     context.StoryResponses
                                            .Include("Country")
                                            .FirstOrDefault(r => r.StoryResponseId == id.ResponseId))
+                               .Take(10)
                                .ToList(),
                 };
             }

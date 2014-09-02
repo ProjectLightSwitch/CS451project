@@ -25,6 +25,18 @@ namespace ProjectLightSwitch.Controllers
             return View(searchModel);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">The story response id that helped</param>
+        /// <returns></returns>
+        [AjaxOnly]
+        [HttpPost]
+        public ActionResult ThisHelped(int id)
+        {
+            return Content(StorySystem.ThisHelped(id) ? "true" : "false");
+        }
+
         public ActionResult Search(StoryResponseSearchInputModel searchModel)
         {
             var model = StorySystem.SearchStoryResponses(searchModel);

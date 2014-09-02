@@ -50,7 +50,12 @@
         // AGE 
         var minAge = '@Model.SearchParameters.MinAge' || 13;
         var maxAge = '@Model.SearchParameters.MaxAge' || 100;
+
+        // initialize age
+        $('#MinAge').val(minAge);
+        $('#MaxAge').val(maxAge);
         $("#age-range-results").text(minAge + " to " + maxAge  + " yrs");
+
         $("#age-range").slider({
             range: true,
             min: 13,

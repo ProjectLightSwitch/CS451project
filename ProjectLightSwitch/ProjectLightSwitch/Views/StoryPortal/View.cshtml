@@ -19,15 +19,28 @@
         width:30%;
     }
 </style>
+
+<script type="text/javascript">
+    function thisHelped() {
+        $.ajax({
+            cache: true,
+            data: { 'id': '@Model.Response.StoryResponseId' },
+            url: '@Url.Action("ThisHelped", "StoryPortal")',
+            type: "POST"
+        }).success(function (response) {
+            $('#this-helped').hide();
+            $('#this-helped-label').show();
+        });
+    }
+</script>
 }
 <section>
     <div id="story-container">
         <div id="story-content">
             <h1>@Model.Response.Title</h1>
-
             <h3 class="inline">Story Tags: </h3>
             <div>
-                @if (Model.Tags.Any())
+                @if (Model.Tags != null && Model.Tags.Any())
                 {
                     <ul class="tagBreadcrumbs">
                         @foreach (var tag in Model.Tags)
@@ -36,12 +49,16 @@
                         }
                     </ul>
                 }
+                else
+                {
+                    <p>This story is not tagged.</p>
+                }
             </div>
             <h3>About Me:</h3>
             <p class="personal-description">
                 I am a @Model.Response.Age year old
                 @(ProjectLightSwitch.Models.Enums.EnumExtensions.ParseGender(Model.Response.Gender))
-                from @Model.Response.Country.Country1
+                from @(Model.Response.Country.Country1).
             </p>
 
             <h3>My Story:</h3>
@@ -53,6 +70,10 @@
                 <p><b>@ans.Question.Prompt</b></p>
                 <p>@ans.AnswerText</p>
             }
+
+            <h3>Did you find this story helpful?</h3>
+            <a id="this-helped" href="#" class="button2" onclick="thisHelped();return false;">Let us Know</a>
+            <span id="this-helped-label" style="display:none;">Thank you for sharing your opinion about this story.</span>
         </div>
         <div id="related-content">
             <div class="right margin">
