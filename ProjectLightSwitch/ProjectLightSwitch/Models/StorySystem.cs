@@ -182,7 +182,10 @@ namespace ProjectLightSwitch.Models
                     {
                         var storyType = new StoryType();
                         context.StoryTypes.Add(storyType);
-                        storyType.Tags = context.Tags.Where(t2 => model.SelectedTags.Contains(t2.TagId)).ToList();
+                        if (model.SelectedTags != null && model.SelectedTags.Count > 0)
+                        {
+                            storyType.Tags = context.Tags.Where(t2 => model.SelectedTags.Contains(t2.TagId)).ToList();
+                        }
                         //context.SaveChanges();
 
                         var localizedStoryType = new LocalizedStoryType
