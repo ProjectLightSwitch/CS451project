@@ -127,67 +127,78 @@ namespace ProjectLightSwitch.Models
 
         public static void PopulateStoryTypesViewModel(StoryTypesViewModel model)
         {
-            model.Page = Math.Max(0, model.Page);
-            if(model.LanguageId == 0)
+            try
             {
-                model.LanguageId = Language.DefaultLanguageId;
-            }
+                model.Page = Math.Max(0, model.Page);
+                if (model.LanguageId == 0)
+                {
+                    model.LanguageId = Language.DefaultLanguageId;
+                }
 
-            if(String.IsNullOrWhiteSpace(model.SearchTerm))
-            {
-                model.SearchTerm = null;
-            }
-            
-            int tagLangId = model.LanguageId ?? Language.DefaultLanguageId;
+                if (String.IsNullOrWhiteSpace(model.SearchTerm))
+                {
+                    model.SearchTerm = null;
+                }
 
-            using (var context = new StoryModel())
-            {
-                context.Configuration.LazyLoadingEnabled = true;
+                int tagLangId = model.LanguageId ?? Language.DefaultLanguageId;
 
-                var q = context.LocalizedStoryTypes
-                       .Where(s =>
-                           (
-                                model.LanguageId == null
-                                || (s.LanguageId == model.LanguageId
-                                && s.Language.IsActive))
-                           && (
-                                model.SearchTerm == null
-                                || s.Title.Contains(model.SearchTerm)
-                                || s.Description.Contains(model.SearchTerm)
-                                || s.StoryType.Tags.SelectMany(t => t.TranslatedTags).Any(t =>
-                                        t.LanguageId == model.LanguageId
-                                        && t.Text.Contains(model.SearchTerm))
-                           )
-                        )
+                using (var context = new StoryModel())
+                {
+                    context.Database.CommandTimeout = 10000;
 
-                        .OrderBy(s => s.StoryTypeId)
-                        .ThenBy(s => s.LanguageId)
-                        .GroupBy(lst => lst.StoryType);
+                    context.Configuration.LazyLoadingEnabled = true;
 
-                // TODO: Don't pass full localized story types with full descriptions for performance
+                    var q = context.LocalizedStoryTypes
+                           .Where(s =>
+                               (
+                                    model.LanguageId == null
+                                    || (s.LanguageId == model.LanguageId
+                                    && s.Language.IsActive))
+                               && (
+                                    model.SearchTerm == null
+                                    || s.Title.Contains(model.SearchTerm)
+                                    || s.Description.Contains(model.SearchTerm)
+                                    || s.StoryType.Tags.SelectMany(t => t.TranslatedTags).Any(t =>
+                                            t.LanguageId == model.LanguageId
+                                            && t.Text.Contains(model.SearchTerm))
+                               )
+                            )
 
-                model.TotalAvailableResults = q.Count();
-                model.StoryTypeViewModels =
-                   q
-                    .OrderBy(s => s.Key.StoryTypeId)
-                    .Skip(model.Page * model.ResultsPerPage)
-                    .Take(model.ResultsPerPage)
-                    .ToList()
-                    .Select(g => new StoryTypeViewModel
-                    {
-                        StoryTypeId = g.Key.StoryTypeId,
-                        DateCreated = g.Key.DateCreated,
-                        LocalizedStoryTypes = g.ToList(),
-                        Tags = g.Key.Tags.Select(t => new JSONTagModel
+                            .OrderBy(s => s.StoryTypeId)
+                            .ThenBy(s => s.LanguageId)
+                            .GroupBy(lst => lst.StoryType);
+
+                    // TODO: Don't pass full localized story types with full descriptions for performance
+
+                    model.TotalAvailableResults = q.Count();
+                    model.StoryTypeViewModels =
+                       q
+                        .OrderBy(s => s.Key.StoryTypeId)
+                        .Skip(model.Page * model.ResultsPerPage)
+                        .Take(model.ResultsPerPage)
+                        .ToList()
+                        .Select(g => new StoryTypeViewModel
                         {
-                            id = t.TagId,
-                            type = t.TagType,
-                            text = t.TranslatedTags
-                                    .Where(tt => tt.LanguageId == tagLangId)
-                                    .Select(tt => tt.Text)
-                                    .FirstOrDefault()
-                        }).ToList()
-                    }).ToList();
+                            StoryTypeId = g.Key.StoryTypeId,
+                            DateCreated = g.Key.DateCreated,
+                            LocalizedStoryTypes = g.ToList(),
+                            Tags = g.Key.Tags.Select(t => new JSONTagModel
+                            {
+                                id = t.TagId,
+                                type = t.TagType,
+                                text = t.TranslatedTags
+                                        .Where(tt => tt.LanguageId == tagLangId)
+                                        .Select(tt => tt.Text)
+                                        .FirstOrDefault()
+                            }).ToList()
+                        }).ToList();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                model.TotalAvailableResults = 0;
+                model.StoryTypeViewModels = Enumerable.Empty<StoryTypeViewModel>();
             }
         }
 
