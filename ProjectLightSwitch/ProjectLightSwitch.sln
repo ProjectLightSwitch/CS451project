@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectLightSwitch.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite", "TestSite\TestSite.csproj", "{8A3C2888-D876-47A2-8536-1DCCDBE0BFCB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeleniumTests", "SeleniumTests\SeleniumTests.csproj", "{2FFEAA39-0499-426D-9814-C13229A33D8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8A3C2888-D876-47A2-8536-1DCCDBE0BFCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A3C2888-D876-47A2-8536-1DCCDBE0BFCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A3C2888-D876-47A2-8536-1DCCDBE0BFCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FFEAA39-0499-426D-9814-C13229A33D8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FFEAA39-0499-426D-9814-C13229A33D8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FFEAA39-0499-426D-9814-C13229A33D8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FFEAA39-0499-426D-9814-C13229A33D8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
