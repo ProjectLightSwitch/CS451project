@@ -7,7 +7,7 @@ namespace ProjectLightSwitch.Models
 {
     public class SiteSettings
     {
-        public const int DefaultResultsPerPage = 10;
+        public const int DefaultResultsPerPage = 50;
 
         public const int DefaultRecentDays = 7;
 
