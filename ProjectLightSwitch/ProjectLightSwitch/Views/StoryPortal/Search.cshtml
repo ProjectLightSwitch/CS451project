@@ -10,19 +10,15 @@
 
     var tagSearcher = null;
 
-    var autocompleteTagPaths = {};
     $(document).ready(function () {
         tagSearcher = new TagSearcher($('#tag-searcher'));
         var breadcrumbs = new SelectedTagBreadCrumbs($('#selected-tags'), tagSearcher, { cssPrefix: '', separator: ' > ', closable: true });
-
-
         var acomplete = jQuery("#tag-autocomplete").autocomplete({
             source: function (request, response) {
                 tagSearcher.tagAdapter.searchTags(request.term, function (data) {
-                    var autocompleteTagPaths = {};
-                    var label = [];
                     for (var i = 0; i < data.length; i++)
                     {
+                        var label = [];
                         var path = data[i].path;
                         for (var j= 0; j < path.length; j++)
                         {
@@ -31,14 +27,17 @@
                         data[i].fullLabel = label.join(' > ');
 
                         label.splice(1, label.length - 3);
-                        data[i].label = label.join('>');
+                        data[i].label = label.join(' > ');
                     }
                     response(data);
                 });
             },
             minLength: 3,
             select: function (event, ui) {
-                tagSearcher.navigateToTag(ui.item.value, true);
+                if (ui.item && ui.item.value){
+                    tagSearcher.navigateToTag(ui.item.value, true);
+                    ui.item.value= ui.item.fullLabel;
+                } 
             },
             focus: function (event, ui) {
                 $("#tag-autocomplete").val(ui.item.label);
@@ -137,6 +136,10 @@
     margin:0 10px 0 0;
 }
 
+#response-results {
+    word-break: break-all;
+}
+
 .story-response-result .tagBreadcrumbs,
 #selected-tags, #selected-tags .tagBreadcrumbs {
     display: inline-block;
@@ -164,6 +167,11 @@
     font-weight: bold;
     text-decoration: underline;
 
+}
+
+.ui-menu .ui-menu-item a{
+
+    white-space: nowrap;
 }
 
 </style>

@@ -199,6 +199,7 @@ TagSearcher.prototype.navigateToTag = function (id, showContainer)
         // Recycle the container
         var browser = new TagChildrenNavigator(container, this, leaves, catId, { isSelfNavigating: true, cssPrefix: 'search', enabled: true })
         this._categoryBrowsers[catId] = { 'path': path, 'browser': browser };
+        this.tagSelector.addListener(browser, catId);
 
         if (showContainer) {
             var index = $(".depth_container").index(this._categoryBrowsers[catId].browser.container);

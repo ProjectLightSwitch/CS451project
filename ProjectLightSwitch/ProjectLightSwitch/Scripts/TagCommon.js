@@ -111,7 +111,7 @@ TagSelector.prototype.onTagDeselected = function (tagId)
     for (var i = 0; i < this._selectedPaths.length; i++) {
         var path = this._selectedPaths[i];
         if (path[path.length - 1].id == tagId) {
-            catId = path[0].id;
+            catId = path[0].id == InvisibleRootId ? path[1].id : path[0].id;
             this._selectedPaths.splice(i, 1);
             break;
         }
@@ -353,8 +353,16 @@ SelectedTagBreadCrumbs.prototype.init = function(container)
 SelectedTagBreadCrumbs.prototype.tagSelected = function (path) 
 {
     var title = [];
-    for (var i = 1; i < path.length; i++) {
-        title.push(path[i].text);
+    if(!path || !path.length) {
+        return;
+    }
+
+    var start = path.length > 1 && path[0] == InvisibleRootId ? 1 : 0;
+    var pathLen = path.length;
+    for (var i = start; i < pathLen; i++) {
+        if (path[i].text !== null && path[i].id != InvisibleRootId) {
+            title.push(path[i].text);
+        }
     }
 
     var label = [title[title.length - 2], title[title.length - 1]].join(this._separator);

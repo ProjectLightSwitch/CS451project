@@ -2,12 +2,14 @@
 @{
     ViewBag.Title = "Browse available story types";
 }
-<section class="accent-block">
+<section>
     <h2>Search for Others' Stories</h2>
     @Html.ActionLink("View Responses", "Search", null, new { @class = "button1" })
+    <div class="margin-large"></div>
+    <h2>Share your Story</h2>
 </section>
-<section class="accent-block">
-    <h3>Share your own story</h3>
+<section class="accent">
+    <h3>Search for a Story Type</h3>
     @using (Html.BeginForm("Browse", "StoryPortal", null, FormMethod.Get))
     {
         @Html.LabelFor(t => t.SearchTerm)
@@ -17,8 +19,7 @@
     }
 </section>
 <section>
-    <h2>Story Types to Create</h2>
-    @if (!Model.StoryTypeViewModels.Any())
+        @if (!Model.StoryTypeViewModels.Any())
     { 
         if(!string.IsNullOrWhiteSpace(@Model.SearchTerm))
         {

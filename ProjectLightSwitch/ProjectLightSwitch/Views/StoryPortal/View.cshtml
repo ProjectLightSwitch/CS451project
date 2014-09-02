@@ -12,6 +12,7 @@
     #story-container > #story-content {
         float:left;
         width: 70%;
+        word-break: break-all;
     }
     #story-container > #related-content {
         float:right;
@@ -64,7 +65,7 @@
                 foreach (var relatedResponse in Model.RelatedResponses)
                 {
                     <div>
-                        <h3>@relatedResponse.Title</h3>
+                        <h3>@Html.ActionLink(relatedResponse.Title, "View", new {id=relatedResponse.StoryResponseId})</h3>
                         <span class="personal-description">
                             I am a @relatedResponse.Age year old
                             @(ProjectLightSwitch.Models.Enums.EnumExtensions.ParseGender(relatedResponse.Gender))
